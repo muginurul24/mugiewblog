@@ -1,0 +1,32 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Category;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+
+/**
+ * @extends Factory<Category>
+ */
+class CategoryFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        $name = fake()->unique()->words(2, true);
+
+        return [
+            'name' => Str::headline($name),
+            'slug' => Str::slug($name),
+            'description' => fake()->sentence(12),
+            'color' => fake()->randomElement(['#D4943A', '#2B8A7E', '#5F6F94', '#B85C38', '#6A7D39']),
+            'icon' => fake()->randomElement(['fa-code', 'fa-server', 'fa-cloud', 'fa-chart-line', 'fa-terminal']),
+            'sort_order' => fake()->numberBetween(1, 20),
+        ];
+    }
+}

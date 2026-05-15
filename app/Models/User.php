@@ -3,16 +3,32 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable([
+    'name',
+    'username',
+    'email',
+    'password',
+    'avatar',
+    'bio',
+    'github_url',
+    'twitter_url',
+    'website_url',
+    'role',
+    'is_active',
+    'two_factor_enabled',
+    'two_factor_secret',
+])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser
 {
@@ -29,7 +45,37 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
+            'is_active' => 'boolean',
+            'two_factor_enabled' => 'boolean',
         ];
+    }
+
+    /**
+     * @return HasMany<Article, $this>
+     */
+    #[\NoDiscard]
+    public function articles(): HasMany
+    {
+        return $this->hasMany(Article::class);
+    }
+
+    /**
+     * @return HasMany<Comment, $this>
+     */
+    #[\NoDiscard]
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * @return HasMany<Bookmark, $this>
+     */
+    #[\NoDiscard]
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
     }
 
     /**
@@ -38,7 +84,7 @@ class User extends Authenticatable implements FilamentUser
     #[\NoDiscard]
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === UserRole::Admin;
     }
 
     /**
@@ -47,7 +93,7 @@ class User extends Authenticatable implements FilamentUser
     #[\NoDiscard]
     public function isEditor(): bool
     {
-        return $this->role === 'editor';
+        return $this->role === UserRole::Editor;
     }
 
     /**
@@ -56,7 +102,7 @@ class User extends Authenticatable implements FilamentUser
     #[\NoDiscard]
     public function isAuthor(): bool
     {
-        return $this->role === 'author';
+        return $this->role === UserRole::Author;
     }
 
     /**
@@ -65,6 +111,6 @@ class User extends Authenticatable implements FilamentUser
     #[\NoDiscard]
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->isAdmin();
+        return $this->is_active && $this->isAdmin();
     }
 }

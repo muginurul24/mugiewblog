@@ -33,6 +33,20 @@ it('should render article page when article is published', function () {
         ->assertSeeText('Komentar');
 });
 
+it('should render about page with editorial context and real blog stats', function () {
+    $this->seed();
+
+    $this->get(route('about'))
+        ->assertSuccessful()
+        ->assertSeeText('Tentang MugiewBlog')
+        ->assertSeeText('Visi')
+        ->assertSeeText('Misi')
+        ->assertSeeText('Tim Penulis')
+        ->assertSeeText('Tech Stack')
+        ->assertSeeText('Artikel')
+        ->assertSeeText('Pembaca');
+});
+
 it('should prepare responsive article markdown content when rich markdown exists', function () {
     $html = Article::renderMarkdown(<<<'MARKDOWN'
         ## Bagian Utama
@@ -131,5 +145,6 @@ it('should render rss feed and sitemap when published content exists', function 
     $this->get(route('sitemap'))
         ->assertSuccessful()
         ->assertHeader('content-type', 'application/xml; charset=UTF-8')
-        ->assertSee('<urlset', false);
+        ->assertSee('<urlset', false)
+        ->assertSee(route('about'), false);
 });

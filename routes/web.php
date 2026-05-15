@@ -12,6 +12,7 @@ Route::livewire('/articles/{article:slug}', 'pages::article-show')->name('articl
 Route::livewire('/categories/{category:slug}', 'pages::category-show')->name('categories.show');
 Route::livewire('/tags/{tag:slug}', 'pages::tag-show')->name('tags.show');
 Route::livewire('/search', 'pages::search')->middleware('throttle:30,1')->name('search');
+Route::livewire('/about', 'pages::about')->name('about');
 
 Route::middleware('guest')->group(function (): void {
     Route::livewire('/login', 'pages::auth.login')->name('login');

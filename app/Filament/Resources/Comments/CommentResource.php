@@ -5,7 +5,9 @@ namespace App\Filament\Resources\Comments;
 use App\Filament\Resources\Comments\Pages\CreateComment;
 use App\Filament\Resources\Comments\Pages\EditComment;
 use App\Filament\Resources\Comments\Pages\ListComments;
+use App\Filament\Resources\Comments\Pages\ViewComment;
 use App\Filament\Resources\Comments\Schemas\CommentForm;
+use App\Filament\Resources\Comments\Schemas\CommentInfolist;
 use App\Filament\Resources\Comments\Tables\CommentsTable;
 use App\Models\Comment;
 use BackedEnum;
@@ -30,6 +32,11 @@ class CommentResource extends Resource
         return CommentForm::configure($schema);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return CommentInfolist::configure($schema);
+    }
+
     public static function table(Table $table): Table
     {
         return CommentsTable::configure($table);
@@ -47,6 +54,7 @@ class CommentResource extends Resource
         return [
             'index' => ListComments::route('/'),
             'create' => CreateComment::route('/create'),
+            'view' => ViewComment::route('/{record}'),
             'edit' => EditComment::route('/{record}/edit'),
         ];
     }

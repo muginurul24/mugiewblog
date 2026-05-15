@@ -62,6 +62,8 @@ new class extends Component {
             'guest_email' => $validated['guestEmail'],
             'content' => $validated['commentContent'],
             'status' => CommentStatus::Pending,
+            'ip_address' => request()->ip(),
+            'user_agent' => Str::limit((string) request()->userAgent(), 500),
         ]);
 
         $this->reset(['guestName', 'guestEmail', 'commentContent', 'website']);

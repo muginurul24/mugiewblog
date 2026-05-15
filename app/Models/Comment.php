@@ -20,6 +20,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'guest_email',
     'content',
     'status',
+    'ip_address',
+    'user_agent',
     'approved_at',
 ])]
 class Comment extends Model

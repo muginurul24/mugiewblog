@@ -7,7 +7,9 @@ use App\Enums\CommentStatus;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\Media;
 use App\Models\NewsletterSubscriber;
+use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -33,6 +35,11 @@ class DatabaseSeeder extends Seeder
         $authors = User::factory()->author()->count(3)->create();
         $categories = $this->seedCategories();
         $tags = $this->seedTags();
+        $series = Series::create([
+            'name' => 'Laravel Production Notes',
+            'slug' => 'laravel-production-notes',
+            'description' => 'Kumpulan catatan produksi Laravel, Livewire, Filament, dan deployment modern.',
+        ]);
 
         foreach ($this->articleBlueprints() as $index => $blueprint) {
             $category = $categories[$blueprint['category']];
@@ -56,6 +63,21 @@ class DatabaseSeeder extends Seeder
             $article->tags()->sync(
                 collect($blueprint['tags'])->map(fn (string $name): int => $tags[$name]->id)->all()
             );
+
+            if ($index < 4) {
+                $series->articles()->attach($article->id, ['sort_order' => $index + 1]);
+            }
+
+            Media::create([
+                'user_id' => $article->user_id,
+                'filename' => Str::afterLast($blueprint['image'], '/'),
+                'original_name' => Str::slug($blueprint['title']).'.jpg',
+                'path' => $blueprint['image'],
+                'mime_type' => 'image/jpeg',
+                'size' => 450_000 + ($index * 1_000),
+                'alt_text' => $blueprint['image_alt'],
+                'folder' => 'articles',
+            ]);
         }
 
         Article::factory()

@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -30,10 +32,10 @@ use Illuminate\Notifications\Notifiable;
     'two_factor_secret',
 ])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmailContract
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, MustVerifyEmail, Notifiable, SoftDeletes;
 
     /**
      * Get the attributes that should be cast.
@@ -79,6 +81,15 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * @return HasMany<Media, $this>
+     */
+    #[\NoDiscard]
+    public function media(): HasMany
+    {
+        return $this->hasMany(Media::class);
+    }
+
+    /**
      * Check if the user has the admin role.
      */
     #[\NoDiscard]
@@ -111,6 +122,6 @@ class User extends Authenticatable implements FilamentUser
     #[\NoDiscard]
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_active && $this->isAdmin();
+        return $this->is_active && ($this->isAdmin() || $this->isEditor());
     }
 }

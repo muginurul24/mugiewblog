@@ -5,15 +5,18 @@ namespace App\Filament\Resources\Comments\Tables;
 use App\Enums\CommentStatus;
 use App\Models\Comment;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
 class CommentsTable
 {
@@ -70,10 +73,40 @@ class CommentsTable
                         'status' => CommentStatus::Rejected,
                         'approved_at' => null,
                     ])),
+                Action::make('spam')
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->visible(fn (Comment $record): bool => $record->status !== CommentStatus::Spam)
+                    ->action(fn (Comment $record): bool => $record->update([
+                        'status' => CommentStatus::Spam,
+                        'approved_at' => null,
+                    ])),
+                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('approve')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): bool => $records->each->update([
+                            'status' => CommentStatus::Approved,
+                            'approved_at' => now(),
+                        ])->isNotEmpty()),
+                    BulkAction::make('reject')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): bool => $records->each->update([
+                            'status' => CommentStatus::Rejected,
+                            'approved_at' => null,
+                        ])->isNotEmpty()),
+                    BulkAction::make('spam')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): bool => $records->each->update([
+                            'status' => CommentStatus::Spam,
+                            'approved_at' => null,
+                        ])->isNotEmpty()),
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),

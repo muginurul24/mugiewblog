@@ -48,6 +48,15 @@ class CommentForm
                     ->required(),
                 DateTimePicker::make('approved_at')
                     ->seconds(false),
+                Grid::make(2)
+                    ->schema([
+                        TextInput::make('ip_address')
+                            ->maxLength(45),
+                        Textarea::make('user_agent')
+                            ->rows(2)
+                            ->maxLength(1000),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 }

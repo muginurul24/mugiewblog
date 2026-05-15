@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\BlogStats;
+use App\Filament\Widgets\PendingComments;
+use App\Filament\Widgets\RecentArticles;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -11,7 +14,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -26,11 +28,12 @@ class BackofficePanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('backoffice')
-            ->path('backoffice')
+            ->path('admin')
             ->login()
             ->profile()
+            ->brandName('MugiewBlog Admin')
             ->colors([
-                'primary' => Color::Mauve,
+                'primary' => Color::Amber,
             ])
             ->databaseNotifications()
             ->databaseNotificationsPolling('20s')
@@ -42,7 +45,9 @@ class BackofficePanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
-                FilamentInfoWidget::class,
+                BlogStats::class,
+                RecentArticles::class,
+                PendingComments::class,
             ])
             ->middleware([
                 EncryptCookies::class,

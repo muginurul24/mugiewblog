@@ -55,12 +55,40 @@ class ArticleForm
                         Select::make('category_id')
                             ->relationship('category', 'name')
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('slug', Str::slug($state ?? ''))),
+                                TextInput::make('slug')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique('categories', 'slug'),
+                                Textarea::make('description')
+                                    ->rows(3)
+                                    ->maxLength(500),
+                            ]),
                         Select::make('tags')
                             ->relationship('tags', 'name')
                             ->multiple()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('slug', Str::slug($state ?? ''))),
+                                TextInput::make('slug')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique('tags', 'slug'),
+                                Textarea::make('description')
+                                    ->rows(3)
+                                    ->maxLength(500),
+                            ]),
                         Select::make('status')
                             ->options(ArticleStatus::options())
                             ->default(ArticleStatus::Draft->value)

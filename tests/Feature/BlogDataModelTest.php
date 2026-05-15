@@ -4,6 +4,8 @@ use App\Enums\ArticleStatus;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\Media;
+use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -44,10 +46,28 @@ it('should expose relationships when blog data exists', function () {
         ->and($article->comments)->toHaveCount(1);
 });
 
+it('should expose media and series relationships when publishing content', function () {
+    $author = User::factory()->author()->create();
+    $article = Article::factory()->for($author, 'author')->published()->create();
+    $media = Media::factory()->for($author, 'uploader')->create([
+        'path' => 'articles/example.webp',
+    ]);
+    $series = Series::factory()->create();
+
+    $series->articles()->attach($article->id, ['sort_order' => 1]);
+
+    expect($media->uploader->is($author))->toBeTrue()
+        ->and($media->url())->toContain('/storage/articles/example.webp')
+        ->and($series->articles()->first()?->is($article))->toBeTrue()
+        ->and($article->series()->first()?->is($series))->toBeTrue();
+});
+
 it('should seed production-like published content when database seeder runs', function () {
     $this->seed();
 
     expect(Article::published()->count())->toBeGreaterThanOrEqual(8)
         ->and(Category::query()->count())->toBeGreaterThanOrEqual(6)
-        ->and(Tag::query()->count())->toBeGreaterThanOrEqual(12);
+        ->and(Tag::query()->count())->toBeGreaterThanOrEqual(12)
+        ->and(Media::query()->count())->toBeGreaterThanOrEqual(8)
+        ->and(Series::query()->count())->toBeGreaterThanOrEqual(1);
 });

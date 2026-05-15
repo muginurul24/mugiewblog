@@ -25,6 +25,7 @@
 | Runtime | FrankenPHP (Octane) | latest |
 | Database | MySQL | 8.4 LTS |
 | Cache/Queue | Redis | 7.x |
+| Queue Monitor | Laravel Horizon | 5.x |
 | CSS | Tailwind CSS | 4.x |
 | Icons | FontAwesome Free | 7.2 |
 | Animation | Animate.css | 4.1 |
@@ -49,6 +50,7 @@
 - ✅ Animate.css 4.1: Entrance/exit/attention animations, prefers-reduced-motion MANDATORY
 - ✅ @tailwindcss/typography: `prose` class for article/comment content, dark:prose-invert
 - ✅ @tailwindcss/forms: Auto-styled inputs, selects, checkboxes; override with Tailwind utilities
+- ✅ Laravel Horizon: Queue monitoring at /horizon, role-gated (admin only)
 
 ---
 

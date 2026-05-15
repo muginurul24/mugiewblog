@@ -1,6 +1,6 @@
-# Epic 7: Infrastructure — Docker, Security, CI/CD
+# Epic 7: Infrastructure — Docker, Security, CI/CD, Horizon
 **Status:** 🔴 Not Started | **Priority:** P0 (MVP Blocker)  
-**Estimated Tasks:** 14 | **Dependencies:** Epic 4
+**Estimated Tasks:** 16 | **Dependencies:** Epic 4
 
 ## Goal
 Production-ready Docker setup, security hardening, CI/CD pipeline, and FrankenPHP Octane configuration.
@@ -60,6 +60,20 @@ Production-ready Docker setup, security hardening, CI/CD pipeline, and FrankenPH
 - [ ] Worker mode handles concurrent requests
 - [ ] No memory leaks after 500 requests
 - [ ] `composer run dev` works with all concurrent processes
+
+### 7.4: Laravel Horizon Setup
+**Priority:** P0 | **Estimate:** 2 tasks
+
+| # | Task | Description |
+|---|---|---|
+| T7.4.1 | Configure HorizonServiceProvider gate | Restrict `/horizon` to admin role, configure per-queue worker balancing |
+| T7.4.2 | Configure Horizon environment | Queue worker counts, memory limits, trim/supervisor settings in `config/horizon.php` |
+
+**Acceptance Criteria:**
+- [ ] Horizon dashboard accessible at `/horizon` for admin
+- [ ] Non-admin gets 403 at `/horizon`
+- [ ] Real-time queue metrics visible (jobs/min, failed jobs, throughput)
+- [ ] Worker balancing configured: emails=2, images=1, default=3
 
 ---
 

@@ -153,6 +153,15 @@ Request → FrankenPHP (Caddy) → Laravel Octane Worker (in-memory)
 - **Prose code blocks:** `prose-code:before:content-none prose-code:after:content-none` untuk inline code bersih
 - **Skill:** `.agents/skills/tailwindcss-plugins/SKILL.md`
 
+### 2.11 Queue Monitoring: Laravel Horizon 5
+
+- **Dashboard:** Web UI di `/horizon` untuk monitoring queue real-time
+- **Metrics:** Jobs per minute, throughput, failed jobs, queue wait times, worker status
+- **Gate:** Hanya admin/editor yang bisa akses Horizon di production
+- **Redis-powered:** Requires Redis queue driver (already configured)
+- **Auto-balancing:** Distributes queue load across workers automatically
+- **Notifications:** Optional Slack/SMS/email alerts for queue failures
+
 ---
 
 ## 3. Database Design
@@ -1198,6 +1207,21 @@ public function boot(): void
     ]);
 }
 ```
+
+### 12.4 Horizon Dashboard
+
+Accessible at `/horizon` — auto-discovered by Laravel. Gate configured in `HorizonServiceProvider`:
+
+```php
+protected function gate(): void
+{
+    Gate::define('viewHorizon', function (?User $user = null): bool {
+        return $user?->isAdmin() ?? false;
+    });
+}
+```
+
+Workers configured per queue with auto-balancing: `emails` (2 workers), `images` (1 worker), `default` (3 workers).
 
 ---
 

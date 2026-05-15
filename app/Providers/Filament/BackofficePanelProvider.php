@@ -28,6 +28,7 @@ class BackofficePanelProvider extends PanelProvider
             ->id('backoffice')
             ->path('backoffice')
             ->login()
+            ->profile()
             ->colors([
                 'primary' => Color::Mauve,
             ])

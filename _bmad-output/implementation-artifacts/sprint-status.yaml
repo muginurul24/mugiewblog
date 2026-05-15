@@ -75,7 +75,7 @@ epics:
     status: in_progress
     priority: P0
     total_tasks: 23
-    completed_tasks: 16
+    completed_tasks: 21
     file: epics/05-blog-features.md
 
   - id: epic-06-theme-ux
@@ -99,14 +99,14 @@ epics:
     status: in_progress
     priority: P0
     total_tasks: 14
-    completed_tasks: 11
+    completed_tasks: 12
     file: epics/08-testing.md
 
 summary:
   total_epics: 8
   total_tasks: 140
-  completed_tasks: 113
-  progress_percent: 81
+  completed_tasks: 119
+  progress_percent: 85
   mvp_target: 2026-06-26
 
 # HOW TO UPDATE:

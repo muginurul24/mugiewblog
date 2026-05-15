@@ -4,6 +4,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\NewsletterSubscriber;
 use App\Models\Tag;
+use App\Notifications\ConfirmNewsletterSubscription;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -44,19 +45,21 @@ new class extends Component {
         $this->validateOnly('email');
         $this->ensureSubscriptionIsNotRateLimited();
 
-        NewsletterSubscriber::query()->updateOrCreate(
+        $subscriber = NewsletterSubscriber::query()->updateOrCreate(
             ['email' => $this->email],
             [
-                'status' => 'subscribed',
+                'status' => 'pending',
                 'source' => 'homepage',
-                'verified_at' => now(),
-                'subscribed_at' => now(),
+                'verified_at' => null,
+                'subscribed_at' => null,
                 'unsubscribed_at' => null,
             ],
         );
 
+        $subscriber->notify(new ConfirmNewsletterSubscription($subscriber));
+
         $this->reset('email');
-        session()->flash('newsletter', 'Newsletter aktif. Artikel baru akan masuk ke inbox Anda.');
+        session()->flash('newsletter', 'Cek inbox untuk konfirmasi newsletter.');
     }
 
     /**

@@ -6,13 +6,14 @@ use Database\Factories\NewsletterSubscriberFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
 #[Fillable(['email', 'name', 'status', 'source', 'verification_token', 'verified_at', 'subscribed_at', 'unsubscribed_at'])]
 class NewsletterSubscriber extends Model
 {
     /** @use HasFactory<NewsletterSubscriberFactory> */
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected static function booted(): void
     {
@@ -37,5 +38,23 @@ class NewsletterSubscriber extends Model
     public function isSubscribed(): bool
     {
         return $this->status === 'subscribed' && $this->unsubscribed_at === null;
+    }
+
+    public function confirm(): bool
+    {
+        return $this->update([
+            'status' => 'subscribed',
+            'verified_at' => $this->verified_at ?? now(),
+            'subscribed_at' => $this->subscribed_at ?? now(),
+            'unsubscribed_at' => null,
+        ]);
+    }
+
+    public function unsubscribe(): bool
+    {
+        return $this->update([
+            'status' => 'unsubscribed',
+            'unsubscribed_at' => now(),
+        ]);
     }
 }

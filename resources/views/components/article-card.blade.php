@@ -1,6 +1,7 @@
 @props([
     'article',
     'featured' => false,
+    'excerpt' => null,
 ])
 
 @php
@@ -52,7 +53,11 @@
         </h2>
 
         <p class="{{ $featured ? 'mt-4 text-base' : 'mt-3 text-sm' }} line-clamp-3 leading-6 text-surface-500 dark:text-surface-400">
-            {{ $article->excerpt }}
+            @if ($excerpt)
+                {!! $excerpt !!}
+            @else
+                {{ $article->excerpt }}
+            @endif
         </p>
 
         <div class="mt-5 flex flex-wrap items-center gap-4 text-xs font-medium text-surface-400">

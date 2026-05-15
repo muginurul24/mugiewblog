@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Article;
 use App\Services\SearchService;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Computed;
@@ -24,11 +25,16 @@ new class extends Component {
         $term = trim($this->query);
 
         return app(SearchService::class)
-            ->publishedArticles($term)
+            ->cachedPublishedArticles($term)
             ->with(['author', 'category'])
             ->withCount(['comments' => fn (Builder $query) => $query->approved()])
             ->latest('published_at')
             ->paginate(9);
+    }
+
+    public function highlightedExcerpt(Article $article): string
+    {
+        return app(SearchService::class)->highlightedExcerpt($article, $this->query);
     }
 };
 ?>
@@ -78,7 +84,7 @@ new class extends Component {
         @if ($this->articles->isNotEmpty())
             <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" wire:loading.class="opacity-50">
                 @foreach ($this->articles as $article)
-                    <x-article-card :article="$article" wire:key="search-article-{{ $article->id }}" />
+                    <x-article-card :article="$article" :excerpt="$this->highlightedExcerpt($article)" wire:key="search-article-{{ $article->id }}" />
                 @endforeach
             </div>
 

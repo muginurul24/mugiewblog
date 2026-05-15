@@ -4,13 +4,19 @@ use App\Enums\CommentStatus;
 use App\Models\Article;
 use App\Models\Comment;
 use App\Models\NewsletterSubscriber;
+use App\Models\User;
+use App\Notifications\ConfirmNewsletterSubscription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
 it('should subscribe a reader when newsletter form is submitted', function () {
+    Notification::fake();
+
     Livewire::test('pages::index')
         ->set('email', ' Reader@Example.COM ')
         ->call('subscribe')
@@ -21,9 +27,29 @@ it('should subscribe a reader when newsletter form is submitted', function () {
 
     expect($subscriber)
         ->email->toBe('reader@example.com')
-        ->status->toBe('subscribed')
+        ->status->toBe('pending')
         ->source->toBe('homepage')
-        ->verified_at->not->toBeNull();
+        ->verified_at->toBeNull();
+
+    Notification::assertSentTo($subscriber, ConfirmNewsletterSubscription::class);
+});
+
+it('should confirm a newsletter subscription with a signed link', function () {
+    $subscriber = NewsletterSubscriber::factory()->create([
+        'status' => 'pending',
+        'verified_at' => null,
+        'subscribed_at' => null,
+    ]);
+
+    $this->get(URL::signedRoute('newsletter.confirm', [
+        'subscriber' => $subscriber,
+        'token' => $subscriber->verification_token,
+    ]))->assertRedirect(route('home'));
+
+    expect($subscriber->refresh())
+        ->status->toBe('subscribed')
+        ->verified_at->not->toBeNull()
+        ->subscribed_at->not->toBeNull();
 });
 
 it('should ignore newsletter honeypot submissions when spam field is filled', function () {
@@ -54,35 +80,43 @@ it('should block newsletter submissions when rate limit is exceeded', function (
     expect(NewsletterSubscriber::query()->where('email', $email)->exists())->toBeFalse();
 });
 
-it('should queue guest comments for moderation when article form is submitted', function () {
+it('should queue verified reader comments for moderation when article form is submitted', function () {
     $article = Article::factory()->published()->create();
+    $reader = User::factory()->create();
 
-    Livewire::test('pages::article-show', ['article' => $article])
-        ->set('guestName', '  Rafi  ')
-        ->set('guestEmail', ' READER@Example.COM ')
+    Livewire::actingAs($reader)
+        ->test('pages::article-show', ['article' => $article])
         ->set('commentContent', 'Komentar ini cukup panjang untuk melewati validasi.')
         ->call('submitComment')
         ->assertHasNoErrors()
-        ->assertSet('guestName', '')
-        ->assertSet('guestEmail', '')
         ->assertSet('commentContent', '');
 
     $comment = Comment::query()->firstOrFail();
 
     expect($comment)
         ->article_id->toBe($article->id)
-        ->guest_name->toBe('Rafi')
-        ->guest_email->toBe('reader@example.com')
+        ->user_id->toBe($reader->id)
         ->content->toBe('Komentar ini cukup panjang untuk melewati validasi.')
         ->status->toBe(CommentStatus::Pending);
 });
 
-it('should ignore comment honeypot submissions when spam field is filled', function () {
+it('should redirect guests to login when comment form is submitted directly', function () {
     $article = Article::factory()->published()->create();
 
     Livewire::test('pages::article-show', ['article' => $article])
-        ->set('guestName', 'Bot')
-        ->set('guestEmail', 'bot@example.com')
+        ->set('commentContent', 'Komentar guest yang cukup panjang.')
+        ->call('submitComment')
+        ->assertRedirect(route('login'));
+
+    expect(Comment::query()->count())->toBe(0);
+});
+
+it('should ignore comment honeypot submissions when spam field is filled', function () {
+    $article = Article::factory()->published()->create();
+    $reader = User::factory()->create();
+
+    Livewire::actingAs($reader)
+        ->test('pages::article-show', ['article' => $article])
         ->set('commentContent', 'Komentar spam yang cukup panjang.')
         ->set('website', 'https://spam.example')
         ->call('submitComment')

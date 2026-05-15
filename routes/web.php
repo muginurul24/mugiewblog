@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\NewsletterSubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::livewire('/', 'pages::index')->name('home');
@@ -39,3 +40,9 @@ Route::middleware('auth')->group(function (): void {
 Route::get('/robots.txt', [FeedController::class, 'robots'])->name('robots');
 Route::get('/feed.xml', [FeedController::class, 'rss'])->name('feed');
 Route::get('/sitemap.xml', [FeedController::class, 'sitemap'])->name('sitemap');
+Route::get('/newsletter/{subscriber}/{token}/confirm', [NewsletterSubscriptionController::class, 'confirm'])
+    ->middleware('signed')
+    ->name('newsletter.confirm');
+Route::get('/newsletter/{subscriber}/{token}/unsubscribe', [NewsletterSubscriptionController::class, 'unsubscribe'])
+    ->middleware('signed')
+    ->name('newsletter.unsubscribe');

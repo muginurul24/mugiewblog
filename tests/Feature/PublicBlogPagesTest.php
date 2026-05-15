@@ -53,7 +53,8 @@ it('should render search results when query matches content', function () {
     $this->get(route('search', ['q' => 'Laravel']))
         ->assertSuccessful()
         ->assertSeeText('Hasil')
-        ->assertSeeText('Laravel');
+        ->assertSeeText('Laravel')
+        ->assertSee('<mark', false);
 });
 
 it('should render rss feed and sitemap when published content exists', function () {

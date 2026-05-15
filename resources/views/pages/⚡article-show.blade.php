@@ -27,6 +27,10 @@ new class extends Component {
     #[Validate('required|string|min:8|max:2000')]
     public string $commentContent = '';
 
+    public ?int $replyingTo = null;
+
+    public string $replyContent = '';
+
     public string $website = '';
 
     public function mount(Article $article): void
@@ -44,8 +48,9 @@ new class extends Component {
 
     public function submitComment(): void
     {
-        $this->guestName = Str::of($this->guestName)->squish()->toString();
-        $this->guestEmail = Str::lower(trim($this->guestEmail));
+        if (! $this->ensureAuthenticatedAndVerified()) {
+            return;
+        }
         $this->commentContent = trim($this->commentContent);
 
         if (filled($this->website)) {
@@ -55,12 +60,15 @@ new class extends Component {
             return;
         }
 
-        $validated = $this->validate();
+        $validated = $this->validate([
+            'commentContent' => ['required', 'string', 'min:8', 'max:2000'],
+        ]);
+
         $this->ensureCommentIsNotRateLimited();
 
         $commentStatus = app(CommentSpamDetector::class)->isSpam([
-            'name' => $validated['guestName'],
-            'email' => $validated['guestEmail'],
+            'name' => auth()->user()->name,
+            'email' => auth()->user()->email,
             'content' => $validated['commentContent'],
             'ip' => request()->ip(),
             'user_agent' => request()->userAgent(),
@@ -70,8 +78,7 @@ new class extends Component {
 
         $comment = Comment::create([
             'article_id' => $this->article->id,
-            'guest_name' => $validated['guestName'],
-            'guest_email' => $validated['guestEmail'],
+            'user_id' => auth()->id(),
             'content' => $validated['commentContent'],
             'status' => $commentStatus,
             'ip_address' => request()->ip(),
@@ -86,12 +93,69 @@ new class extends Component {
         session()->flash('comment', 'Komentar terkirim dan menunggu moderasi.');
     }
 
+    public function startReply(int $commentId): void
+    {
+        if (! $this->ensureAuthenticatedAndVerified()) {
+            return;
+        }
+
+        $comment = $this->article
+            ->comments()
+            ->approved()
+            ->whereKey($commentId)
+            ->firstOrFail();
+
+        abort_if($this->commentDepth($comment) >= 3, 422);
+
+        $this->replyingTo = $comment->id;
+        $this->replyContent = '';
+    }
+
+    public function cancelReply(): void
+    {
+        $this->reset(['replyingTo', 'replyContent']);
+    }
+
+    public function submitReply(): void
+    {
+        if (! $this->ensureAuthenticatedAndVerified()) {
+            return;
+        }
+
+        $validated = $this->validate([
+            'replyContent' => ['required', 'string', 'min:8', 'max:2000'],
+        ]);
+
+        $parent = $this->article
+            ->comments()
+            ->approved()
+            ->whereKey($this->replyingTo)
+            ->firstOrFail();
+
+        abort_if($this->commentDepth($parent) >= 3, 422);
+
+        $comment = Comment::create([
+            'article_id' => $this->article->id,
+            'user_id' => auth()->id(),
+            'parent_id' => $parent->id,
+            'content' => trim($validated['replyContent']),
+            'status' => CommentStatus::Pending,
+            'ip_address' => request()->ip(),
+            'user_agent' => Str::limit((string) request()->userAgent(), 500),
+        ]);
+
+        CommentCreated::dispatch($comment);
+        $this->reset(['replyingTo', 'replyContent']);
+        unset($this->comments);
+        session()->flash('comment', 'Balasan terkirim dan menunggu moderasi.');
+    }
+
     /**
      * @throws ValidationException
      */
     private function ensureCommentIsNotRateLimited(): void
     {
-        $key = 'comment:'.sha1((request()->ip() ?: 'unknown').'|'.$this->article->id.'|'.$this->guestEmail);
+        $key = 'comment:'.sha1((request()->ip() ?: 'unknown').'|'.$this->article->id.'|'.auth()->id());
 
         $executed = RateLimiter::attempt(
             $key,
@@ -105,6 +169,36 @@ new class extends Component {
                 'commentContent' => 'Terlalu banyak percobaan. Coba lagi dalam '.RateLimiter::availableIn($key).' detik.',
             ]);
         }
+    }
+
+    private function ensureAuthenticatedAndVerified(): bool
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return false;
+        }
+
+        if (! auth()->user()->hasVerifiedEmail()) {
+            $this->redirectRoute('verification.notice', navigate: true);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function commentDepth(Comment $comment): int
+    {
+        $depth = 1;
+        $current = $comment;
+
+        while ($current->parent !== null) {
+            $depth++;
+            $current = $current->parent;
+        }
+
+        return $depth;
     }
 
     #[Computed]
@@ -131,7 +225,7 @@ new class extends Component {
             ->comments()
             ->approved()
             ->whereNull('parent_id')
-            ->with(['author', 'replies.author'])
+            ->with(['author', 'repliesRecursive.author'])
             ->latest('approved_at')
             ->get();
     }
@@ -283,49 +377,39 @@ new class extends Component {
                         <p class="mt-4 rounded-lg bg-accent-muted px-3 py-2 text-sm font-medium text-accent">{{ session('comment') }}</p>
                     @endif
 
-                    <form wire:submit="submitComment" class="mt-5 grid gap-4">
-                        <div class="hidden" aria-hidden="true">
-                            <label for="comment-website">Website</label>
-                            <input id="comment-website" wire:model="website" type="text" tabindex="-1" autocomplete="off">
-                        </div>
-                        <div class="grid gap-4 sm:grid-cols-2">
-                            <div>
-                                <label for="guest-name" class="mb-1 block text-sm font-semibold">Nama</label>
-                                <input id="guest-name" wire:model="guestName" type="text" class="w-full rounded-lg border-surface-200 focus:border-accent focus:ring-accent/30 dark:border-surface-800 dark:bg-surface-950">
-                                @error('guestName') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                    @auth
+                        @if (auth()->user()->hasVerifiedEmail())
+                            <form wire:submit="submitComment" class="mt-5 grid gap-4">
+                                <div class="hidden" aria-hidden="true">
+                                    <label for="comment-website">Website</label>
+                                    <input id="comment-website" wire:model="website" type="text" tabindex="-1" autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="comment-content" class="mb-1 block text-sm font-semibold">Komentar</label>
+                                    <textarea id="comment-content" wire:model="commentContent" rows="4" class="w-full rounded-lg border-surface-200 focus:border-accent focus:ring-accent/30 dark:border-surface-800 dark:bg-surface-950"></textarea>
+                                    @error('commentContent') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-bold text-white transition hover:bg-accent-hover disabled:opacity-60">
+                                        <i class="fas fa-paper-plane h-4 w-4" aria-hidden="true"></i>
+                                        Kirim Komentar
+                                    </button>
+                                </div>
+                            </form>
+                        @else
+                            <div class="mt-5 rounded-lg bg-surface-100 p-4 text-sm text-surface-600 dark:bg-surface-950 dark:text-surface-300">
+                                <a href="{{ route('verification.notice') }}" wire:navigate class="font-semibold text-accent">Verifikasi email</a> untuk menulis komentar.
                             </div>
-                            <div>
-                                <label for="guest-email" class="mb-1 block text-sm font-semibold">Email</label>
-                                <input id="guest-email" wire:model="guestEmail" type="email" class="w-full rounded-lg border-surface-200 focus:border-accent focus:ring-accent/30 dark:border-surface-800 dark:bg-surface-950">
-                                @error('guestEmail') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
-                            </div>
+                        @endif
+                    @else
+                        <div class="mt-5 rounded-lg bg-surface-100 p-4 text-sm text-surface-600 dark:bg-surface-950 dark:text-surface-300">
+                            <a href="{{ route('login') }}" wire:navigate class="font-semibold text-accent">Masuk</a> atau <a href="{{ route('register') }}" wire:navigate class="font-semibold text-accent">daftar</a> untuk menulis komentar.
                         </div>
-                        <div>
-                            <label for="comment-content" class="mb-1 block text-sm font-semibold">Komentar</label>
-                            <textarea id="comment-content" wire:model="commentContent" rows="4" class="w-full rounded-lg border-surface-200 focus:border-accent focus:ring-accent/30 dark:border-surface-800 dark:bg-surface-950"></textarea>
-                            @error('commentContent') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-bold text-white transition hover:bg-accent-hover disabled:opacity-60">
-                                <i class="fas fa-paper-plane h-4 w-4" aria-hidden="true"></i>
-                                Kirim Komentar
-                            </button>
-                        </div>
-                    </form>
+                    @endauth
 
                     <div class="mt-8 space-y-5">
                         @forelse ($this->comments as $comment)
-                            <div class="border-t border-surface-200 pt-5 dark:border-surface-800">
-                                <div class="flex gap-3">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-100 text-sm font-bold text-accent dark:bg-surface-800">
-                                        {{ mb_strtoupper(mb_substr($comment->author?->name ?? $comment->guest_name ?? 'P', 0, 1)) }}
-                                    </span>
-                                    <div>
-                                        <p class="font-semibold">{{ $comment->author?->name ?? $comment->guest_name }}</p>
-                                        <p class="mt-1 text-sm leading-6 text-surface-600 dark:text-surface-300">{{ $comment->content }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <x-comment-thread :comment="$comment" :replying-to="$replyingTo" :level="1" />
                         @empty
                             <p class="rounded-lg bg-surface-100 px-4 py-3 text-sm text-surface-500 dark:bg-surface-950 dark:text-surface-400">Belum ada komentar approved.</p>
                         @endforelse

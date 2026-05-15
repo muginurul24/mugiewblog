@@ -79,6 +79,15 @@ class Comment extends Model
     }
 
     /**
+     * @return HasMany<Comment, $this>
+     */
+    #[\NoDiscard]
+    public function repliesRecursive(): HasMany
+    {
+        return $this->replies()->with(['author', 'repliesRecursive']);
+    }
+
+    /**
      * @param  Builder<Comment>  $query
      * @return Builder<Comment>
      */

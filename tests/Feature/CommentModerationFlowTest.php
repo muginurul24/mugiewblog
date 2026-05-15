@@ -19,10 +19,10 @@ it('should dispatch moderation event when a clean guest comment is submitted', f
     Event::fake([CommentCreated::class]);
 
     $article = Article::factory()->published()->create();
+    $reader = User::factory()->create();
 
-    Livewire::test('pages::article-show', ['article' => $article])
-        ->set('guestName', 'Rafi')
-        ->set('guestEmail', 'reader@example.com')
+    Livewire::actingAs($reader)
+        ->test('pages::article-show', ['article' => $article])
         ->set('commentContent', 'Komentar ini bersih dan cukup panjang untuk masuk moderasi.')
         ->call('submitComment')
         ->assertHasNoErrors();
@@ -37,10 +37,13 @@ it('should mark suspicious comments as spam before moderation notifications are 
     Event::fake([CommentCreated::class]);
 
     $article = Article::factory()->published()->create();
+    $reader = User::factory()->create([
+        'name' => 'Slot Reader',
+        'email' => 'reader@example.com',
+    ]);
 
-    Livewire::test('pages::article-show', ['article' => $article])
-        ->set('guestName', 'Slot Reader')
-        ->set('guestEmail', 'bot@example.com')
+    Livewire::actingAs($reader)
+        ->test('pages::article-show', ['article' => $article])
         ->set('commentContent', 'slot gacor https://a.test https://b.test https://c.test')
         ->call('submitComment')
         ->assertHasNoErrors();
@@ -79,4 +82,31 @@ it('should notify registered commenters when their comment is approved', functio
     expect($comment->refresh()->status)->toBe(CommentStatus::Approved);
 
     Notification::assertSentTo($reader, CommentApprovedNotification::class);
+});
+
+it('should queue nested replies for moderation up to the third level', function () {
+    Event::fake([CommentCreated::class]);
+
+    $reader = User::factory()->create();
+    $article = Article::factory()->published()->create();
+    $root = Comment::factory()
+        ->for($article)
+        ->create();
+
+    Livewire::actingAs($reader)
+        ->test('pages::article-show', ['article' => $article])
+        ->call('startReply', $root->id)
+        ->assertSet('replyingTo', $root->id)
+        ->set('replyContent', 'Balasan ini cukup panjang untuk moderation queue.')
+        ->call('submitReply')
+        ->assertHasNoErrors()
+        ->assertSet('replyingTo', null);
+
+    $reply = Comment::query()->where('parent_id', $root->id)->firstOrFail();
+
+    expect($reply)
+        ->user_id->toBe($reader->id)
+        ->status->toBe(CommentStatus::Pending);
+
+    Event::assertDispatched(CommentCreated::class);
 });

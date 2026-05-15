@@ -20,13 +20,13 @@ class MediaFactory extends Factory
     {
         return [
             'user_id' => User::factory()->author(),
-            'filename' => fake()->uuid().'.webp',
-            'original_name' => fake()->slug().'.jpg',
-            'path' => 'articles/'.fake()->uuid().'.webp',
+            'filename' => $this->faker->uuid().'.webp',
+            'original_name' => $this->faker->slug().'.jpg',
+            'path' => 'articles/'.$this->faker->uuid().'.webp',
             'mime_type' => 'image/webp',
-            'size' => fake()->numberBetween(50_000, 900_000),
-            'alt_text' => fake()->sentence(6),
-            'folder' => fake()->randomElement(['articles', 'avatars', 'general']),
+            'size' => $this->faker->numberBetween(50_000, 900_000),
+            'alt_text' => $this->faker->sentence(6),
+            'folder' => $this->faker->randomElement(['articles', 'avatars', 'general']),
         ];
     }
 }

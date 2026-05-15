@@ -18,15 +18,15 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->unique()->words(2, true);
+        $name = $this->faker->unique()->words(2, true);
 
         return [
             'name' => Str::headline($name),
             'slug' => Str::slug($name),
-            'description' => fake()->sentence(12),
-            'color' => fake()->randomElement(['#D4943A', '#2B8A7E', '#5F6F94', '#B85C38', '#6A7D39']),
-            'icon' => fake()->randomElement(['fa-code', 'fa-server', 'fa-cloud', 'fa-chart-line', 'fa-terminal']),
-            'sort_order' => fake()->numberBetween(1, 20),
+            'description' => $this->faker->sentence(12),
+            'color' => $this->faker->randomElement(['#D4943A', '#2B8A7E', '#5F6F94', '#B85C38', '#6A7D39']),
+            'icon' => $this->faker->randomElement(['fa-code', 'fa-server', 'fa-cloud', 'fa-chart-line', 'fa-terminal']),
+            'sort_order' => $this->faker->numberBetween(1, 20),
         ];
     }
 }

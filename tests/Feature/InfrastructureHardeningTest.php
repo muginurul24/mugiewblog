@@ -7,12 +7,17 @@ use Illuminate\Support\Facades\Gate;
 uses(RefreshDatabase::class);
 
 it('should attach security headers to public responses', function () {
-    $this->get(route('home'))
+    $response = $this->get(route('home'))
         ->assertOk()
         ->assertHeader('X-Content-Type-Options', 'nosniff')
         ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
         ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
         ->assertHeader('Content-Security-Policy');
+
+    expect($response->headers->get('Content-Security-Policy'))
+        ->toContain("script-src 'self' 'unsafe-inline' 'unsafe-eval'")
+        ->toContain("style-src 'self' 'unsafe-inline' https://fonts.bunny.net")
+        ->toContain("font-src 'self' data: https://fonts.bunny.net");
 });
 
 it('should restrict horizon access to admin users', function () {

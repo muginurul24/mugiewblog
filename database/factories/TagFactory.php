@@ -18,12 +18,12 @@ class TagFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->unique()->word();
+        $name = $this->faker->unique()->word();
 
         return [
             'name' => Str::headline($name),
             'slug' => Str::slug($name),
-            'description' => fake()->optional()->sentence(),
+            'description' => $this->faker->optional()->sentence(),
         ];
     }
 }

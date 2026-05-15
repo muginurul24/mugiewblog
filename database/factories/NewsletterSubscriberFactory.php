@@ -19,10 +19,10 @@ class NewsletterSubscriberFactory extends Factory
     public function definition(): array
     {
         return [
-            'email' => fake()->unique()->safeEmail(),
-            'name' => fake()->name(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'name' => $this->faker->name(),
             'status' => 'subscribed',
-            'source' => fake()->randomElement(['footer', 'article', 'homepage']),
+            'source' => $this->faker->randomElement(['footer', 'article', 'homepage']),
             'verification_token' => Str::random(48),
             'verified_at' => now(),
             'subscribed_at' => now(),

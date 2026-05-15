@@ -26,7 +26,7 @@ class CommentFactory extends Factory
             'parent_id' => null,
             'guest_name' => null,
             'guest_email' => null,
-            'content' => fake()->paragraph(),
+            'content' => $this->faker->paragraph(),
             'status' => CommentStatus::Approved,
             'approved_at' => now(),
         ];

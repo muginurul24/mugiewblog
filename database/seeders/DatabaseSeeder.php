@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\ArticleStatus;
 use App\Enums\CommentStatus;
+use App\Enums\UserRole;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Comment;
@@ -13,6 +14,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -23,21 +25,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::factory()->admin()->create([
+        $admin = $this->seedUser([
             'name' => 'Rafi Mugiew',
             'username' => 'rafi',
             'email' => 'rafi@example.com',
+            'email_verified_at' => now(),
+            'password' => 'password',
             'bio' => 'Full-stack developer yang menulis tentang Laravel, cloud, DevOps, dan investasi teknologi.',
             'github_url' => 'https://github.com/muginurul24',
             'website_url' => 'https://mugiew.dev',
+            'role' => UserRole::Admin,
+            'is_active' => true,
         ]);
 
-        $authors = User::factory()->author()->count(3)->create();
+        $authors = $this->seedAuthors();
         $categories = $this->seedCategories();
         $tags = $this->seedTags();
-        $series = Series::create([
-            'name' => 'Laravel Production Notes',
+        $series = Series::updateOrCreate([
             'slug' => 'laravel-production-notes',
+        ], [
+            'name' => 'Laravel Production Notes',
             'description' => 'Kumpulan catatan produksi Laravel, Livewire, Filament, dan deployment modern.',
         ]);
 
@@ -45,11 +52,12 @@ class DatabaseSeeder extends Seeder
             $category = $categories[$blueprint['category']];
             $content = $this->articleContent($blueprint['title']);
 
-            $article = Article::create([
-                'user_id' => $index % 2 === 0 ? $admin->id : $authors->random()->id,
+            $article = Article::updateOrCreate([
+                'slug' => Str::slug($blueprint['title']),
+            ], [
+                'user_id' => $index % 2 === 0 ? $admin->id : $authors->values()->get($index % $authors->count())->id,
                 'category_id' => $category->id,
                 'title' => $blueprint['title'],
-                'slug' => Str::slug($blueprint['title']),
                 'excerpt' => $blueprint['excerpt'],
                 'content_md' => $content,
                 'featured_image' => $blueprint['image'],
@@ -65,14 +73,15 @@ class DatabaseSeeder extends Seeder
             );
 
             if ($index < 4) {
-                $series->articles()->attach($article->id, ['sort_order' => $index + 1]);
+                $series->articles()->syncWithoutDetaching([$article->id => ['sort_order' => $index + 1]]);
             }
 
-            Media::create([
+            Media::updateOrCreate([
+                'path' => $blueprint['image'],
+            ], [
                 'user_id' => $article->user_id,
                 'filename' => Str::afterLast($blueprint['image'], '/'),
                 'original_name' => Str::slug($blueprint['title']).'.jpg',
-                'path' => $blueprint['image'],
                 'mime_type' => 'image/jpeg',
                 'size' => 450_000 + ($index * 1_000),
                 'alt_text' => $blueprint['image_alt'],
@@ -80,30 +89,109 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        Article::factory()
-            ->draft()
-            ->for($admin, 'author')
-            ->for($categories->random())
-            ->count(4)
-            ->create()
-            ->each(fn (Article $article): array => $article->tags()->sync($tags->random(3)->pluck('id')->all()));
+        foreach ($this->draftBlueprints() as $index => $blueprint) {
+            $category = $categories[$blueprint['category']];
+            $content = $this->articleContent($blueprint['title']);
+
+            $article = Article::updateOrCreate([
+                'slug' => Str::slug($blueprint['title']),
+            ], [
+                'user_id' => $index % 2 === 0 ? $admin->id : $authors->values()->get($index % $authors->count())->id,
+                'category_id' => $category->id,
+                'title' => $blueprint['title'],
+                'excerpt' => $blueprint['excerpt'],
+                'content_md' => $content,
+                'featured_image' => $blueprint['image'],
+                'featured_image_alt' => $blueprint['image_alt'],
+                'status' => ArticleStatus::Draft,
+                'published_at' => null,
+                'scheduled_at' => null,
+                'is_featured' => false,
+                'view_count' => 0,
+            ]);
+
+            $article->tags()->sync(
+                collect($blueprint['tags'])->map(fn (string $name): int => $tags[$name]->id)->all()
+            );
+        }
 
         Article::published()
-            ->inRandomOrder()
+            ->latest('published_at')
             ->take(8)
             ->get()
-            ->each(function (Article $article) use ($authors): void {
-                Comment::factory()
-                    ->for($article)
-                    ->for($authors->random(), 'author')
-                    ->count(fake()->numberBetween(1, 4))
-                    ->create([
+            ->each(function (Article $article, int $index) use ($authors): void {
+                $comments = $this->commentBlueprints();
+
+                for ($commentIndex = 0; $commentIndex < (($index % 3) + 1); $commentIndex++) {
+                    $author = $authors->values()->get(($index + $commentIndex) % $authors->count());
+                    $content = $comments[($index + $commentIndex) % count($comments)];
+
+                    Comment::updateOrCreate([
+                        'article_id' => $article->id,
+                        'user_id' => $author->id,
+                        'content' => $content,
+                    ], [
+                        'parent_id' => null,
+                        'guest_name' => null,
+                        'guest_email' => null,
                         'status' => CommentStatus::Approved,
-                        'approved_at' => now(),
+                        'approved_at' => now()->subDays($commentIndex + 1),
                     ]);
+                }
             });
 
-        NewsletterSubscriber::factory()->count(15)->create();
+        foreach ($this->newsletterSubscribers() as $subscriber) {
+            NewsletterSubscriber::updateOrCreate([
+                'email' => $subscriber['email'],
+            ], $subscriber);
+        }
+    }
+
+    /**
+     * @param  array{name: string, username: string, email: string, email_verified_at: Carbon, password: string, bio: string, role: UserRole, is_active: bool, github_url?: string, website_url?: string}  $attributes
+     */
+    private function seedUser(array $attributes): User
+    {
+        $user = User::firstOrNew(['email' => $attributes['email']]);
+        $user->forceFill($attributes)->save();
+
+        return $user;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    private function seedAuthors(): Collection
+    {
+        return collect([
+            [
+                'name' => 'Nadia Prasetya',
+                'username' => 'nadia-prasetya',
+                'email' => 'nadia@example.com',
+                'bio' => 'Editor dan Laravel engineer yang fokus pada content workflow, data model, dan DX.',
+                'website_url' => 'https://mugiew.dev/authors/nadia',
+            ],
+            [
+                'name' => 'Bagas Wicaksono',
+                'username' => 'bagas-wicaksono',
+                'email' => 'bagas@example.com',
+                'bio' => 'DevOps practitioner yang menulis tentang observability, container, queue, dan reliability.',
+                'github_url' => 'https://github.com/mugiew',
+            ],
+            [
+                'name' => 'Sinta Rahma',
+                'username' => 'sinta-rahma',
+                'email' => 'sinta@example.com',
+                'bio' => 'AI engineer yang menghubungkan product thinking, retrieval quality, dan evaluasi LLM.',
+                'website_url' => 'https://mugiew.dev/authors/sinta',
+            ],
+        ])->map(fn (array $author): User => $this->seedUser([
+            ...$author,
+            'email_verified_at' => now(),
+            'password' => 'password',
+            'role' => UserRole::Author,
+            'is_active' => true,
+        ]));
     }
 
     /**
@@ -119,9 +207,10 @@ class DatabaseSeeder extends Seeder
             ['AI Engineering', 'ai-engineering', 'LLM, agent workflow, RAG, dan evaluasi model.', '#6A7D39', 'fa-microchip'],
             ['Investment', 'investment', 'Analisis investasi teknologi, crypto, dan pasar digital.', '#8A6F3E', 'fa-chart-line'],
         ])->mapWithKeys(fn (array $category, int $index): array => [
-            $category[1] => Category::create([
-                'name' => $category[0],
+            $category[1] => Category::updateOrCreate([
                 'slug' => $category[1],
+            ], [
+                'name' => $category[0],
                 'description' => $category[2],
                 'color' => $category[3],
                 'icon' => $category[4],
@@ -155,9 +244,10 @@ class DatabaseSeeder extends Seeder
             'Security',
             'Performance',
         ])->mapWithKeys(fn (string $name): array => [
-            $name => Tag::create([
-                'name' => $name,
+            $name => Tag::updateOrCreate([
                 'slug' => Str::slug($name),
+            ], [
+                'name' => $name,
                 'description' => "Artikel seputar {$name}.",
             ]),
         ]);
@@ -234,6 +324,94 @@ class DatabaseSeeder extends Seeder
                 'image_alt' => 'Database server dan visualisasi data',
             ],
         ];
+    }
+
+    /**
+     * @return array<int, array{title: string, excerpt: string, category: string, tags: array<int, string>, image: string, image_alt: string}>
+     */
+    private function draftBlueprints(): array
+    {
+        return [
+            [
+                'title' => 'Checklist Hardening Laravel Octane Sebelum Launch',
+                'excerpt' => 'Catatan draft tentang konfigurasi worker, cache, queue, dan batasan state untuk server boot-once.',
+                'category' => 'cloud',
+                'tags' => ['Laravel', 'FrankenPHP', 'Security'],
+                'image' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1400&q=80',
+                'image_alt' => 'Peta jaringan digital dan koneksi cloud',
+            ],
+            [
+                'title' => 'Template Review PR untuk Fitur Filament',
+                'excerpt' => 'Draft kerangka review untuk resource, policy, validation, dan pengalaman admin.',
+                'category' => 'programming',
+                'tags' => ['Filament', 'Laravel', 'Security'],
+                'image' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80',
+                'image_alt' => 'Dashboard analitik di layar laptop',
+            ],
+            [
+                'title' => 'Queue Redis dan Horizon untuk Newsletter',
+                'excerpt' => 'Draft desain queue newsletter yang memperhatikan retry, rate limit, dan observability.',
+                'category' => 'devops',
+                'tags' => ['Redis', 'DevOps', 'Performance'],
+                'image' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1400&q=80',
+                'image_alt' => 'Ruang server dengan pencahayaan biru',
+            ],
+            [
+                'title' => 'Evaluasi RAG untuk Knowledge Base Internal',
+                'excerpt' => 'Draft rubrik evaluasi retrieval, citation quality, dan regression suite untuk aplikasi internal.',
+                'category' => 'ai-engineering',
+                'tags' => ['AI Agents', 'RAG', 'Performance'],
+                'image' => 'https://images.unsplash.com/photo-1676299081847-824916de030a?auto=format&fit=crop&w=1400&q=80',
+                'image_alt' => 'Visual abstrak model kecerdasan buatan',
+            ],
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function commentBlueprints(): array
+    {
+        return [
+            'Tulisan ini praktis dan langsung bisa dijadikan checklist sebelum masuk ke sprint berikutnya.',
+            'Bagian tradeoff-nya membantu karena tidak hanya menjual satu teknologi sebagai solusi tunggal.',
+            'Contoh implementasinya cukup ringkas, tetapi tetap memberi konteks untuk aplikasi produksi.',
+            'Saya suka pendekatan mengukur baseline dulu sebelum menambah optimasi atau dependency baru.',
+            'Poin observability dan rollback sebaiknya memang masuk sejak awal, bukan setelah incident.',
+            'Struktur artikelnya enak dipindai untuk pembaca yang butuh keputusan cepat.',
+        ];
+    }
+
+    /**
+     * @return array<int, array{email: string, name: string, status: string, source: string, verified_at: Carbon, subscribed_at: Carbon, unsubscribed_at: null}>
+     */
+    private function newsletterSubscribers(): array
+    {
+        return collect([
+            ['andi@example.com', 'Andi Mahendra', 'footer'],
+            ['bima@example.com', 'Bima Santoso', 'article'],
+            ['citra@example.com', 'Citra Lestari', 'homepage'],
+            ['dewi@example.com', 'Dewi Kartika', 'footer'],
+            ['eko@example.com', 'Eko Pranata', 'article'],
+            ['farah@example.com', 'Farah Aulia', 'homepage'],
+            ['galih@example.com', 'Galih Putra', 'footer'],
+            ['hana@example.com', 'Hana Salsabila', 'article'],
+            ['indra@example.com', 'Indra Wijaya', 'homepage'],
+            ['julia@example.com', 'Julia Permata', 'footer'],
+            ['kevin@example.com', 'Kevin Rahardjo', 'article'],
+            ['laila@example.com', 'Laila Safitri', 'homepage'],
+            ['mika@example.com', 'Mika Adinata', 'footer'],
+            ['nina@example.com', 'Nina Oktavia', 'article'],
+            ['oscar@example.com', 'Oscar Wibowo', 'homepage'],
+        ])->map(fn (array $subscriber): array => [
+            'email' => $subscriber[0],
+            'name' => $subscriber[1],
+            'status' => 'subscribed',
+            'source' => $subscriber[2],
+            'verified_at' => now(),
+            'subscribed_at' => now(),
+            'unsubscribed_at' => null,
+        ])->all();
     }
 
     #[\NoDiscard]

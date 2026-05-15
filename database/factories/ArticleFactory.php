@@ -21,7 +21,7 @@ class ArticleFactory extends Factory
      */
     public function definition(): array
     {
-        $title = fake()->unique()->sentence(fake()->numberBetween(5, 9));
+        $title = $this->faker->unique()->sentence($this->faker->numberBetween(5, 9));
         $content = $this->markdownContent($title);
 
         return [
@@ -29,7 +29,7 @@ class ArticleFactory extends Factory
             'category_id' => Category::factory(),
             'title' => Str::headline($title),
             'slug' => Str::slug($title),
-            'excerpt' => fake()->paragraph(2),
+            'excerpt' => $this->faker->paragraph(2),
             'content_md' => $content,
             'content_html' => Article::renderMarkdown($content),
             'featured_image' => 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1400&q=80',
@@ -39,8 +39,8 @@ class ArticleFactory extends Factory
             'scheduled_at' => null,
             'reading_time' => Article::estimateReadingTime($content),
             'meta_title' => Str::limit($title, 60, ''),
-            'meta_description' => fake()->sentence(18),
-            'view_count' => fake()->numberBetween(25, 6000),
+            'meta_description' => $this->faker->sentence(18),
+            'view_count' => $this->faker->numberBetween(25, 6000),
             'is_featured' => false,
         ];
     }
@@ -49,7 +49,7 @@ class ArticleFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => ArticleStatus::Published,
-            'published_at' => fake()->dateTimeBetween('-8 months', '-1 day'),
+            'published_at' => $this->faker->dateTimeBetween('-8 months', '-1 day'),
         ]);
     }
 
@@ -67,7 +67,7 @@ class ArticleFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => ArticleStatus::Scheduled,
             'published_at' => null,
-            'scheduled_at' => fake()->dateTimeBetween('+1 day', '+2 months'),
+            'scheduled_at' => $this->faker->dateTimeBetween('+1 day', '+2 months'),
         ]);
     }
 

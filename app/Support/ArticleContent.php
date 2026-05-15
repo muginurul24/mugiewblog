@@ -37,6 +37,9 @@ final class ArticleContent
         $toc = [];
         $usedIds = [];
 
+        self::prepareMedia($root);
+        self::wrapTables($document, $root);
+
         foreach ($root->getElementsByTagName('*') as $node) {
             if (! $node instanceof DOMElement || ! in_array($node->tagName, ['h2', 'h3'], true)) {
                 continue;
@@ -59,6 +62,47 @@ final class ArticleContent
         }
 
         return ['html' => self::innerHtml($root), 'toc' => $toc];
+    }
+
+    private static function prepareMedia(DOMElement $root): void
+    {
+        foreach ($root->getElementsByTagName('img') as $image) {
+            if (! $image instanceof DOMElement) {
+                continue;
+            }
+
+            $image->setAttribute('loading', 'lazy');
+            $image->setAttribute('decoding', 'async');
+
+            if (! $image->hasAttribute('alt')) {
+                $image->setAttribute('alt', '');
+            }
+        }
+    }
+
+    private static function wrapTables(DOMDocument $document, DOMElement $root): void
+    {
+        foreach (iterator_to_array($root->getElementsByTagName('table')) as $table) {
+            if (! $table instanceof DOMElement) {
+                continue;
+            }
+
+            $parent = $table->parentNode;
+
+            if ($parent instanceof DOMElement && Str::contains($parent->getAttribute('class'), 'article-table-scroll')) {
+                continue;
+            }
+
+            if (! $parent instanceof DOMNode) {
+                continue;
+            }
+
+            $wrapper = $document->createElement('div');
+            $wrapper->setAttribute('class', 'article-table-scroll');
+
+            $parent->replaceChild($wrapper, $table);
+            $wrapper->appendChild($table);
+        }
     }
 
     /**

@@ -25,6 +25,41 @@ it('should render markdown and reading time when article is created', function (
         ->reading_time->toBe(1);
 });
 
+it('should render safe github flavored markdown for technical articles', function () {
+    $html = Article::renderMarkdown(<<<'MARKDOWN'
+        ## Checklist
+
+        - Item induk
+          - Item anak
+
+        1. Langkah pertama
+        2. Langkah kedua
+
+        | Area | Status |
+        | --- | --- |
+        | Code | Aman |
+
+        Gunakan `inline_code` untuk istilah teknis.
+
+        ```php
+        echo "ok";
+        ```
+
+        <script>alert("xss")</script>
+
+        [unsafe](javascript:alert("xss"))
+        MARKDOWN);
+
+    expect($html)
+        ->toContain('<ul>')
+        ->toContain('<ol>')
+        ->toContain('<table>')
+        ->toContain('<code>inline_code</code>')
+        ->toContain('<pre><code class="language-php">')
+        ->not->toContain('<script')
+        ->not->toContain('href="javascript:');
+});
+
 it('should expose relationships when blog data exists', function () {
     $author = User::factory()->author()->create();
     $category = Category::factory()->create();

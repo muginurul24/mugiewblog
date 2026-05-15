@@ -3,6 +3,7 @@
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Support\ArticleContent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -30,6 +31,68 @@ it('should render article page when article is published', function () {
         ->assertSeeText($article->title)
         ->assertSeeText('Daftar Isi')
         ->assertSeeText('Komentar');
+});
+
+it('should prepare responsive article markdown content when rich markdown exists', function () {
+    $html = Article::renderMarkdown(<<<'MARKDOWN'
+        ## Bagian Utama
+
+        Paragraf dengan `inline_code`, daftar, gambar, dan tabel.
+
+        - Satu
+          - Dua
+
+        ```php
+        echo "ok";
+        ```
+
+        ![Diagram arsitektur](https://example.com/diagram.png)
+
+        | Area | Status |
+        | --- | --- |
+        | Render | Aman |
+        MARKDOWN);
+
+    $prepared = ArticleContent::prepare($html);
+
+    expect($prepared['toc'])->toBe([
+        ['id' => 'bagian-utama', 'title' => 'Bagian Utama', 'level' => 2],
+    ])
+        ->and($prepared['html'])->toContain('id="bagian-utama"')
+        ->and($prepared['html'])->toContain('loading="lazy"')
+        ->and($prepared['html'])->toContain('decoding="async"')
+        ->and($prepared['html'])->toContain('class="article-table-scroll"');
+});
+
+it('should render article markdown patterns on public article pages', function () {
+    $article = Article::factory()->published()->create([
+        'title' => 'Markdown Rendering Guide',
+        'slug' => 'markdown-rendering-guide',
+        'content_md' => <<<'MARKDOWN'
+        ## Checklist Produksi
+
+        - List utama
+          - List anak
+
+        Gunakan `inline_code` untuk nama fungsi.
+
+        ```php
+        echo "ok";
+        ```
+
+        | Elemen | Status |
+        | --- | --- |
+        | Tabel | Responsive |
+        MARKDOWN,
+        'content_html' => '',
+    ]);
+
+    $this->get($article->url())
+        ->assertSuccessful()
+        ->assertSee('class="article-prose"', false)
+        ->assertSee('<ul>', false)
+        ->assertSee('<pre><code class="language-php">', false)
+        ->assertSee('class="article-table-scroll"', false);
 });
 
 it('should render category and tag pages when taxonomy exists', function () {

@@ -426,6 +426,10 @@ class DatabaseSeeder extends Seeder
 
         Mulai dari kebutuhan pengguna, ukur baseline, lalu pilih implementasi yang paling sederhana. Di Laravel, pola yang kuat biasanya datang dari kombinasi Eloquent scope, queued jobs, cache yang punya strategi invalidasi, dan tampilan Blade yang fokus pada aksesibilitas.
 
+        - Tentukan metrik sukses sebelum menulis kode.
+        - Batasi scope agar perubahan mudah di-review dan mudah di-rollback.
+        - Pastikan konten tetap nyaman dibaca di mobile, tablet, dan desktop.
+
         ```php
         final class ProductionChecklist
         {
@@ -437,9 +441,17 @@ class DatabaseSeeder extends Seeder
         }
         ```
 
+        > Keputusan teknis yang baik meninggalkan jejak: alasan, baseline, dan sinyal kapan perlu diganti.
+
         ## Hal yang Perlu Dijaga
 
         Pastikan setiap fitur punya test minimal, query penting sudah eager-loaded, dan pengalaman mobile tidak menjadi versi kedua dari desktop. Dokumentasikan tradeoff di commit atau PR agar keputusan bisa dilacak.
+
+        | Area | Sinyal sehat |
+        | --- | --- |
+        | Aksesibilitas | Heading runtut, kontras jelas, dan navigasi keyboard aman |
+        | Performa | Query utama terukur dan aset visual tidak memblokir render |
+        | Operasional | Log, retry, dan rollback tersedia sebelum fitur dibuka luas |
 
         ## Kesimpulan
 

@@ -32,6 +32,9 @@ class AddSecurityHeaders
             }
         }
 
+        $response->headers->remove('X-Powered-By');
+        header_remove('X-Powered-By');
+
         return $response;
     }
 }

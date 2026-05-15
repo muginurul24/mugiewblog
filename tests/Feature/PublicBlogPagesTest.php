@@ -14,6 +14,7 @@ it('should render homepage when published articles exist', function () {
         ->assertSuccessful()
         ->assertHeader('x-content-type-options', 'nosniff')
         ->assertHeader('x-frame-options', 'SAMEORIGIN')
+        ->assertHeaderMissing('x-powered-by')
         ->assertSeeText('Byte-sized insight')
         ->assertSeeText('Artikel Terbaru')
         ->assertSee('application/rss+xml', false);

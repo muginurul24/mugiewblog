@@ -144,6 +144,15 @@ Request → FrankenPHP (Caddy) → Laravel Octane Worker (in-memory)
 - **Convention:** Exit animations need JS toggle; prefer `animate__faster` (500ms); stagger cards with delay
 - **Skill:** `.agents/skills/animatecss/SKILL.md`
 
+### 2.10 Tailwind Plugins: Typography & Forms
+
+- **@tailwindcss/typography v0.5** — `prose` class untuk styling artikel, komentar, konten panjang
+- **@tailwindcss/forms v0.5** — opinionated base styles untuk input, select, checkbox, textarea
+- **Configured via** `@plugin` di `app.css` (Tailwind v4 CSS-first)
+- **Convention:** `prose prose-lg dark:prose-invert max-w-none` untuk artikel; forms auto-styled, override pakai Tailwind utility
+- **Prose code blocks:** `prose-code:before:content-none prose-code:after:content-none` untuk inline code bersih
+- **Skill:** `.agents/skills/tailwindcss-plugins/SKILL.md`
+
 ---
 
 ## 3. Database Design

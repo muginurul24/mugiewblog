@@ -28,6 +28,8 @@
 | CSS | Tailwind CSS | 4.x |
 | Icons | FontAwesome Free | 7.2 |
 | Animation | Animate.css | 4.1 |
+| Typography | @tailwindcss/typography | 0.5 |
+| Forms | @tailwindcss/forms | 0.5 |
 | JS Package Manager | Bun | latest |
 | Testing | Pest | 4.x |
 | Code Style | Laravel Pint | latest |
@@ -45,6 +47,8 @@
 - ✅ Tailwind v4: CSS-first config (`@import "tailwindcss"`, NO `tailwind.config.js`)
 - ✅ FontAwesome Free 7.2: Three styles (fas/far/fab), aria-hidden required, Tailwind sizing preferred
 - ✅ Animate.css 4.1: Entrance/exit/attention animations, prefers-reduced-motion MANDATORY
+- ✅ @tailwindcss/typography: `prose` class for article/comment content, dark:prose-invert
+- ✅ @tailwindcss/forms: Auto-styled inputs, selects, checkboxes; override with Tailwind utilities
 
 ---
 
@@ -89,6 +93,8 @@
 - Dark mode via class strategy + inline blocking script
 - **FontAwesome Free 7.2** for icons: `fas`/`far`/`fab`, always `aria-hidden="true"`, use Tailwind sizing
 - **Animate.css 4.1** for animations: `animate__animated` prefix, respect `prefers-reduced-motion`
+- **@tailwindcss/typography** for article content: `prose prose-lg dark:prose-invert max-w-none`
+- **@tailwindcss/forms** for form elements: auto-styled, override with Tailwind utilities
 - Heroicons (Blade components) for app-specific minimal icons
 
 ---

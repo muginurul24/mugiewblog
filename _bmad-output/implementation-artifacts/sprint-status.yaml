@@ -82,7 +82,7 @@ epics:
     name: "Theme & UX — Dark Mode, Accessibility"
     status: not_started
     priority: P0
-    total_tasks: 14
+    total_tasks: 15
     completed_tasks: 0
     file: epics/06-theme-ux.md
 
@@ -104,7 +104,7 @@ epics:
 
 summary:
   total_epics: 8
-  total_tasks: 137
+  total_tasks: 138
   completed_tasks: 0
   progress_percent: 0
   mvp_target: 2026-06-26

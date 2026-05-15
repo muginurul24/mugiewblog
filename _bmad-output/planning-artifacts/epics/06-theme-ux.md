@@ -1,6 +1,6 @@
 # Epic 6: Theme & UX — Dark Mode, Accessibility, Performance
 **Status:** 🔴 Not Started | **Priority:** P0 (MVP Blocker)  
-**Estimated Tasks:** 14 | **Dependencies:** Epic 4
+**Estimated Tasks:** 15 | **Dependencies:** Epic 4
 
 ## Goal
 Implement anti-FOUC dark/light mode, WCAG 2.1 AA accessibility, Tailwind CSS v4 CSS-first config, performance optimizations, and responsive design polish.
@@ -27,21 +27,24 @@ Implement anti-FOUC dark/light mode, WCAG 2.1 AA accessibility, Tailwind CSS v4 
 ---
 
 ### 6.2: Frontend Asset Setup
-**Priority:** P0 | **Estimate:** 5 tasks
+**Priority:** P0 | **Estimate:** 6 tasks
 
 | # | Task | Description |
 |---|---|---|
 | T6.2.1 | Configure Tailwind CSS v4 CSS-first | `@import "tailwindcss"` base, `@theme {}` with custom design tokens (colors, fonts, spacing) |
 | T6.2.2 | Define design tokens | Primary palette (OKLCH), Inter font family, content max-width, prose typography scale |
 | T6.2.3 | Configure Vite for Tailwind v4 | Ensure `vite.config.js` processes CSS correctly with Tailwind v4 plugin |
-| T6.2.4 | Verify FontAwesome integration | Confirm `@import` works, all 3 styles (fas/far/fab) render, test dark mode contrast |
-| T6.2.5 | Verify Animate.css integration | Confirm `@import` works, test with `prefers-reduced-motion`, document animation conventions |
+| T6.2.4 | Configure @tailwindcss/typography | `@plugin`, setup prose modifiers for articles and comments, dark mode invert |
+| T6.2.5 | Configure @tailwindcss/forms | `@plugin`, verify auto-styled inputs/selects/checkboxes, dark mode compatibility |
+| T6.2.6 | Verify FontAwesome + Animate.css | Confirm `@import` works for both, test accessibility, test `prefers-reduced-motion` |
 
 **Acceptance Criteria:**
 - [ ] No `tailwind.config.js` file (CSS-first config)
 - [ ] Custom colors defined with OKLCH
 - [ ] `bun run build` produces optimized CSS
 - [ ] Dark mode variants work via `dark:` prefix
+- [ ] `prose dark:prose-invert` styles article content correctly
+- [ ] Forms auto-styled with focus rings and proper border colors
 - [ ] FA icons render in all three styles, accessible (aria-hidden)
 - [ ] Animate.css respects `prefers-reduced-motion`
 

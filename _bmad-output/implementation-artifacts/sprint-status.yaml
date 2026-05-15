@@ -1,0 +1,115 @@
+# MugiewBlog — Sprint Status
+# Auto-generated: 2026-05-15
+# BMad Method — Track all epics, stories, and tasks
+
+project: MugiewBlog
+version: "1.0.0-MVP"
+start_date: 2026-05-15
+target_mvp: 2026-06-26  # 6 weeks
+
+sprints:
+  - id: sprint-1
+    name: "Foundation"
+    goal: "Database, Models, Auth, Admin Panel"
+    duration: "2 weeks"
+    status: not_started
+    epics:
+      - epic-01-database-models
+      - epic-02-authentication-authorization
+      - epic-03-filament-admin
+
+  - id: sprint-2
+    name: "Frontend & Features"
+    goal: "Public frontend, search, comments, SEO"
+    duration: "2 weeks"
+    status: not_started
+    epics:
+      - epic-04-public-frontend
+      - epic-05-blog-features
+
+  - id: sprint-3
+    name: "Polish & Ship"
+    goal: "Theme, dark mode, performance, Docker, testing"
+    duration: "2 weeks"
+    status: not_started
+    epics:
+      - epic-06-theme-ux
+      - epic-07-infrastructure
+      - epic-08-testing
+
+epics:
+  - id: epic-01-database-models
+    name: "Database & Models Foundation"
+    status: not_started
+    priority: P0
+    total_tasks: 18
+    completed_tasks: 0
+    file: epics/01-database-models.md
+
+  - id: epic-02-authentication-authorization
+    name: "Authentication & Authorization"
+    status: not_started
+    priority: P0
+    total_tasks: 16
+    completed_tasks: 0
+    file: epics/02-authentication-authorization.md
+
+  - id: epic-03-filament-admin
+    name: "Filament Admin Panel"
+    status: not_started
+    priority: P0
+    total_tasks: 20
+    completed_tasks: 0
+    file: epics/03-filament-admin.md
+
+  - id: epic-04-public-frontend
+    name: "Public Frontend — Livewire SPA"
+    status: not_started
+    priority: P0
+    total_tasks: 18
+    completed_tasks: 0
+    file: epics/04-public-frontend.md
+
+  - id: epic-05-blog-features
+    name: "Blog Features — Comments, Search, SEO"
+    status: not_started
+    priority: P0
+    total_tasks: 16
+    completed_tasks: 0
+    file: epics/05-blog-features.md
+
+  - id: epic-06-theme-ux
+    name: "Theme & UX — Dark Mode, Accessibility"
+    status: not_started
+    priority: P0
+    total_tasks: 12
+    completed_tasks: 0
+    file: epics/06-theme-ux.md
+
+  - id: epic-07-infrastructure
+    name: "Infrastructure — Docker, Security, CI/CD"
+    status: not_started
+    priority: P0
+    total_tasks: 14
+    completed_tasks: 0
+    file: epics/07-infrastructure.md
+
+  - id: epic-08-testing
+    name: "Testing Suite"
+    status: not_started
+    priority: P0
+    total_tasks: 14
+    completed_tasks: 0
+    file: epics/08-testing.md
+
+summary:
+  total_epics: 8
+  total_tasks: 128
+  completed_tasks: 0
+  progress_percent: 0
+  mvp_target: 2026-06-26
+
+# HOW TO UPDATE:
+# 1. Change epic status: not_started → in_progress → completed
+# 2. Increment completed_tasks as Codex finishes each task
+# 3. Progress is auto-calculated from completed_tasks / total_tasks

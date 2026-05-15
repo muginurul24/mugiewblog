@@ -91,7 +91,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - Execute PHP in app context for debugging and testing code. Do not create models without user approval, prefer tests with factories instead. Prefer existing Artisan commands over custom tinker code.
 - Always use single quotes to prevent shell expansion: `php artisan tinker --execute 'Your::code();'`
-  - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
+    - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
 
 === php rules ===
 
@@ -181,5 +181,33 @@ $this->app->singleton(Service::class, fn () => new Service(fn () => request()));
 - The `{name}` argument should not include the test suite directory. Use `php artisan make:test --pest SomeFeatureTest` instead of `php artisan make:test --pest Feature/SomeFeatureTest`.
 - Run tests: `php artisan test --compact` or filter: `php artisan test --compact --filter=testName`.
 - Do NOT delete tests without approval.
+
+=== bmad rules ===
+
+## BMad Method
+
+This project follows the BMad development methodology. All planning artifacts live in `_bmad-output/`.
+
+### Document Map
+
+| File                                                       | Purpose                              |
+| ---------------------------------------------------------- | ------------------------------------ |
+| `_bmad-output/project-context.md`                          | Codex constitution — read this FIRST |
+| `_bmad-output/planning-artifacts/PRD.md`                   | Product requirements                 |
+| `_bmad-output/planning-artifacts/architecture.md`          | Technical design                     |
+| `_bmad-output/planning-artifacts/epics/*.md`               | Task breakdown (8 epics, 128 tasks)  |
+| `_bmad-output/implementation-artifacts/sprint-status.yaml` | Progress tracker                     |
+
+### Workflow
+
+1. **Read `project-context.md` first** — contains tech stack, conventions, patterns, commands.
+2. **Read the epic file** before starting any task.
+3. **One task per commit** — atomic, focused, single responsibility.
+4. **Quality gates per task:**
+    - `php artisan test --compact` (all tests must pass)
+    - `vendor/bin/pint --format agent` (code must be formatted)
+    - No N+1 queries — always eager-load relationships
+5. **Update `sprint-status.yaml`** — increment `completed_tasks` after each commit.
+6. **Never push to main** with failing tests.
 
 </laravel-boost-guidelines>

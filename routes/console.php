@@ -11,3 +11,7 @@ Artisan::command('inspire', function () {
 Schedule::command('articles:publish-scheduled')
     ->everyMinute()
     ->withoutOverlapping(10);
+
+Schedule::command('horizon:snapshot')
+    ->everyFiveMinutes()
+    ->withoutOverlapping();

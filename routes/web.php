@@ -1,17 +1,16 @@
 <?php
 
+use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\FeedController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::livewire('/', 'pages::index')->name('home');
 Route::livewire('/articles/{article:slug}', 'pages::article-show')->name('articles.show');
 Route::livewire('/categories/{category:slug}', 'pages::category-show')->name('categories.show');
 Route::livewire('/tags/{tag:slug}', 'pages::tag-show')->name('tags.show');
-Route::livewire('/search', 'pages::search')->name('search');
+Route::livewire('/search', 'pages::search')->middleware('throttle:30,1')->name('search');
 
 Route::middleware('guest')->group(function (): void {
     Route::livewire('/login', 'pages::auth.login')->name('login');
@@ -26,25 +25,15 @@ Route::middleware('auth')->group(function (): void {
     Route::livewire('/profile', 'pages::auth.profile')->name('profile');
     Route::livewire('/email/verify', 'pages::auth.verify-email')->name('verification.notice');
 
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
 
-        return redirect()->intended(route('home'));
-    })->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'send'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
 
-    Route::post('/email/verification-notification', function (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-
-        return back()->with('status', 'Link verifikasi baru sudah dikirim.');
-    })->middleware('throttle:6,1')->name('verification.send');
-
-    Route::post('/logout', function (Request $request) {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('home');
-    })->name('logout');
+    Route::post('/logout', LogoutController::class)->name('logout');
 });
 
 Route::get('/robots.txt', [FeedController::class, 'robots'])->name('robots');

@@ -91,7 +91,7 @@ epics:
     status: in_progress
     priority: P0
     total_tasks: 16
-    completed_tasks: 4
+    completed_tasks: 14
     file: epics/07-infrastructure.md
 
   - id: epic-08-testing
@@ -99,14 +99,14 @@ epics:
     status: in_progress
     priority: P0
     total_tasks: 14
-    completed_tasks: 9
+    completed_tasks: 11
     file: epics/08-testing.md
 
 summary:
   total_epics: 8
   total_tasks: 140
-  completed_tasks: 101
-  progress_percent: 72
+  completed_tasks: 113
+  progress_percent: 81
   mvp_target: 2026-06-26
 
 # HOW TO UPDATE:

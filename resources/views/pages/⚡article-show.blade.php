@@ -95,9 +95,9 @@ new class extends Component {
 
         $executed = RateLimiter::attempt(
             $key,
-            3,
+            5,
             fn (): bool => true,
-            600,
+            60,
         );
 
         if (! $executed) {

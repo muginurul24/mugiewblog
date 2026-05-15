@@ -10,6 +10,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SendCommentNotifications implements ShouldQueue
 {
+    public string $queue = 'notifications';
+
     /**
      * Handle the event.
      */

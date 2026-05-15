@@ -18,6 +18,17 @@ class AddSecurityHeaders
         $response = $next($request);
 
         $headers = [
+            'Content-Security-Policy' => implode('; ', [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline'",
+                "style-src 'self' 'unsafe-inline'",
+                "img-src 'self' data: https:",
+                "font-src 'self' data:",
+                "connect-src 'self'",
+                "frame-ancestors 'self'",
+                "base-uri 'self'",
+                "form-action 'self'",
+            ]),
             'Cross-Origin-Opener-Policy' => 'same-origin',
             'Permissions-Policy' => 'camera=(), microphone=(), geolocation=(), payment=()',
             'Referrer-Policy' => 'strict-origin-when-cross-origin',
@@ -30,6 +41,10 @@ class AddSecurityHeaders
             if (! $response->headers->has($name)) {
                 $response->headers->set($name, $value);
             }
+        }
+
+        if ($request->isSecure() && app()->isProduction()) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
         $response->headers->remove('X-Powered-By');

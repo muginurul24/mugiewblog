@@ -4,8 +4,10 @@ use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 new class extends Component
@@ -20,6 +22,9 @@ new class extends Component
 
     public string $password_confirmation = '';
 
+    /**
+     * @throws ValidationException
+     */
     public function register(): mixed
     {
         $validated = $this->validate([
@@ -28,6 +33,16 @@ new class extends Component
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
+
+        $key = 'register:'.sha1(request()->ip().'|'.Str::lower($validated['email']));
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            throw ValidationException::withMessages([
+                'email' => 'Terlalu banyak pendaftaran dari alamat ini. Coba lagi nanti.',
+            ]);
+        }
+
+        RateLimiter::hit($key, 3600);
 
         $user = User::create([
             'name' => Str::squish($validated['name']),

@@ -20,6 +20,7 @@ class CommentApprovedNotification extends Notification implements ShouldQueue
     {
         $this->comment->loadMissing('article');
         $this->afterCommit();
+        $this->onQueue('notifications');
     }
 
     /**

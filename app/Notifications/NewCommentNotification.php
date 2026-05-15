@@ -19,6 +19,7 @@ class NewCommentNotification extends Notification implements ShouldQueue
     {
         $this->comment->loadMissing(['article', 'author']);
         $this->afterCommit();
+        $this->onQueue('notifications');
     }
 
     /**

@@ -125,7 +125,7 @@ new class extends Component {
     <x-slot:title>{{ $this->article->meta_title ?: $this->article->title }} — MugiewBlog</x-slot:title>
     <x-slot:metaDescription>{{ $this->article->meta_description ?: $this->article->excerpt }}</x-slot:metaDescription>
     <x-slot:canonical>{{ $this->article->url() }}</x-slot:canonical>
-    <x-slot:ogImage>{{ $this->article->featured_image ?: asset('favicon.ico') }}</x-slot:ogImage>
+    <x-slot:ogImage>{{ $this->article->featured_image_url ?: asset('favicon.ico') }}</x-slot:ogImage>
 
     <div class="fixed left-0 top-16 z-40 h-1 w-full bg-transparent">
         <div class="h-full bg-accent transition-[width] duration-150" :style="`width: ${progress}%`"></div>
@@ -195,9 +195,9 @@ new class extends Component {
                     </div>
                 </header>
 
-                @if ($this->article->featured_image)
+                @if ($this->article->featured_image_url)
                     <img
-                        src="{{ $this->article->featured_image }}"
+                        src="{{ $this->article->featured_image_url }}"
                         alt="{{ $this->article->featured_image_alt ?: $this->article->title }}"
                         class="mb-10 aspect-[16/9] w-full rounded-lg object-cover"
                         loading="eager"
@@ -320,7 +320,7 @@ new class extends Component {
                 '@type' => 'Person',
                 'name' => $this->article->author?->name ?? 'MugiewBlog',
             ],
-            'image' => $this->article->featured_image,
+            'image' => $this->article->featured_image_url,
             'mainEntityOfPage' => $this->article->url(),
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>

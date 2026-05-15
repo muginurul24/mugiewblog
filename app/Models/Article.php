@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 #[Fillable([
@@ -143,6 +144,20 @@ class Article extends Model
     public function url(): string
     {
         return route('articles.show', $this);
+    }
+
+    #[\NoDiscard]
+    public function getFeaturedImageUrlAttribute(): ?string
+    {
+        if (blank($this->featured_image)) {
+            return null;
+        }
+
+        if (Str::startsWith($this->featured_image, ['http://', 'https://'])) {
+            return $this->featured_image;
+        }
+
+        return Storage::disk('public')->url($this->featured_image);
     }
 
     #[\NoDiscard]

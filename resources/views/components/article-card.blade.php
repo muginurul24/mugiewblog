@@ -15,9 +15,9 @@
     'flex h-full flex-col' => ! $featured,
 ]) }}>
     <a href="{{ $article->url() }}" wire:navigate class="{{ $featured ? 'relative block min-h-72 overflow-hidden' : 'relative block aspect-[16/10] overflow-hidden' }}" aria-label="Baca {{ $article->title }}">
-        @if ($article->featured_image)
+        @if ($article->featured_image_url)
             <img
-                src="{{ $article->featured_image }}"
+                src="{{ $article->featured_image_url }}"
                 alt="{{ $article->featured_image_alt ?: $article->title }}"
                 class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                 loading="{{ $featured ? 'eager' : 'lazy' }}"

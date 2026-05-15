@@ -51,3 +51,17 @@ it('should render search results when query matches content', function () {
         ->assertSeeText('Hasil')
         ->assertSeeText('Laravel');
 });
+
+it('should render rss feed and sitemap when published content exists', function () {
+    $this->seed();
+
+    $this->get(route('feed'))
+        ->assertSuccessful()
+        ->assertHeader('content-type', 'application/rss+xml; charset=UTF-8')
+        ->assertSee('<rss', false);
+
+    $this->get(route('sitemap'))
+        ->assertSuccessful()
+        ->assertHeader('content-type', 'application/xml; charset=UTF-8')
+        ->assertSee('<urlset', false);
+});

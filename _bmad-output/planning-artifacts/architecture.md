@@ -117,13 +117,32 @@ Request → FrankenPHP (Caddy) → Laravel Octane Worker (in-memory)
 - **Full-text search** — MySQL native FULLTEXT untuk search MVP
 - **8.4 LTS** — Long term support hingga 2032
 
-### 2.6 Why Tailwind CSS v4 (CSS-first config)
+### 2.7 Why Tailwind CSS v4 (CSS-first config)
 
 - **No JS config file** — `@import "tailwindcss"` + `@theme {}` in CSS
 - **Smaller bundle** — CSS-first config eliminates JS parsing
 - **Native cascade layers** — Better specificity control
 - **Container queries** — Built-in support
 - **OKLCH colors** — Modern color space, better dark mode
+
+### 2.8 Icon Library: FontAwesome Free 7.2
+
+- **Bundled locally** di `resources/fontawesome/` — no npm dependency
+- **Three styles:** Solid (`fas`), Regular (`far`), Brands (`fab`)
+- **Imported via** `@import "./../fontawesome/css/all.min.css"` di `app.css`
+- **Convention:** Tailwind sizing (`h-5 w-5`) > FA size classes (`fa-lg`)
+- **A11y:** `aria-hidden="true"` on `<i>`, `aria-label` on interactive parent
+- **Skill:** `.agents/skills/fontawesome/SKILL.md`
+
+### 2.9 Animation Library: Animate.css 4.1
+
+- **Installed via npm**, imported via `@import "animate.css"` di `app.css`
+- **Class-based API:** `animate__animated` + effect class (e.g., `animate__fadeInUp`)
+- **Modifiers:** speed (`animate__faster`), delay (`animate__delay-1s`), repeat
+- **Livewire/Alpine triggers:** `x-transition:enter` + animate classes
+- **A11y:** `prefers-reduced-motion` WAJIB — disable all animations
+- **Convention:** Exit animations need JS toggle; prefer `animate__faster` (500ms); stagger cards with delay
+- **Skill:** `.agents/skills/animatecss/SKILL.md`
 
 ---
 
@@ -1366,7 +1385,143 @@ volumes:
 
 ---
 
-## 15. Testing Architecture
+## 15. Notification Architecture
+
+### 15.1 Strategy
+Database notifications via Filament bell icon + optional email fallback.
+
+```
+Events → Listeners (ShouldQueue) → Notification Classes → Database + Mail
+                                              ↓
+                              Filament Bell Icon (polling 20s)
+```
+
+### 15.2 Channel Configuration
+
+| Channel | Use Case | Queue |
+|---|---|---|
+| `database` | Admin bell notifications, user notification center | `notifications` |
+| `mail` | Email for comment replies, article published, welcome | `emails` |
+
+### 15.3 Notification Classes
+
+```php
+// app/Notifications/NewCommentNotification.php
+final class NewCommentNotification extends Notification implements ShouldQueue
+{
+    use Queueable;
+
+    public function __construct(
+        public Comment $comment,
+    ) {}
+
+    public function via(object $notifiable): array
+    {
+        return ['database', 'mail'];  // In-app + email
+    }
+
+    #[ArrayShape(['comment_id' => 'int', ...])]
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'type' => 'new_comment',
+            'comment_id' => $this->comment->id,
+            'commenter_name' => $this->comment->user->name,
+            'article_title' => $this->comment->article->title,
+            'article_slug' => $this->comment->article->slug,
+            'content_preview' => Str::limit($this->comment->content, 100),
+        ];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject("Komentar baru di {$this->comment->article->title}")
+            ->line("{$this->comment->user->name} berkomentar di artikel Anda.")
+            ->action('Lihat Komentar', route('articles.show', $this->comment->article->slug))
+            ->line(Str::limit($this->comment->content, 200));
+    }
+}
+
+// app/Notifications/CommentApprovedNotification.php
+final class CommentApprovedNotification extends Notification implements ShouldQueue
+{
+    use Queueable;
+
+    public function via(object $notifiable): array
+    {
+        return ['database'];  // In-app only, no email spam
+    }
+}
+```
+
+### 15.4 Event-Driven Dispatch
+
+```php
+// Event: app/Events/CommentCreated.php
+final class CommentCreated
+{
+    use Dispatchable, SerializesModels;
+
+    public function __construct(public Comment $comment) {}
+}
+
+// Listener: app/Listeners/SendCommentNotifications.php
+#[On('comment.created')]
+final class SendCommentNotifications implements ShouldQueue
+{
+    public function handle(CommentCreated $event): void
+    {
+        // Notify article author (if not self-comment)
+        if ($event->comment->user_id !== $event->comment->article->user_id) {
+            $event->comment->article->author
+                ->notify(new NewCommentNotification($event->comment));
+        }
+
+        // Notify admins/editors for moderation
+        User::whereIn('role', ['admin', 'editor'])->each(
+            fn (User $user) => $user->notify(new CommentNeedsModeration($event->comment))
+        );
+    }
+}
+```
+
+### 15.5 Queue Routing (Laravel 13)
+
+```php
+// bootstrap/app.php
+Queue::route('notifications', [
+    SendCommentNotifications::class,
+]);
+```
+
+### 15.6 Filament Bell Integration
+
+Panel provider sudah dikonfigurasi:
+```php
+->databaseNotifications()              // Bell icon with dropdown
+->databaseNotificationsPolling('20s')  // Poll every 20 detik (Filament default: 30s)
+```
+
+Bell icon otomatis muncul di Filament top bar, menampilkan:
+- Unread count badge
+- Dropdown dengan 5 notifikasi terbaru
+- "Mark all as read" button
+- "View all" link ke halaman notifikasi
+
+### 15.7 Notification Types & Triggers
+
+| Trigger | Notification | Recipient | Channels |
+|---|---|---|---|
+| Comment created | `NewCommentNotification` | Article author | database + mail |
+| Comment needs approval | `CommentNeedsModeration` | Admin, Editor | database |
+| Comment approved | `CommentApprovedNotification` | Comment author | database |
+| Article published (Phase 2) | `ArticlePublishedNotification` | Newsletter subs | mail |
+| Welcome (Phase 2) | `WelcomeNotification` | New user | database + mail |
+
+---
+
+## 16. Testing Architecture
 
 ### 15.1 Test Structure
 

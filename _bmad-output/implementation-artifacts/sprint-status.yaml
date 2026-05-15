@@ -71,10 +71,10 @@ epics:
     file: epics/04-public-frontend.md
 
   - id: epic-05-blog-features
-    name: "Blog Features — Comments, Search, SEO"
+    name: "Blog Features — Comments, Search, SEO, Notifications"
     status: not_started
     priority: P0
-    total_tasks: 16
+    total_tasks: 23
     completed_tasks: 0
     file: epics/05-blog-features.md
 
@@ -82,7 +82,7 @@ epics:
     name: "Theme & UX — Dark Mode, Accessibility"
     status: not_started
     priority: P0
-    total_tasks: 12
+    total_tasks: 14
     completed_tasks: 0
     file: epics/06-theme-ux.md
 
@@ -104,7 +104,7 @@ epics:
 
 summary:
   total_epics: 8
-  total_tasks: 128
+  total_tasks: 137
   completed_tasks: 0
   progress_percent: 0
   mvp_target: 2026-06-26

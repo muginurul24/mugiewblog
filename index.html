@@ -1,0 +1,2757 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <!-- ANTI-FOUC: Script blocking WAJIB pertama di <head> -->
+        <script>
+            (function () {
+                const theme =
+                    localStorage.getItem("theme") ??
+                    (window.matchMedia("(prefers-color-scheme: dark)").matches
+                        ? "dark"
+                        : "light");
+                document.documentElement.classList.add(theme);
+            })();
+        </script>
+
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>DevPulse — Blog Teknologi & Pemrograman</title>
+        <meta
+            name="description"
+            content="DevPulse adalah blog teknologi profesional membahas pemrograman, infrastruktur cloud, DevOps, investasi kripto, dan update bahasa pemrograman terkini."
+        />
+        <meta
+            property="og:title"
+            content="DevPulse — Blog Teknologi & Pemrograman"
+        />
+        <meta
+            property="og:description"
+            content="Artikel mendalam tentang coding, cloud, DevOps, dan investasi teknologi."
+        />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            display: ["Space Grotesk", "sans-serif"],
+                            body: ["DM Sans", "sans-serif"],
+                            mono: ["JetBrains Mono", "monospace"],
+                        },
+                        colors: {
+                            accent: {
+                                DEFAULT: "#D4943A",
+                                hover: "#E8A848",
+                                light: "#F5D5A0",
+                                dark: "#A0702A",
+                                muted: "rgba(212,148,58,0.15)",
+                            },
+                            surface: {
+                                50: "#FAFAF5",
+                                100: "#F3F2EC",
+                                200: "#E8E6E0",
+                                300: "#D4D2CA",
+                                700: "#2A2A2A",
+                                800: "#1C1C1C",
+                                850: "#161616",
+                                900: "#111111",
+                                950: "#0A0A0A",
+                            },
+                        },
+                    },
+                },
+            };
+        </script>
+
+        <!-- Lucide Icons -->
+        <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+            body {
+                font-family: "DM Sans", sans-serif;
+            }
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+                font-family: "Space Grotesk", sans-serif;
+            }
+            code,
+            pre {
+                font-family: "JetBrains Mono", monospace;
+            }
+
+            /* Scrollbar kustom */
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #3a3a3a;
+                border-radius: 3px;
+            }
+            .dark ::-webkit-scrollbar-thumb {
+                background: #444;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+
+            /* Progress bar membaca */
+            #reading-progress {
+                transition: width 0.1s linear;
+            }
+
+            /* Animasi masuk */
+            .fade-up {
+                opacity: 0;
+                transform: translateY(24px);
+                transition:
+                    opacity 0.6s ease,
+                    transform 0.6s ease;
+            }
+            .fade-up.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            /* Stagger anak */
+            .stagger-children > * {
+                opacity: 0;
+                transform: translateY(16px);
+                transition:
+                    opacity 0.5s ease,
+                    transform 0.5s ease;
+            }
+            .stagger-children.visible > *:nth-child(1) {
+                transition-delay: 0.05s;
+            }
+            .stagger-children.visible > *:nth-child(2) {
+                transition-delay: 0.1s;
+            }
+            .stagger-children.visible > *:nth-child(3) {
+                transition-delay: 0.15s;
+            }
+            .stagger-children.visible > *:nth-child(4) {
+                transition-delay: 0.2s;
+            }
+            .stagger-children.visible > *:nth-child(5) {
+                transition-delay: 0.25s;
+            }
+            .stagger-children.visible > *:nth-child(6) {
+                transition-delay: 0.3s;
+            }
+            .stagger-children.visible > *:nth-child(7) {
+                transition-delay: 0.35s;
+            }
+            .stagger-children.visible > *:nth-child(8) {
+                transition-delay: 0.4s;
+            }
+            .stagger-children.visible > * {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            /* Garis aksen animasi */
+            @keyframes gradient-shift {
+                0% {
+                    background-position: 0% 50%;
+                }
+                50% {
+                    background-position: 100% 50%;
+                }
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+            .accent-line {
+                height: 3px;
+                background: linear-gradient(
+                    90deg,
+                    #d4943a,
+                    #e8a848,
+                    #f5d5a0,
+                    #d4943a
+                );
+                background-size: 200% 100%;
+                animation: gradient-shift 4s ease infinite;
+            }
+
+            /* Hero grid pattern */
+            .hero-grid {
+                background-image:
+                    linear-gradient(
+                        rgba(212, 148, 58, 0.06) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(212, 148, 58, 0.06) 1px,
+                        transparent 1px
+                    );
+                background-size: 40px 40px;
+            }
+            .dark .hero-grid {
+                background-image:
+                    linear-gradient(
+                        rgba(212, 148, 58, 0.08) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(212, 148, 58, 0.08) 1px,
+                        transparent 1px
+                    );
+            }
+
+            /* Glow orbs */
+            .glow-orb {
+                position: absolute;
+                border-radius: 50%;
+                filter: blur(80px);
+                opacity: 0.4;
+                pointer-events: none;
+            }
+            .dark .glow-orb {
+                opacity: 0.15;
+            }
+
+            /* Card hover */
+            .article-card {
+                transition:
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease,
+                    border-color 0.3s ease;
+            }
+            .article-card:hover {
+                transform: translateY(-4px);
+            }
+            .dark .article-card:hover {
+                box-shadow: 0 8px 32px rgba(212, 148, 58, 0.08);
+            }
+            .article-card:hover {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            }
+
+            /* TOC active */
+            .toc-link {
+                transition:
+                    color 0.2s,
+                    border-color 0.2s;
+            }
+            .toc-link.active {
+                color: #d4943a;
+                border-color: #d4943a;
+            }
+
+            /* Kode blok */
+            .prose pre {
+                border-radius: 12px;
+                padding: 1.25rem;
+                overflow-x: auto;
+                font-size: 0.875rem;
+                line-height: 1.7;
+            }
+            .dark .prose pre {
+                background: #1a1a2e;
+                color: #e0e0e0;
+                border: 1px solid #2a2a3e;
+            }
+            .prose pre {
+                background: #f5f4f0;
+                color: #1a1a1a;
+                border: 1px solid #e8e6e0;
+            }
+            .prose code:not(pre code) {
+                padding: 0.15em 0.4em;
+                border-radius: 4px;
+                font-size: 0.875em;
+            }
+            .dark .prose code:not(pre code) {
+                background: rgba(212, 148, 58, 0.12);
+                color: #f5d5a0;
+            }
+            .prose code:not(pre code) {
+                background: rgba(212, 148, 58, 0.1);
+                color: #a0702a;
+            }
+
+            /* Syntax highlight sederhana */
+            .token-keyword {
+                color: #c678dd;
+            }
+            .token-string {
+                color: #98c379;
+            }
+            .token-function {
+                color: #61afef;
+            }
+            .token-variable {
+                color: #e06c75;
+            }
+            .token-comment {
+                color: #5c6370;
+                font-style: italic;
+            }
+            .token-number {
+                color: #d19a66;
+            }
+            .token-operator {
+                color: #56b6c2;
+            }
+
+            /* Toast */
+            .toast {
+                animation: toast-in 0.4s ease forwards;
+            }
+            @keyframes toast-in {
+                from {
+                    opacity: 0;
+                    transform: translateY(16px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            .toast-out {
+                animation: toast-out 0.3s ease forwards;
+            }
+            @keyframes toast-out {
+                from {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateY(-8px);
+                }
+            }
+
+            /* Search highlight */
+            mark {
+                background: rgba(212, 148, 58, 0.3);
+                color: inherit;
+                border-radius: 2px;
+                padding: 0 2px;
+            }
+
+            /* Modal backdrop */
+            .modal-backdrop {
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+
+            /* Mobile menu */
+            .mobile-menu {
+                transition:
+                    transform 0.3s ease,
+                    opacity 0.3s ease;
+            }
+            .mobile-menu.hidden-menu {
+                transform: translateX(100%);
+                opacity: 0;
+                pointer-events: none;
+            }
+            .mobile-menu.show-menu {
+                transform: translateX(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            /* Theme toggle */
+            .theme-icon {
+                transition:
+                    transform 0.3s ease,
+                    opacity 0.3s ease;
+            }
+
+            /* Pulse animation untuk logo */
+            @keyframes pulse-glow {
+                0%,
+                100% {
+                    box-shadow: 0 0 0 0 rgba(212, 148, 58, 0.4);
+                }
+                50% {
+                    box-shadow: 0 0 0 8px rgba(212, 148, 58, 0);
+                }
+            }
+            .logo-pulse {
+                animation: pulse-glow 3s ease infinite;
+            }
+
+            /* Prefers reduced motion */
+            @media (prefers-reduced-motion: reduce) {
+                .fade-up,
+                .stagger-children > * {
+                    opacity: 1;
+                    transform: none;
+                    transition: none;
+                }
+                .accent-line {
+                    animation: none;
+                }
+                .logo-pulse {
+                    animation: none;
+                }
+                #reading-progress {
+                    transition: none;
+                }
+                .article-card {
+                    transition: none;
+                }
+            }
+
+            /* Prose kustom untuk artikel */
+            .prose {
+                max-width: 72ch;
+            }
+            .prose h2 {
+                margin-top: 2.5em;
+                margin-bottom: 0.75em;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+            }
+            .prose h3 {
+                margin-top: 2em;
+                margin-bottom: 0.5em;
+                font-weight: 600;
+            }
+            .prose p {
+                margin-bottom: 1.25em;
+                line-height: 1.8;
+            }
+            .prose ul,
+            .prose ol {
+                margin-bottom: 1.25em;
+                padding-left: 1.5em;
+            }
+            .prose li {
+                margin-bottom: 0.4em;
+                line-height: 1.7;
+            }
+            .prose blockquote {
+                border-left: 3px solid #d4943a;
+                padding: 0.75em 1.25em;
+                margin: 1.5em 0;
+                border-radius: 0 8px 8px 0;
+            }
+            .dark .prose blockquote {
+                background: rgba(212, 148, 58, 0.06);
+                color: #a3a3a3;
+            }
+            .prose blockquote {
+                background: rgba(212, 148, 58, 0.05);
+                color: #4a4a4a;
+            }
+            .prose a {
+                color: #d4943a;
+                text-decoration: underline;
+                text-underline-offset: 3px;
+            }
+            .prose a:hover {
+                color: #e8a848;
+            }
+            .prose img {
+                border-radius: 12px;
+                margin: 2em 0;
+            }
+            .prose hr {
+                border-color: #e8e6e0;
+                margin: 2em 0;
+            }
+            .dark .prose hr {
+                border-color: #2a2a2a;
+            }
+            .prose table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 1.5em 0;
+                font-size: 0.9em;
+            }
+            .prose th,
+            .prose td {
+                padding: 0.6em 1em;
+                text-align: left;
+                border-bottom: 1px solid #e8e6e0;
+            }
+            .dark .prose th,
+            .dark .prose td {
+                border-color: #2a2a2a;
+            }
+            .prose th {
+                font-weight: 600;
+                font-family: "Space Grotesk", sans-serif;
+            }
+
+            /* Komentar reply indent */
+            .comment-reply {
+                margin-left: 2.5rem;
+                border-left: 2px solid #e8e6e0;
+                padding-left: 1rem;
+            }
+            .dark .comment-reply {
+                border-left-color: #2a2a2a;
+            }
+        </style>
+    </head>
+
+    <body
+        class="bg-surface-50 dark:bg-surface-950 text-gray-900 dark:text-gray-100 font-body antialiased min-h-screen flex flex-col transition-colors duration-300"
+    >
+        <!-- Garis aksen atas -->
+        <div class="accent-line fixed top-0 left-0 w-full z-[60]"></div>
+
+        <!-- Progress bar membaca (hanya tampil di halaman artikel) -->
+        <div
+            id="reading-progress"
+            class="fixed top-[3px] left-0 h-[2px] bg-accent z-[60]"
+            style="width: 0%; display: none"
+        ></div>
+
+        <!-- ========== HEADER / NAV ========== -->
+        <header
+            id="main-header"
+            class="sticky top-[3px] z-50 bg-surface-50/80 dark:bg-surface-950/80 backdrop-blur-xl border-b border-surface-200 dark:border-surface-700 transition-colors duration-300"
+        >
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <!-- Logo -->
+                    <a
+                        href="#home"
+                        class="flex items-center gap-2.5 group"
+                        aria-label="DevPulse Beranda"
+                    >
+                        <div
+                            class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center logo-pulse"
+                        >
+                            <i data-lucide="zap" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <span
+                            class="font-display font-bold text-xl tracking-tight"
+                            >Dev<span class="text-accent">Pulse</span></span
+                        >
+                    </a>
+
+                    <!-- Nav Desktop -->
+                    <nav
+                        class="hidden md:flex items-center gap-1"
+                        aria-label="Navigasi utama"
+                    >
+                        <a
+                            href="#home"
+                            class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-accent dark:hover:text-accent hover:bg-accent-muted transition-colors"
+                            data-nav="home"
+                            >Beranda</a
+                        >
+                        <a
+                            href="#category/php"
+                            class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-accent dark:hover:text-accent hover:bg-accent-muted transition-colors"
+                            data-nav="category"
+                            >Kategori</a
+                        >
+                        <a
+                            href="#about"
+                            class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-accent dark:hover:text-accent hover:bg-accent-muted transition-colors"
+                            data-nav="about"
+                            >Tentang</a
+                        >
+                    </nav>
+
+                    <!-- Kanan: Search + Theme + Auth -->
+                    <div class="flex items-center gap-2">
+                        <!-- Tombol Pencarian -->
+                        <button
+                            onclick="openSearch()"
+                            class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-surface-200 dark:border-surface-700 text-sm text-gray-500 dark:text-gray-500 hover:border-accent/50 hover:text-accent transition-colors"
+                            aria-label="Cari artikel (Ctrl+K)"
+                        >
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Cari...</span>
+                            <kbd
+                                class="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-gray-400"
+                                >Ctrl K</kbd
+                            >
+                        </button>
+
+                        <!-- Toggle Tema -->
+                        <div class="relative" id="theme-dropdown-wrap">
+                            <button
+                                onclick="toggleThemeDropdown()"
+                                class="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-gray-500 dark:text-gray-400 hover:text-accent"
+                                aria-label="Ganti tema"
+                                id="theme-btn"
+                            >
+                                <i
+                                    data-lucide="sun"
+                                    class="w-4 h-4 theme-icon"
+                                    id="theme-icon-sun"
+                                ></i>
+                                <i
+                                    data-lucide="moon"
+                                    class="w-4 h-4 theme-icon hidden"
+                                    id="theme-icon-moon"
+                                ></i>
+                                <i
+                                    data-lucide="monitor"
+                                    class="w-4 h-4 theme-icon hidden"
+                                    id="theme-icon-monitor"
+                                ></i>
+                            </button>
+                            <!-- Dropdown tema -->
+                            <div
+                                id="theme-dropdown"
+                                class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-surface-800 rounded-xl shadow-xl border border-surface-200 dark:border-surface-700 py-1 z-50"
+                            >
+                                <button
+                                    onclick="setTheme('light')"
+                                    class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-accent-muted hover:text-accent transition-colors"
+                                >
+                                    <i data-lucide="sun" class="w-4 h-4"></i>
+                                    Terang
+                                </button>
+                                <button
+                                    onclick="setTheme('dark')"
+                                    class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-accent-muted hover:text-accent transition-colors"
+                                >
+                                    <i data-lucide="moon" class="w-4 h-4"></i>
+                                    Gelap
+                                </button>
+                                <button
+                                    onclick="setTheme('system')"
+                                    class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-accent-muted hover:text-accent transition-colors"
+                                >
+                                    <i
+                                        data-lucide="monitor"
+                                        class="w-4 h-4"
+                                    ></i>
+                                    Sistem
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tombol Login -->
+                        <button
+                            onclick="openAuth()"
+                            class="hidden sm:inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-sm font-medium transition-colors"
+                        >
+                            <i data-lucide="log-in" class="w-4 h-4"></i> Masuk
+                        </button>
+
+                        <!-- Hamburger Mobile -->
+                        <button
+                            onclick="toggleMobileMenu()"
+                            class="md:hidden p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-gray-500"
+                            aria-label="Menu"
+                        >
+                            <i
+                                data-lucide="menu"
+                                class="w-5 h-5"
+                                id="menu-icon-open"
+                            ></i>
+                            <i
+                                data-lucide="x"
+                                class="w-5 h-5 hidden"
+                                id="menu-icon-close"
+                            ></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div
+                id="mobile-menu"
+                class="mobile-menu hidden-menu md:hidden fixed inset-0 top-16 bg-surface-50/95 dark:bg-surface-950/95 modal-backdrop z-40"
+            >
+                <nav class="flex flex-col p-6 gap-2">
+                    <a
+                        href="#home"
+                        onclick="closeMobileMenu()"
+                        class="px-4 py-3 rounded-xl text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-accent-muted hover:text-accent transition-colors"
+                        >Beranda</a
+                    >
+                    <a
+                        href="#category/php"
+                        onclick="closeMobileMenu()"
+                        class="px-4 py-3 rounded-xl text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-accent-muted hover:text-accent transition-colors"
+                        >Kategori</a
+                    >
+                    <a
+                        href="#about"
+                        onclick="closeMobileMenu()"
+                        class="px-4 py-3 rounded-xl text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-accent-muted hover:text-accent transition-colors"
+                        >Tentang</a
+                    >
+                    <hr
+                        class="border-surface-200 dark:border-surface-700 my-2"
+                    />
+                    <button
+                        onclick="
+                            openAuth();
+                            closeMobileMenu();
+                        "
+                        class="px-4 py-3 rounded-xl text-lg font-medium bg-accent text-white text-left"
+                    >
+                        Masuk / Daftar
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- ========== KONTEN UTAMA ========== -->
+        <main id="app" class="flex-1">
+            <!-- Diisi oleh router -->
+        </main>
+
+        <!-- ========== FOOTER ========== -->
+        <footer
+            class="border-t border-surface-200 dark:border-surface-700 bg-surface-100/50 dark:bg-surface-900/50 transition-colors duration-300"
+        >
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+                >
+                    <!-- Kolom 1: Brand -->
+                    <div class="sm:col-span-2 lg:col-span-1">
+                        <a href="#home" class="flex items-center gap-2 mb-4">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center"
+                            >
+                                <i
+                                    data-lucide="zap"
+                                    class="w-4 h-4 text-white"
+                                ></i>
+                            </div>
+                            <span class="font-display font-bold text-lg"
+                                >Dev<span class="text-accent">Pulse</span></span
+                            >
+                        </a>
+                        <p
+                            class="text-sm text-gray-500 dark:text-gray-500 leading-relaxed max-w-xs"
+                        >
+                            Blog teknologi profesional untuk developer,
+                            engineer, dan investor yang ingin tetap update di
+                            dunia coding dan teknologi.
+                        </p>
+                        <div class="flex gap-3 mt-4">
+                            <a
+                                href="#"
+                                class="p-2 rounded-lg bg-surface-200 dark:bg-surface-800 text-gray-500 hover:text-accent hover:bg-accent-muted transition-colors"
+                                aria-label="GitHub"
+                                ><i data-lucide="github" class="w-4 h-4"></i
+                            ></a>
+                            <a
+                                href="#"
+                                class="p-2 rounded-lg bg-surface-200 dark:bg-surface-800 text-gray-500 hover:text-accent hover:bg-accent-muted transition-colors"
+                                aria-label="Twitter"
+                                ><i data-lucide="twitter" class="w-4 h-4"></i
+                            ></a>
+                            <a
+                                href="#"
+                                class="p-2 rounded-lg bg-surface-200 dark:bg-surface-800 text-gray-500 hover:text-accent hover:bg-accent-muted transition-colors"
+                                aria-label="YouTube"
+                                ><i data-lucide="youtube" class="w-4 h-4"></i
+                            ></a>
+                            <a
+                                href="#"
+                                class="p-2 rounded-lg bg-surface-200 dark:bg-surface-800 text-gray-500 hover:text-accent hover:bg-accent-muted transition-colors"
+                                aria-label="RSS"
+                                ><i data-lucide="rss" class="w-4 h-4"></i
+                            ></a>
+                        </div>
+                    </div>
+                    <!-- Kolom 2: Navigasi -->
+                    <div>
+                        <h4
+                            class="font-display font-semibold text-sm uppercase tracking-wider text-gray-400 dark:text-gray-600 mb-4"
+                        >
+                            Navigasi
+                        </h4>
+                        <ul class="space-y-2.5">
+                            <li>
+                                <a
+                                    href="#home"
+                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-accent transition-colors"
+                                    >Beranda</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    href="#category/php"
+                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-accent transition-colors"
+                                    >Kategori</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    href="#about"
+                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-accent transition-colors"
+                                    >Tentang Kami</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    href="#"
+                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-accent transition-colors"
+                                    >Kontak</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Kolom 3: Kategori -->
+                    <div>
+                        <h4
+                            class="font-display font-semibold text-sm uppercase tracking-wider text-gray-400 dark:text-gray-600 mb-4"
+                        >
+                            Kategori
+                        </h4>
+                        <ul class="space-y-2.5" id="footer-categories">
+                            <!-- Diisi JS -->
+                        </ul>
+                    </div>
+                    <!-- Kolom 4: Newsletter -->
+                    <div>
+                        <h4
+                            class="font-display font-semibold text-sm uppercase tracking-wider text-gray-400 dark:text-gray-600 mb-4"
+                        >
+                            Newsletter
+                        </h4>
+                        <p
+                            class="text-sm text-gray-500 dark:text-gray-500 mb-3"
+                        >
+                            Dapatkan artikel terbaik langsung di inbox Anda
+                            setiap minggu.
+                        </p>
+                        <form
+                            onsubmit="subscribeNewsletter(event)"
+                            class="flex gap-2"
+                        >
+                            <input
+                                type="email"
+                                required
+                                placeholder="email@anda.com"
+                                class="flex-1 min-w-0 px-3 py-2 rounded-lg text-sm bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                            />
+                            <button
+                                type="submit"
+                                class="px-3 py-2 rounded-lg bg-accent hover:bg-accent-hover text-white text-sm font-medium transition-colors flex-shrink-0"
+                            >
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <hr class="border-surface-200 dark:border-surface-700 my-8" />
+                <div
+                    class="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-400 dark:text-gray-600"
+                >
+                    <p>
+                        &copy; 2026 DevPulse. Dibuat dengan Laravel 13, Livewire
+                        4, dan Tailwind CSS v4.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="hover:text-accent transition-colors"
+                            >Kebijakan Privasi</a
+                        >
+                        <a href="#" class="hover:text-accent transition-colors"
+                            >Syarat & Ketentuan</a
+                        >
+                        <a href="#" class="hover:text-accent transition-colors"
+                            >Sitemap</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ========== MODAL PENCARIAN ========== -->
+        <div
+            id="search-modal"
+            class="fixed inset-0 z-[70] hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Pencarian"
+        >
+            <div
+                class="absolute inset-0 bg-black/50 modal-backdrop"
+                onclick="closeSearch()"
+            ></div>
+            <div
+                class="relative max-w-2xl mx-auto mt-[15vh] mx-4 sm:mx-auto bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700 overflow-hidden"
+            >
+                <div
+                    class="flex items-center gap-3 px-4 border-b border-surface-200 dark:border-surface-700"
+                >
+                    <i
+                        data-lucide="search"
+                        class="w-5 h-5 text-gray-400 flex-shrink-0"
+                    ></i>
+                    <input
+                        id="search-input"
+                        type="text"
+                        placeholder="Cari artikel, topik, atau bahasa pemrograman..."
+                        class="flex-1 py-4 bg-transparent text-base focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                        oninput="handleSearch(this.value)"
+                        autocomplete="off"
+                    />
+                    <kbd
+                        class="px-2 py-0.5 rounded text-xs font-mono bg-surface-100 dark:bg-surface-800 text-gray-400 border border-surface-200 dark:border-surface-700 flex-shrink-0"
+                        >ESC</kbd
+                    >
+                </div>
+                <div id="search-results" class="max-h-[60vh] overflow-y-auto">
+                    <div
+                        class="p-6 text-center text-gray-400 dark:text-gray-600 text-sm"
+                        id="search-placeholder"
+                    >
+                        <i
+                            data-lucide="file-search"
+                            class="w-8 h-8 mx-auto mb-2 opacity-50"
+                        ></i>
+                        <p>Ketik untuk mulai mencari...</p>
+                        <p class="text-xs mt-1">
+                            Coba: "PHP", "Rust", "Kubernetes", "kripto"
+                        </p>
+                    </div>
+                    <div id="search-list" class="hidden"></div>
+                    <div
+                        id="search-empty"
+                        class="hidden p-6 text-center text-gray-400 dark:text-gray-600 text-sm"
+                    >
+                        <i
+                            data-lucide="search-x"
+                            class="w-8 h-8 mx-auto mb-2 opacity-50"
+                        ></i>
+                        <p>Tidak ditemukan hasil untuk pencarian tersebut.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== MODAL AUTH ========== -->
+        <div
+            id="auth-modal"
+            class="fixed inset-0 z-[70] hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Autentikasi"
+        >
+            <div
+                class="absolute inset-0 bg-black/50 modal-backdrop"
+                onclick="closeAuth()"
+            ></div>
+            <div
+                class="relative max-w-md w-full mx-4 mt-[12vh] sm:mx-auto bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700 overflow-hidden"
+            >
+                <div class="p-6 sm:p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2
+                            class="font-display font-bold text-xl"
+                            id="auth-title"
+                        >
+                            Masuk ke DevPulse
+                        </h2>
+                        <button
+                            onclick="closeAuth()"
+                            class="p-1.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-gray-400"
+                        >
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <!-- Tab Login/Register -->
+                    <div
+                        class="flex bg-surface-100 dark:bg-surface-800 rounded-xl p-1 mb-6"
+                    >
+                        <button
+                            onclick="switchAuthTab('login')"
+                            id="auth-tab-login"
+                            class="flex-1 py-2 text-sm font-medium rounded-lg bg-white dark:bg-surface-700 text-accent shadow-sm transition-all"
+                        >
+                            Masuk
+                        </button>
+                        <button
+                            onclick="switchAuthTab('register')"
+                            id="auth-tab-register"
+                            class="flex-1 py-2 text-sm font-medium rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-all"
+                        >
+                            Daftar
+                        </button>
+                    </div>
+                    <!-- Social Login -->
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <button
+                            class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-surface-200 dark:border-surface-700 text-sm font-medium hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                        >
+                            <svg class="w-4 h-4" viewBox="0 0 24 24">
+                                <path
+                                    fill="currentColor"
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                                />
+                            </svg>
+                            GitHub
+                        </button>
+                        <button
+                            class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-surface-200 dark:border-surface-700 text-sm font-medium hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                        >
+                            <svg class="w-4 h-4" viewBox="0 0 24 24">
+                                <path
+                                    fill="#4285F4"
+                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+                                />
+                                <path
+                                    fill="#34A853"
+                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                />
+                                <path
+                                    fill="#FBBC05"
+                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                />
+                                <path
+                                    fill="#EA4335"
+                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                />
+                            </svg>
+                            Google
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <hr
+                            class="flex-1 border-surface-200 dark:border-surface-700"
+                        />
+                        <span class="text-xs text-gray-400"
+                            >atau dengan email</span
+                        >
+                        <hr
+                            class="flex-1 border-surface-200 dark:border-surface-700"
+                        />
+                    </div>
+                    <!-- Form Login -->
+                    <form
+                        id="auth-login-form"
+                        onsubmit="handleAuth(event, 'login')"
+                        class="space-y-4"
+                    >
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+                                >Email</label
+                            >
+                            <input
+                                type="email"
+                                required
+                                placeholder="anda@email.com"
+                                class="w-full px-4 py-2.5 rounded-xl text-sm bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+                                >Password</label
+                            >
+                            <input
+                                type="password"
+                                required
+                                placeholder="Minimal 8 karakter"
+                                class="w-full px-4 py-2.5 rounded-xl text-sm bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors"
+                            />
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <label
+                                class="flex items-center gap-2 cursor-pointer"
+                                ><input
+                                    type="checkbox"
+                                    class="rounded border-surface-300 text-accent focus:ring-accent/50"
+                                /><span class="text-gray-600 dark:text-gray-400"
+                                    >Ingat saya</span
+                                ></label
+                            >
+                            <a
+                                href="#"
+                                class="text-accent hover:text-accent-hover transition-colors"
+                                >Lupa password?</a
+                            >
+                        </div>
+                        <button
+                            type="submit"
+                            class="w-full py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white font-medium transition-colors"
+                        >
+                            Masuk
+                        </button>
+                    </form>
+                    <!-- Form Register -->
+                    <form
+                        id="auth-register-form"
+                        onsubmit="handleAuth(event, 'register')"
+                        class="space-y-4 hidden"
+                    >
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+                                >Nama Lengkap</label
+                            >
+                            <input
+                                type="text"
+                                required
+                                placeholder="Andi Pratama"
+                                class="w-full px-4 py-2.5 rounded-xl text-sm bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+                                >Email</label
+                            >
+                            <input
+                                type="email"
+                                required
+                                placeholder="anda@email.com"
+                                class="w-full px-4 py-2.5 rounded-xl text-sm bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+                                >Password</label
+                            >
+                            <input
+                                type="password"
+                                required
+                                minlength="8"
+                                placeholder="Minimal 8 karakter"
+                                class="w-full px-4 py-2.5 rounded-xl text-sm bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+                                >Konfirmasi Password</label
+                            >
+                            <input
+                                type="password"
+                                required
+                                minlength="8"
+                                placeholder="Ulangi password"
+                                class="w-full px-4 py-2.5 rounded-xl text-sm bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            class="w-full py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white font-medium transition-colors"
+                        >
+                            Buat Akun
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== TOAST CONTAINER ========== -->
+        <div
+            id="toast-container"
+            class="fixed bottom-6 right-6 z-[80] flex flex-col gap-2 pointer-events-none"
+        ></div>
+
+        <!-- ========== JAVASCRIPT ========== -->
+        <script>
+            // ============================
+            // DATA: Artikel, Kategori, Tag
+            // ============================
+            const categories = [
+                {
+                    slug: "php",
+                    name: "PHP",
+                    color: "#4F5B93",
+                    icon: "file-code",
+                },
+                {
+                    slug: "javascript",
+                    name: "JavaScript",
+                    color: "#EFD81D",
+                    icon: "braces",
+                },
+                {
+                    slug: "rust",
+                    name: "Rust",
+                    color: "#CE422B",
+                    icon: "shield",
+                },
+                { slug: "go", name: "Go", color: "#00ADD8", icon: "server" },
+                {
+                    slug: "python",
+                    name: "Python",
+                    color: "#3776AB",
+                    icon: "terminal",
+                },
+                {
+                    slug: "devops",
+                    name: "DevOps",
+                    color: "#326CE5",
+                    icon: "container",
+                },
+                {
+                    slug: "investasi",
+                    name: "Investasi",
+                    color: "#10B981",
+                    icon: "trending-up",
+                },
+            ];
+
+            const authors = [
+                {
+                    name: "Andi Pratama",
+                    role: "Full-Stack Developer",
+                    avatar: "https://picsum.photos/seed/andi/100/100.jpg",
+                },
+                {
+                    name: "Sari Dewi",
+                    role: "DevOps Engineer",
+                    avatar: "https://picsum.photos/seed/sari/100/100.jpg",
+                },
+                {
+                    name: "Budi Santoso",
+                    role: "Cloud Architect",
+                    avatar: "https://picsum.photos/seed/budi/100/100.jpg",
+                },
+                {
+                    name: "Rina Wijaya",
+                    role: "Data Engineer",
+                    avatar: "https://picsum.photos/seed/rina/100/100.jpg",
+                },
+            ];
+
+            const articles = [
+                {
+                    id: 1,
+                    slug: "php-85-pipe-operator-panduan-lengkap",
+                    title: "PHP 8.5 Pipe Operator: Panduan Lengkap dan Contoh Praktis",
+                    excerpt:
+                        "Pipe Operator `|>` akhirnya hadir di PHP 8.5. Fitur ini mengubah cara kita menulis fungsi berantai menjadi lebih bersih dan mudah dibaca, terinspirasi dari Elixir dan F#.",
+                    category: categories[0],
+                    tags: [
+                        "PHP 8.5",
+                        "Pipe Operator",
+                        "Functional Programming",
+                    ],
+                    author: authors[0],
+                    publishedAt: "2026-05-10",
+                    readTime: 8,
+                    cover: "https://picsum.photos/seed/php85pipe/1200/600.jpg",
+                    featured: true,
+                    status: "published",
+                    content: `
+<h2 id="sekilas-tentang-pipe-operator">Sekilas Tentang Pipe Operator</h2>
+<p>Setelah bertahun-tahun menunggu, PHP akhirnya mengadopsi <strong>Pipe Operator</strong> (<code>|&gt;</code>) di versi 8.5. Fitur ini memungkinkan kita menulis operasi berantai dengan gaya <em>functional programming</em> yang lebih intuitif.</p>
+<blockquote>Pipe Operator bukan sekadar syntax sugar — ini adalah perubahan paradigma dalam cara kita membaca dan menulis kode PHP. — Sara Golemon, PHP Core Contributor</blockquote>
+
+<h2 id="syntax-dasar">Syntax Dasar</h2>
+<p>Cara tradisional menulis fungsi berantai sering kali menghasilkan kode yang sulit dibaca karena pembacaan bergerak dari dalam ke luar:</p>
+<pre><code><span class="token-comment">// Cara lama: baca dari dalam ke luar</span>
+<span class="token-variable">$result</span> <span class="token-operator">=</span> <span class="token-function">array_filter</span>(
+    <span class="token-function">array_map</span>(
+        <span class="token-keyword">fn</span>(<span class="token-variable">$n</span>) <span class="token-operator">=&gt;</span> <span class="token-variable">$n</span> <span class="token-operator">*</span> <span class="token-number">2</span>,
+        <span class="token-function">explode</span>(<span class="token-string">','</span>, <span class="token-variable">$input</span>)
+    ),
+    <span class="token-keyword">fn</span>(<span class="token-variable">$n</span>) <span class="token-operator">=&gt;</span> <span class="token-variable">$n</span> <span class="token-operator">&gt;</span> <span class="token-number">10</span>
+);</code></pre>
+
+<p>Dengan Pipe Operator, alur data menjadi jelas — dari kiri ke kanan, sama seperti cara kita berpikir:</p>
+<pre><code><span class="token-comment">// Cara baru: baca dari kiri ke kanan</span>
+<span class="token-variable">$result</span> <span class="token-operator">=</span> <span class="token-variable">$input</span>
+    <span class="token-operator">|&gt;</span> <span class="token-function">explode</span>(<span class="token-string">','</span>, <span class="token-variable">?</span>)
+    <span class="token-operator">|&gt;</span> <span class="token-function">array_map</span>(<span class="token-keyword">fn</span>(<span class="token-variable">$n</span>) <span class="token-operator">=&gt;</span> <span class="token-variable">$n</span> <span class="token-operator">*</span> <span class="token-number">2</span>, <span class="token-variable">?</span>)
+    <span class="token-operator">|&gt;</span> <span class="token-function">array_filter</span>(<span class="token-variable">?</span>, <span class="token-keyword">fn</span>(<span class="token-variable">$n</span>) <span class="token-operator">=&gt;</span> <span class="token-variable">$n</span> <span class="token-operator">&gt;</span> <span class="token-number">10</span>);</code></pre>
+
+<h2 id="placeholder-argument">Placeholder Argument (<code>?</code>)</h2>
+<p>Simbol <code>?</code> berfungsi sebagai <em>placeholder</em> untuk argumen yang menerima hasil dari pipe sebelumnya. Ini mirip dengan <code>$_</code> di Rust atau <code>%></code> di Elixir.</p>
+<pre><code><span class="token-comment">// Placeholder di posisi pertama (bisa dihilangkan)</span>
+<span class="token-variable">$result</span> <span class="token-operator">=</span> <span class="token-variable">$data</span> <span class="token-operator">|&gt;</span> <span class="token-function">json_encode</span>(<span class="token-variable">?</span>);
+
+<span class="token-comment">// Placeholder di posisi kedua</span>
+<span class="token-variable">$result</span> <span class="token-operator">=</span> <span class="token-variable">$items</span> <span class="token-operator">|&gt;</span> <span class="token-function">array_map</span>(<span class="token-variable">$callback</span>, <span class="token-variable">?</span>);
+
+<span class="token-comment">// Multiple placeholder</span>
+<span class="token-variable">$result</span> <span class="token-operator">=</span> <span class="token-variable">$config</span> <span class="token-operator">|&gt;</span> <span class="token-function">array_merge</span>(<span class="token-variable">?</span>, <span class="token-variable">$defaults</span>, <span class="token-variable">?</span>);</code></pre>
+
+<h2 id="clone-with">Fitur Terkait: <code>clone with</code></h2>
+<p>Bersamaan dengan Pipe Operator, PHP 8.5 juga memperkenalkan <code>clone with</code> yang sangat berguna untuk immutable data transformation:</p>
+<pre><code><span class="token-variable">$updated</span> <span class="token-operator">=</span> <span class="token-variable">$user</span> <span class="token-keyword">clone</span> <span class="token-keyword">with</span> [
+    <span class="token-string">'name'</span> <span class="token-operator">=&gt;</span> <span class="token-string">'Andi Pratama'</span>,
+    <span class="token-string">'email'</span> <span class="token-operator">=&gt;</span> <span class="token-string">'andi@devpulse.id'</span>,
+];</code></pre>
+
+<h2 id="kapan-menggunakan-pipe-operator">Kapan Menggunakan Pipe Operator?</h2>
+<ul>
+<li><strong>Data transformation pipeline</strong> — ketika kamu memiliki rangkaian transformasi data yang jelas</li>
+<li><strong>Method chaining alternative</strong> — sebagai alternatif fluent interface yang tidak memerlukan return <code>$this</code></li>
+<li><strong>Functional composition</strong> — saat membangun pipeline pemrosesan yang kompleks</li>
+</ul>
+
+<h2 id="performa">Dampak Performa</h2>
+<p>Berdasarkan benchmark awal, Pipe Operator memiliki <strong>overhead yang hampir nol</strong> karena di-resolve pada compile time. Tidak ada penalti runtime yang signifikan dibandingkan pemanggilan fungsi biasa.</p>
+
+<h2 id="kesimpulan">Kesimpulan</h2>
+<p>Pipe Operator adalah salah satu penambahan syntax paling signifikan dalam sejarah PHP modern. Ia membawa paradigma functional programming ke dalam ekosistem PHP tanpa mengorbankan backward compatibility. Jika kamu sudah menggunakan Laravel Collections atau pipeline pattern, kamu akan merasa sangat familiar.</p>
+        `,
+                },
+                {
+                    id: 2,
+                    slug: "rust-untuk-backend-kenapa-startup-beralih",
+                    title: "Rust untuk Backend: Kenapa Banyak Startup Beralih dari Go dan Node.js",
+                    excerpt:
+                        "Performa ekstrem, memory safety tanpa GC, dan ekosistem yang matang membuat Rust semakin menjadi pilihan utama untuk backend startup modern.",
+                    category: categories[2],
+                    tags: ["Rust", "Backend", "Startup", "Performance"],
+                    author: authors[2],
+                    publishedAt: "2026-05-08",
+                    readTime: 12,
+                    cover: "https://picsum.photos/seed/rustbackend/1200/600.jpg",
+                    featured: false,
+                    status: "published",
+                    content: `<h2 id="kenapa-rust">Kenapa Rust?</h2><p>Dalam dua tahun terakhir, migrasi dari Go dan Node.js ke Rust untuk backend services meningkat 340% di kalangan startup Series A+. Alasannya bukan sekadar hype — ada metrik nyata di balik keputusan ini.</p><h2 id="memory-safety-tanpa-gc">Memory Safety Tanpa GC</h2><p>Rust menjamin memory safety pada compile time melalui ownership system, menghilangkan kebutuhan garbage collector. Ini berarti latensi yang lebih predictable — krusial untuk sistem real-time.</p><pre><code><span class="token-keyword">async fn</span> <span class="token-function">handle_request</span>(req: Request) -> Result&lt;Response&gt; {
+    <span class="token-keyword">let</span> data <span class="token-operator">=</span> <span class="token-function">parse_body</span>(<span class="token-operator">&amp;</span>req)?<span class="token-operator">.</span><span class="token-function">pipe</span>(<span class="token-function">validate</span>)
+        .<span class="token-function">pipe</span>(<span class="token-function">transform</span>)
+        .<span class="token-function">pipe</span>(<span class="token-function">persist</span>)<span class="token-operator">.</span><span class="token-function">await</span>?;
+    <span class="token-function">Ok</span>(<span class="token-function">Response::json</span>(<span class="token-operator">&amp;</span>data))
+}</code></pre><h2 id="benchmark">Benchmark Nyata</h2><p>Pada load test 10K concurrent connections, Axum (Rust) menunjukkan P99 latency 2.3ms dibandingkan Gin (Go) 8.1ms dan Express (Node.js) 45ms.</p><h2 id="ekosistem">Ekosistem yang Matang</h2><p>Tokio, Axum, SQLx, dan serde telah mencapai tingkat kematangan yang membuat development Rust tidak lagi "terlalu sulit" untuk tim yang terbiasa dengan typed language.</p><h2 id="kesimpulan">Kesimpulan</h2><p>Rust bukan untuk semua kasus, tapi untuk workload yang membutuhkan latensi rendah dan throughput tinggi, ia semakin menjadi pilihan yang sulit ditolak.</p>`,
+                },
+                {
+                    id: 3,
+                    slug: "optimalkan-kubernetes-dengan-karpenter",
+                    title: "Mengoptimalkan Kubernetes Cluster dengan Karpenter: Panduan Praktis",
+                    excerpt:
+                        "Karpenter menggantikan Cluster Autoscaler dengan pendekatan yang lebih cerdas dalam provision node, menghemat hingga 40% biaya cloud.",
+                    category: categories[5],
+                    tags: [
+                        "Kubernetes",
+                        "Karpenter",
+                        "AWS",
+                        "Cost Optimization",
+                    ],
+                    author: authors[1],
+                    publishedAt: "2026-05-05",
+                    readTime: 10,
+                    cover: "https://picsum.photos/seed/k8skarpenter/1200/600.jpg",
+                    featured: false,
+                    status: "published",
+                    content: `<h2 id="masalah-dengan-cluster-autoscaler">Masalah dengan Cluster Autoscaler</h2><p>Cluster Autoscaler tradisional memiliki banyak keterbatasan: konfigurasi node group yang rigid, provisioning yang lambat, dan sering kali over-provisioning.</p><h2 id="apa-itu-karpenter">Apa itu Karpenter?</h2><p>Karpenter adalah node provisioner yang dibuat AWS, dirancang untuk langsung membuat node berdasarkan kebutuhan pod tanpa bergantung pada pre-defined node groups.</p><pre><code><span class="token-comment"># Provisioner sederhana Karpenter</span>
+<span class="token-keyword">apiVersion:</span> karpenter.sh/v1
+<span class="token-keyword">kind:</span> Provisioner
+<span class="token-keyword">spec:</span>
+  <span class="token-keyword">requirements:</span>
+    - <span class="token-keyword">key:</span> karpenter.sh/capacity-type
+      <span class="token-keyword">operator:</span> In
+      <span class="token-keyword">values:</span> ["spot", "on-demand"]</code></pre><h2 id="penghematan-biaya">Penghematan Biaya</h2><p>Dalam produksi kami, migrasi ke Karpenter mengurangi biaya node sebesar 38% berkat penggunaan Spot Instance yang lebih agresif dan right-sizing yang otomatis.</p><h2 id="kesimpulan">Kesimpulan</h2><p>Jika kamu menjalankan Kubernetes di AWS dan belum menggunakan Karpenter, kamu kemungkinan membayar lebih mahal dari yang seharusnya.</p>`,
+                },
+                {
+                    id: 4,
+                    slug: "investasi-kripto-2026-strategi-dca",
+                    title: "Investasi Kripto 2026: Strategi DCA di Bull Market yang Tepat",
+                    excerpt:
+                        "Bull market 2026 membawa peluang besar, tapi juga risiko yang sama besarnya. Pelajari cara menerapkan DCA secara disiplin untuk memaksimalkan keuntungan.",
+                    category: categories[6],
+                    tags: ["Kripto", "DCA", "Investasi", "Bitcoin", "Ethereum"],
+                    author: authors[3],
+                    publishedAt: "2026-05-03",
+                    readTime: 7,
+                    cover: "https://picsum.photos/seed/cryptodca2026/1200/600.jpg",
+                    featured: false,
+                    status: "published",
+                    content: `<h2 id="landscape-kripto-2026">Landscape Kripto 2026</h2><p>Dengan Bitcoin yang sudah menembus ATH baru dan regulasi yang semakin jelas, pasar kripto memasuki fase yang lebih mature. Namun, volatilitas tetap menjadi faktor utama.</p><h2 id="apa-itu-dca">Apa itu DCA?</h2><p>Dollar Cost Averaging (DCA) adalah strategi investasi dengan membeli aset secara berkala dalam jumlah tetap, terlepas dari harga. Ini mengurangi dampak volatilitas.</p><h2 id="strategi-praktis">Strategi Praktis</h2><ul><li>Tentukan alokasi bulanan (misalnya Rp 2.000.000)</li><li>Pilih 3-5 aset fundamental (BTC, ETH, SOL)</li><li>Automasi pembelian melalui exchange API</li><li>Tetap disiplin bahkan saat market turun</li><li>Evaluasi portfolio setiap kuartal</li></ul><h2 id="risiko">Risiko yang Harus Dipahami</h2><p>DCA bukan strategi tanpa risiko. Di bull market yang sangat kuat, DCA justru bisa underperform dibandingkan lump sum investment. Kenali profil risiko kamu.</p><h2 id="kesimpulan">Kesimpulan</h2><p>DCA tetap menjadi strategi paling direkomendasikan untuk investor ritel karena kesederhanaan dan disiplin yang ditanamkan.</p>`,
+                },
+                {
+                    id: 5,
+                    slug: "react-server-components-vs-livewire-4",
+                    title: "React Server Components vs Livewire 4: Perbandingan Mendalam untuk Developer PHP",
+                    excerpt:
+                        "Kedua framework menawarkan pengalaman serupa tanpa menulis JavaScript API calls. Mana yang lebih cocok untuk stack Laravel kamu?",
+                    category: categories[1],
+                    tags: [
+                        "React",
+                        "Livewire 4",
+                        "Laravel",
+                        "Server Components",
+                    ],
+                    author: authors[0],
+                    publishedAt: "2026-04-30",
+                    readTime: 11,
+                    cover: "https://picsum.photos/seed/rscvslivewire/1200/600.jpg",
+                    featured: false,
+                    status: "published",
+                    content: `<h2 id="pendahuluan">Pendahuluan</h2><p>Konsep "server components" yang dipopulerkan React kini hadir juga di ekosistem PHP melalui Livewire 4. Kedua pendekatan ini punya filosofi yang mirip tapi implementasi yang sangat berbeda.</p><h2 id="arsitektur">Perbedaan Arsitektur</h2><p>RSC mengirim serialized component tree dari server, sementara Livewire 4 menggunakan AJAX-based component state synchronization. Livewire lebih "stateful" sementara RSC lebih "streaming".</p><h2 id="developer-experience">Developer Experience</h2><p>Livewire 4 menang dalam kesederhanaan — kamu tetap menulis Blade template dan PHP class. RSC memerlukan pemahaman tentang boundary server/client yang lebih kompleks.</p><h2 id="performa">Performa</h2><p>Untuk aplikasi Laravel, Livewire 4 + FrankenPHP worker mode mencapai TTFB sub-50ms, kompetitif dengan RSC yang di-serve dari edge runtime.</p><h2 id="kesimpulan">Kesimpulan</h2><p>Jika kamu sudah di ekosistem Laravel, Livewire 4 adalah pilihan yang lebih natural. RSC lebih masuk akal jika kamu membutuhkan shared component library antara backend dan mobile app.</p>`,
+                },
+                {
+                    id: 6,
+                    slug: "go-124-fitur-baru",
+                    title: "Go 1.24: Fitur Baru yang Wajib Kamu Tahu sebagai Backend Developer",
+                    excerpt:
+                        "Go 1.24 membawa iterator protocol, improved PGO, dan perbaikan toolchain yang signifikan. Berikut rangkuman lengkapnya.",
+                    category: categories[3],
+                    tags: ["Go", "Go 1.24", "Backend", "Iterator"],
+                    author: authors[2],
+                    publishedAt: "2026-04-28",
+                    readTime: 9,
+                    cover: "https://picsum.photos/seed/go124new/1200/600.jpg",
+                    featured: false,
+                    status: "published",
+                    content: `<h2 id="iterator-protocol">Iterator Protocol</h2><p>Fitur paling dinantikan di Go 1.24 adalah iterator protocol yang memungkinkan range-over fungsi. Ini mengubah cara kita menulis data processing.</p><pre><code><span class="token-keyword">func</span> <span class="token-function">fibonacci</span>() iter.Seq[int] {
+    <span class="token-keyword">return</span> <span class="token-keyword">func</span>(yield <span class="token-keyword">func</span>(int) bool) {
+        a, b := 0, 1
+        <span class="token-keyword">for</span> yield(a) {
+            a, b = b, a+b
+        }
+    }
+}
+
+<span class="token-keyword">for</span> n := <span class="token-keyword">range</span> fibonacci() {
+    fmt.Println(n)
+}</code></pre><h2 id="improved-pgo">Improved PGO</h2><p>Profile-Guided Optimization di Go 1.24 kini mendukung inline cache optimization yang bisa meningkatkan performa 2-7% tanpa perubahan kode.</p><h2 id="toolchain">Perbaikan Toolchain</h2><p>Go 1.24 memperkenalkan <code>go tool vet</code> yang lebih cerdas dan <code>go mod tidy -diff</code> untuk melihat perubahan sebelum di-commit.</p><h2 id="kesimpulan">Kesimpulan</h2><p>Go 1.24 adalah release yang solid dengan iterator sebagai highlight utama. Bahasa ini semakin expressif tanpa kehilangan kesederhanaannya.</p>`,
+                },
+                {
+                    id: 7,
+                    slug: "ci-cd-pipeline-github-actions",
+                    title: "Membangun CI/CD Pipeline yang Robust dengan GitHub Actions untuk Laravel",
+                    excerpt:
+                        "Step-by-step membangun pipeline CI/CD lengkap: testing, code quality, Docker build, dan deploy otomatis ke production.",
+                    category: categories[5],
+                    tags: [
+                        "GitHub Actions",
+                        "CI/CD",
+                        "Laravel",
+                        "Docker",
+                        "DevOps",
+                    ],
+                    author: authors[1],
+                    publishedAt: "2026-04-25",
+                    readTime: 14,
+                    cover: "https://picsum.photos/seed/cicdghactions/1200/600.jpg",
+                    featured: false,
+                    status: "published",
+                    content: `<h2 id="arsitektur-pipeline">Arsitektur Pipeline</h2><p>Pipeline yang baik tidak hanya menjalankan tes — ia memvalidasi kualitas kode, membangun artifact, dan mendeploy dengan rollback otomatis.</p><h2 id="workflow-file">Workflow File</h2><pre><code><span class="token-keyword">name:</span> CI/CD Pipeline
+<span class="token-keyword">on:</span>
+  <span class="token-keyword">push:</span>
+    <span class="token-keyword">branches:</span> [main, develop]
+<span class="token-keyword">jobs:</span>
+  <span class="token-keyword">test:</span>
+    <span class="token-keyword">runs-on:</span> ubuntu-latest
+    <span class="token-keyword">steps:</span>
+      - <span class="token-keyword">uses:</span> actions/checkout@v4
+      - <span class="token-keyword">name:</span> Setup PHP 8.5
+        <span class="token-keyword">uses:</span> shivammathur/setup-php@v2
+        <span class="token-keyword">with:</span>
+          <span class="token-keyword">php-version:</span> '8.5'</code></pre><h2 id="best-practices">Best Practices</h2><ul><li>Gunakan composite actions untuk step yang sering diulang</li><li>Cache dependency dengan hash lock file</li><li>Parallelisasi test dengan split strategy</li><li>Artifact retention policy yang tepat</li></ul><h2 id="kesimpulan">Kesimpulan</h2><p>GitHub Actions sudah cukup mature untuk membangun pipeline production-grade. Kuncinya adalah modularisasi dan caching yang tepat.</p>`,
+                },
+                {
+                    id: 8,
+                    slug: "python-314-type-hints-lebih-kuat",
+                    title: "Python 3.14: Type Hints yang Lebih Kuat dan Fitur Baru Lainnya",
+                    excerpt:
+                        "Python 3.14 membawa peningkatan signifikan pada type system, termasuk type parameter defaults dan improved type inference.",
+                    category: categories[4],
+                    tags: ["Python", "Python 3.14", "Type Hints", "Mypy"],
+                    author: authors[3],
+                    publishedAt: "2026-04-22",
+                    readTime: 8,
+                    cover: "https://picsum.photos/seed/python314type/1200/600.jpg",
+                    featured: false,
+                    status: "published",
+                    content: `<h2 id="type-parameter-defaults">Type Parameter Defaults</h2><p>Python 3.14 akhirnya mendukung default value untuk type parameters, membuat generic class lebih fleksibel:</p><pre><code><span class="token-keyword">class</span> <span class="token-function">Repository</span>[T: <span class="token-keyword">int</span> | <span class="token-keyword">str</span> = <span class="token-keyword">int</span>]:
+    <span class="token-keyword">def</span> <span class="token-function">find</span>(self, id: T) -> T | None:
+        ...</code></pre><h2 id="improved-inference">Improved Type Inference</h2><p>Mypy dan pyright kini bisa meninfer tipe lebih akurat, mengurangi kebutuhan explicit type annotation hingga 30%.</p><h2 id="kesimpulan">Kesimpulan</h2><p>Python terus bergerak ke arah yang lebih "typed" tanpa kehilangan fleksibilitas dinamisnya.</p>`,
+                },
+            ];
+
+            const comments = [
+                {
+                    id: 1,
+                    articleId: 1,
+                    author: "Rizky Fauzan",
+                    avatar: "https://picsum.photos/seed/rizky/60/60.jpg",
+                    content:
+                        "Artikel yang sangat jelas! Pipe Operator benar-benar game changer untuk PHP. Sudah saya coba di project Laravel 13 dan kodenya jadi jauh lebih readable.",
+                    date: "2026-05-10T14:30:00",
+                    replies: [
+                        {
+                            id: 2,
+                            author: "Andi Pratama",
+                            avatar: "https://picsum.photos/seed/andi/60/60.jpg",
+                            content:
+                                "Terima kasih Rizky! Memang untuk project Laravel yang sudah pakai Collections, transisi ke Pipe Operator terasa sangat natural.",
+                            date: "2026-05-10T15:00:00",
+                            isAuthor: true,
+                            replies: [],
+                        },
+                    ],
+                },
+                {
+                    id: 3,
+                    articleId: 1,
+                    author: "Maya Sari",
+                    avatar: "https://picsum.photos/seed/maya/60/60.jpg",
+                    content:
+                        "Saya masih ragu apakah ini akan diadopsi luas oleh komunitas PHP. Bagaimana menurut kalian?",
+                    date: "2026-05-11T09:15:00",
+                    replies: [],
+                },
+                {
+                    id: 4,
+                    articleId: 2,
+                    author: "Dimas Arya",
+                    avatar: "https://picsum.photos/seed/dimas/60/60.jpg",
+                    content:
+                        "Sudah 6 bulan kami pakai Rust untuk microservice payment. P99 latency turun dari 50ms ke 3ms. Worth the learning curve.",
+                    date: "2026-05-08T20:00:00",
+                    replies: [],
+                },
+            ];
+
+            // ============================
+            // STATE
+            // ============================
+            let currentRoute = "";
+            let activeCategory = null;
+            let searchQuery = "";
+
+            // ============================
+            // ROUTER
+            // ============================
+            function getRoute() {
+                const hash = window.location.hash.slice(1) || "home";
+                if (hash.startsWith("article/"))
+                    return {
+                        page: "article",
+                        slug: hash.replace("article/", ""),
+                    };
+                if (hash.startsWith("category/"))
+                    return {
+                        page: "category",
+                        slug: hash.replace("category/", ""),
+                    };
+                if (hash === "about") return { page: "about" };
+                if (hash === "404") return { page: "404" };
+                return { page: "home" };
+            }
+
+            function navigate(hash) {
+                window.location.hash = hash;
+            }
+
+            function router() {
+                const route = getRoute();
+                currentRoute = route;
+                const app = document.getElementById("app");
+
+                // Sembunyikan/tampilkan progress bar
+                const progressBar = document.getElementById("reading-progress");
+                if (route.page === "article") {
+                    progressBar.style.display = "block";
+                    progressBar.style.width = "0%";
+                } else {
+                    progressBar.style.display = "none";
+                }
+
+                // Update nav active state
+                document
+                    .querySelectorAll(".nav-link")
+                    .forEach((l) =>
+                        l.classList.remove("text-accent", "bg-accent-muted"),
+                    );
+                const navMap = {
+                    home: "home",
+                    category: "category",
+                    about: "about",
+                };
+                const activeNav = navMap[route.page];
+                if (activeNav)
+                    document
+                        .querySelector(`.nav-link[data-nav="${activeNav}"]`)
+                        ?.classList.add("text-accent", "bg-accent-muted");
+
+                window.scrollTo({ top: 0, behavior: "instant" });
+
+                switch (route.page) {
+                    case "home":
+                        app.innerHTML = renderHome();
+                        break;
+                    case "article":
+                        app.innerHTML = renderArticle(route.slug);
+                        break;
+                    case "category":
+                        app.innerHTML = renderCategory(route.slug);
+                        break;
+                    case "about":
+                        app.innerHTML = renderAbout();
+                        break;
+                    case "404":
+                        app.innerHTML = render404();
+                        break;
+                    default:
+                        app.innerHTML = renderHome();
+                }
+
+                // Re-initialize Lucide icons
+                if (typeof lucide !== "undefined") lucide.createIcons();
+                // Re-observe animations
+                observeAnimations();
+                // Setup article-specific features
+                if (route.page === "article") setupArticlePage(route.slug);
+            }
+
+            window.addEventListener("hashchange", router);
+            window.addEventListener("DOMContentLoaded", () => {
+                if (typeof lucide !== "undefined") lucide.createIcons();
+                router();
+                setupFooterCategories();
+                updateThemeIcon();
+            });
+
+            // ============================
+            // HELPERS
+            // ============================
+            function formatDate(dateStr) {
+                return new Date(dateStr).toLocaleDateString("id-ID", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                });
+            }
+
+            function getArticle(slug) {
+                return articles.find((a) => a.slug === slug);
+            }
+            function getArticlesByCategory(catSlug) {
+                return articles.filter(
+                    (a) =>
+                        a.category.slug === catSlug && a.status === "published",
+                );
+            }
+            function getRelatedArticles(article, count = 3) {
+                return articles
+                    .filter(
+                        (a) =>
+                            a.id !== article.id &&
+                            (a.category.slug === article.category.slug ||
+                                a.tags.some((t) => article.tags.includes(t))) &&
+                            a.status === "published",
+                    )
+                    .slice(0, count);
+            }
+
+            // ============================
+            // RENDER: HOMEPAGE
+            // ============================
+            function renderHome() {
+                const featured = articles.find(
+                    (a) => a.featured && a.status === "published",
+                );
+                const latest = articles
+                    .filter((a) => !a.featured && a.status === "published")
+                    .slice(0, 6);
+                const popular = [...articles]
+                    .sort((a, b) => b.readTime - a.readTime)
+                    .slice(0, 4);
+
+                return `
+      <!-- Hero Section -->
+      <section class="relative overflow-hidden hero-grid">
+        <div class="glow-orb w-96 h-96 bg-accent/30 -top-48 -right-48"></div>
+        <div class="glow-orb w-64 h-64 bg-accent/20 bottom-0 left-1/4"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 sm:pt-16 sm:pb-12">
+          <div class="text-center mb-10 fade-up">
+            <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight mb-4">
+              Byte-Sized Insight<br>untuk <span class="text-accent">Modern Developer</span>
+            </h1>
+            <p class="text-gray-500 dark:text-gray-500 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+              Artikel mendalam tentang pemrograman, infrastruktur cloud, DevOps, dan investasi teknologi — ditulis oleh praktisi untuk praktisi.
+            </p>
+          </div>
+
+          <!-- Featured Article -->
+          ${
+              featured
+                  ? `
+          <a href="#article/${featured.slug}" class="article-card block group rounded-2xl overflow-hidden border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 fade-up">
+            <div class="grid md:grid-cols-2">
+              <div class="relative overflow-hidden aspect-[16/10] md:aspect-auto">
+                <img src="${featured.cover}" alt="${featured.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="eager">
+                <div class="absolute top-4 left-4">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-white" style="background:${featured.category.color}">
+                    <i data-lucide="${featured.category.icon}" class="w-3 h-3"></i> ${featured.category.name}
+                  </span>
+                </div>
+              </div>
+              <div class="p-6 sm:p-8 flex flex-col justify-center">
+                <div class="flex items-center gap-3 mb-4">
+                  <img src="${featured.author.avatar}" alt="${featured.author.name}" class="w-8 h-8 rounded-full object-cover">
+                  <div>
+                    <span class="text-sm font-medium">${featured.author.name}</span>
+                    <span class="text-xs text-gray-400 ml-2">${formatDate(featured.publishedAt)}</span>
+                  </div>
+                </div>
+                <h2 class="font-display font-bold text-2xl sm:text-3xl tracking-tight mb-3 group-hover:text-accent transition-colors leading-snug">${featured.title}</h2>
+                <p class="text-gray-500 dark:text-gray-500 leading-relaxed mb-5 line-clamp-3">${featured.excerpt}</p>
+                <div class="flex items-center gap-4 text-sm text-gray-400 dark:text-gray-600">
+                  <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5"></i> ${featured.readTime} menit</span>
+                  <span class="flex items-center gap-1.5"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> ${comments.filter((c) => c.articleId === featured.id).length} komentar</span>
+                  <span class="flex items-center gap-1.5"><i data-lucide="bookmark" class="w-3.5 h-3.5"></i> Simpan</span>
+                </div>
+              </div>
+            </div>
+          </a>`
+                  : ""
+          }
+        </div>
+      </section>
+
+      <!-- Kategori Pills -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-wrap gap-2 fade-up" id="category-pills">
+          <button onclick="filterCategory(null)" class="cat-pill px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${!activeCategory ? "bg-accent text-white border-accent" : "border-surface-200 dark:border-surface-700 text-gray-600 dark:text-gray-400 hover:border-accent/50 hover:text-accent"}" data-cat="all">
+            Semua
+          </button>
+          ${categories
+              .map(
+                  (c) => `
+            <button onclick="filterCategory('${c.slug}')" class="cat-pill px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${activeCategory === c.slug ? "text-white border-transparent" : "border-surface-200 dark:border-surface-700 text-gray-600 dark:text-gray-400 hover:border-accent/50 hover:text-accent"}" data-cat="${c.slug}" ${activeCategory === c.slug ? `style="background:${c.color}"` : ""}>
+              ${c.name}
+            </button>
+          `,
+              )
+              .join("")}
+        </div>
+      </section>
+
+      <!-- Artikel Grid + Sidebar -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid lg:grid-cols-3 gap-8">
+          <!-- Artikel Grid -->
+          <div class="lg:col-span-2">
+            <h2 class="font-display font-bold text-2xl mb-6 fade-up">Artikel Terbaru</h2>
+            <div class="grid sm:grid-cols-2 gap-5 stagger-children" id="articles-grid">
+              ${latest.map((a) => renderArticleCard(a)).join("")}
+            </div>
+            ${activeCategory ? `<button onclick="filterCategory(null)" class="mt-6 text-accent hover:text-accent-hover text-sm font-medium transition-colors fade-up">Lihat semua artikel &rarr;</button>` : ""}
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="space-y-8">
+            <!-- Artikel Populer -->
+            <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 p-5 fade-up">
+              <h3 class="font-display font-semibold text-sm uppercase tracking-wider text-gray-400 dark:text-gray-600 mb-4">Populer</h3>
+              <div class="space-y-4">
+                ${popular
+                    .map(
+                        (a, i) => `
+                  <a href="#article/${a.slug}" class="flex gap-3 group">
+                    <span class="font-display font-bold text-2xl text-accent/30 group-hover:text-accent transition-colors leading-none mt-0.5">${String(i + 1).padStart(2, "0")}</span>
+                    <div>
+                      <h4 class="text-sm font-medium leading-snug group-hover:text-accent transition-colors line-clamp-2">${a.title}</h4>
+                      <span class="text-xs text-gray-400 mt-1">${a.readTime} mnt baca</span>
+                    </div>
+                  </a>
+                `,
+                    )
+                    .join("")}
+              </div>
+            </div>
+
+            <!-- Tag Cloud -->
+            <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 p-5 fade-up">
+              <h3 class="font-display font-semibold text-sm uppercase tracking-wider text-gray-400 dark:text-gray-600 mb-4">Topik Populer</h3>
+              <div class="flex flex-wrap gap-2">
+                ${[...new Set(articles.flatMap((a) => a.tags))]
+                    .slice(0, 12)
+                    .map(
+                        (tag) => `
+                  <button onclick="openSearch('${tag}')" class="px-3 py-1 rounded-lg text-xs font-medium bg-surface-100 dark:bg-surface-800 text-gray-600 dark:text-gray-400 hover:bg-accent-muted hover:text-accent transition-colors">${tag}</button>
+                `,
+                    )
+                    .join("")}
+              </div>
+            </div>
+
+            <!-- Newsletter CTA -->
+            <div class="rounded-2xl border border-accent/20 bg-accent-muted p-5 fade-up">
+              <div class="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center mb-3">
+                <i data-lucide="mail" class="w-5 h-5 text-accent"></i>
+              </div>
+              <h3 class="font-display font-semibold mb-1">Jangan Lewatkan Update</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-500 mb-4">Berlangganan newsletter mingguan kami. Gratis, tanpa spam.</p>
+              <form onsubmit="subscribeNewsletter(event)" class="space-y-2">
+                <input type="email" required placeholder="email@anda.com" class="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors placeholder:text-gray-400">
+                <button type="submit" class="w-full py-2 rounded-lg bg-accent hover:bg-accent-hover text-white text-sm font-medium transition-colors">Berlangganan</button>
+              </form>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Jelajahi Kategori -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h2 class="font-display font-bold text-2xl mb-6 fade-up">Jelajahi Topik</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 stagger-children">
+          ${categories
+              .map((c) => {
+                  const count = articles.filter(
+                      (a) => a.category.slug === c.slug,
+                  ).length;
+                  return `
+            <a href="#category/${c.slug}" class="group rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 p-5 hover:border-transparent transition-all hover:shadow-lg" style="--hover-bg: ${c.color}15;">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors" style="background:${c.color}20;">
+                <i data-lucide="${c.icon}" class="w-5 h-5" style="color:${c.color}"></i>
+              </div>
+              <h3 class="font-display font-semibold mb-1 group-hover:text-accent transition-colors">${c.name}</h3>
+              <p class="text-sm text-gray-400">${count} artikel</p>
+            </a>`;
+              })
+              .join("")}
+        </div>
+      </section>
+      `;
+            }
+
+            // ============================
+            // RENDER: Article Card
+            // ============================
+            function renderArticleCard(a) {
+                return `
+      <a href="#article/${a.slug}" class="article-card group rounded-2xl overflow-hidden border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 flex flex-col">
+        <div class="relative overflow-hidden aspect-[16/10]">
+          <img src="${a.cover}" alt="${a.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy">
+          <span class="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold text-white" style="background:${a.category.color}">
+            ${a.category.name}
+          </span>
+        </div>
+        <div class="p-4 flex-1 flex flex-col">
+          <h3 class="font-display font-semibold text-base leading-snug mb-2 group-hover:text-accent transition-colors line-clamp-2">${a.title}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-500 leading-relaxed mb-3 line-clamp-2 flex-1">${a.excerpt}</p>
+          <div class="flex items-center justify-between text-xs text-gray-400 dark:text-gray-600">
+            <div class="flex items-center gap-2">
+              <img src="${a.author.avatar}" alt="${a.author.name}" class="w-5 h-5 rounded-full object-cover">
+              <span>${a.author.name}</span>
+            </div>
+            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${a.readTime} mnt</span>
+          </div>
+        </div>
+      </a>`;
+            }
+
+            // ============================
+            // RENDER: ARTICLE DETAIL
+            // ============================
+            function renderArticle(slug) {
+                const article = getArticle(slug);
+                if (!article) return render404();
+
+                const articleComments = comments.filter(
+                    (c) => c.articleId === article.id,
+                );
+                const related = getRelatedArticles(article, 3);
+
+                // Generate TOC dari heading h2 & h3
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = article.content;
+                const headings = tempDiv.querySelectorAll("h2, h3");
+                const tocItems = [];
+                headings.forEach((h, i) => {
+                    if (h.id)
+                        tocItems.push({
+                            id: h.id,
+                            text: h.textContent,
+                            level: h.tagName === "H3" ? 2 : 1,
+                        });
+                });
+
+                return `
+      <article class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-600 mb-6 fade-up" aria-label="Breadcrumb">
+          <a href="#home" class="hover:text-accent transition-colors">Beranda</a>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          <a href="#category/${article.category.slug}" class="hover:text-accent transition-colors">${article.category.name}</a>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          <span class="text-gray-600 dark:text-gray-400 truncate max-w-[200px]">${article.title}</span>
+        </nav>
+
+        <div class="grid lg:grid-cols-[1fr_240px] gap-10">
+          <!-- Konten Utama -->
+          <div>
+            <!-- Header Artikel -->
+            <header class="mb-8 fade-up">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-white mb-4" style="background:${article.category.color}">
+                <i data-lucide="${article.category.icon}" class="w-3 h-3"></i> ${article.category.name}
+              </span>
+              <h1 class="font-display font-bold text-3xl sm:text-4xl lg:text-[2.75rem] tracking-tight leading-tight mb-4">${article.title}</h1>
+              <p class="text-lg text-gray-500 dark:text-gray-500 leading-relaxed mb-6">${article.excerpt}</p>
+              <div class="flex flex-wrap items-center gap-4">
+                <div class="flex items-center gap-3">
+                  <img src="${article.author.avatar}" alt="${article.author.name}" class="w-10 h-10 rounded-full object-cover border-2 border-surface-200 dark:border-surface-700">
+                  <div>
+                    <p class="text-sm font-medium">${article.author.name}</p>
+                    <p class="text-xs text-gray-400">${article.author.role}</p>
+                  </div>
+                </div>
+                <span class="text-sm text-gray-400">${formatDate(article.publishedAt)}</span>
+                <span class="flex items-center gap-1 text-sm text-gray-400"><i data-lucide="clock" class="w-3.5 h-3.5"></i> ${article.readTime} menit baca</span>
+              </div>
+              <!-- Share buttons -->
+              <div class="flex items-center gap-2 mt-5 pt-5 border-t border-surface-200 dark:border-surface-700">
+                <span class="text-xs text-gray-400 font-medium mr-1">Bagikan:</span>
+                <button onclick="shareArticle('twitter','${article.slug}')" class="p-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-gray-500 hover:text-accent hover:bg-accent-muted transition-colors" aria-label="Bagikan ke Twitter"><i data-lucide="twitter" class="w-4 h-4"></i></button>
+                <button onclick="shareArticle('linkedin','${article.slug}')" class="p-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-gray-500 hover:text-accent hover:bg-accent-muted transition-colors" aria-label="Bagikan ke LinkedIn"><i data-lucide="linkedin" class="w-4 h-4"></i></button>
+                <button onclick="shareArticle('copy','${article.slug}')" class="p-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-gray-500 hover:text-accent hover:bg-accent-muted transition-colors" aria-label="Salin link"><i data-lucide="link" class="w-4 h-4"></i></button>
+                <button onclick="toggleBookmark('${article.slug}')" class="ml-auto p-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-gray-500 hover:text-accent hover:bg-accent-muted transition-colors" aria-label="Simpan artikel"><i data-lucide="bookmark" class="w-4 h-4"></i></button>
+              </div>
+            </header>
+
+            <!-- Cover Image -->
+            <div class="rounded-2xl overflow-hidden mb-10 fade-up">
+              <img src="${article.cover}" alt="${article.title}" class="w-full object-cover" loading="eager">
+            </div>
+
+            <!-- Konten Artikel -->
+            <div class="prose max-w-none fade-up" id="article-content">
+              ${article.content}
+            </div>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2 mt-10 pt-8 border-t border-surface-200 dark:border-surface-700 fade-up">
+              ${article.tags.map((t) => `<button onclick="openSearch('${t}')" class="px-3 py-1 rounded-lg text-sm bg-surface-100 dark:bg-surface-800 text-gray-600 dark:text-gray-400 hover:bg-accent-muted hover:text-accent transition-colors">${t}</button>`).join("")}
+            </div>
+
+            <!-- Author Box -->
+            <div class="mt-10 p-6 rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 fade-up">
+              <div class="flex flex-col sm:flex-row gap-4">
+                <img src="${article.author.avatar}" alt="${article.author.name}" class="w-16 h-16 rounded-2xl object-cover flex-shrink-0">
+                <div>
+                  <p class="font-display font-semibold text-lg">${article.author.name}</p>
+                  <p class="text-sm text-gray-400 mb-2">${article.author.role}</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-500 leading-relaxed">Penulis aktif di DevPulse, fokus pada topik ${article.category.name} dan teknologi terkini. Dengan pengalaman lebih dari 8 tahun di industri software, berbagi insight praktis untuk developer Indonesia.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Komentar -->
+            <section class="mt-12 fade-up">
+              <h2 class="font-display font-bold text-2xl mb-6">
+                Komentar <span class="text-gray-400 dark:text-gray-600 font-normal text-lg">(${articleComments.length})</span>
+              </h2>
+
+              <!-- Form Komentar -->
+              <div class="p-5 rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 mb-8">
+                <p class="text-sm text-gray-500 dark:text-gray-500 mb-3">Tulis komentar Anda</p>
+                <textarea id="comment-input" rows="3" placeholder="Tulis pendapatmu tentang artikel ini..." class="w-full px-4 py-3 rounded-xl text-sm bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors placeholder:text-gray-400 resize-none"></textarea>
+                <div class="flex justify-end mt-3">
+                  <button onclick="addComment(${article.id})" class="px-5 py-2 rounded-xl bg-accent hover:bg-accent-hover text-white text-sm font-medium transition-colors">Kirim Komentar</button>
+                </div>
+              </div>
+
+              <!-- Daftar Komentar -->
+              <div class="space-y-6" id="comments-list">
+                ${articleComments.map((c) => renderComment(c)).join("")}
+              </div>
+            </section>
+
+            <!-- Related Articles -->
+            ${
+                related.length > 0
+                    ? `
+            <section class="mt-14 fade-up">
+              <h2 class="font-display font-bold text-2xl mb-6">Artikel Terkait</h2>
+              <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                ${related.map((a) => renderArticleCard(a)).join("")}
+              </div>
+            </section>`
+                    : ""
+            }
+          </div>
+
+          <!-- Sidebar TOC (Desktop) -->
+          <aside class="hidden lg:block">
+            <div class="sticky top-24">
+              ${
+                  tocItems.length > 0
+                      ? `
+              <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 p-5">
+                <h3 class="font-display font-semibold text-sm uppercase tracking-wider text-gray-400 dark:text-gray-600 mb-4">Daftar Isi</h3>
+                <nav class="space-y-1" id="toc-nav" aria-label="Daftar isi artikel">
+                  ${tocItems
+                      .map(
+                          (item) => `
+                    <a href="#${item.id}" class="toc-link block py-1.5 text-sm border-l-2 border-transparent pl-3 ${item.level === 2 ? "ml-3 text-gray-500 dark:text-gray-500" : "text-gray-600 dark:text-gray-400"} hover:text-accent hover:border-accent transition-colors" data-toc="${item.id}">${item.text}</a>
+                  `,
+                      )
+                      .join("")}
+                </nav>
+              </div>`
+                      : ""
+              }
+
+              <!-- Sticky CTA -->
+              <div class="mt-6 p-5 rounded-2xl border border-accent/20 bg-accent-muted">
+                <p class="text-sm font-medium mb-2">Menikmati artikel ini?</p>
+                <p class="text-xs text-gray-500 dark:text-gray-500 mb-3">Dapatkan artikel serupa langsung di inbox Anda.</p>
+                <form onsubmit="subscribeNewsletter(event)" class="space-y-2">
+                  <input type="email" required placeholder="email@anda.com" class="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors placeholder:text-gray-400">
+                  <button type="submit" class="w-full py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-xs font-medium transition-colors">Langganan</button>
+                </form>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </article>`;
+            }
+
+            // ============================
+            // RENDER: Comment
+            // ============================
+            function renderComment(c) {
+                return `
+      <div class="flex gap-3">
+        <img src="${c.avatar}" alt="${c.author}" class="w-9 h-9 rounded-full object-cover flex-shrink-0 mt-0.5">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-sm font-medium">${c.author}</span>
+            ${c.isAuthor ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-accent/15 text-accent">Penulis</span>' : ""}
+            <span class="text-xs text-gray-400">${formatDate(c.date)}</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">${c.content}</p>
+          <button class="text-xs text-gray-400 hover:text-accent mt-2 transition-colors">Balas</button>
+          ${
+              c.replies && c.replies.length > 0
+                  ? `
+            <div class="comment-reply mt-4 space-y-4">
+              ${c.replies.map((r) => renderComment(r)).join("")}
+            </div>
+          `
+                  : ""
+          }
+        </div>
+      </div>`;
+            }
+
+            // ============================
+            // RENDER: CATEGORY PAGE
+            // ============================
+            function renderCategory(slug) {
+                const category = categories.find((c) => c.slug === slug);
+                if (!category) return render404();
+                const catArticles = getArticlesByCategory(slug);
+
+                return `
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-600 mb-8 fade-up" aria-label="Breadcrumb">
+          <a href="#home" class="hover:text-accent transition-colors">Beranda</a>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          <span class="text-gray-600 dark:text-gray-400">${category.name}</span>
+        </nav>
+
+        <div class="flex items-center gap-4 mb-8 fade-up">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background:${category.color}20;">
+            <i data-lucide="${category.icon}" class="w-6 h-6" style="color:${category.color}"></i>
+          </div>
+          <div>
+            <h1 class="font-display font-bold text-3xl sm:text-4xl tracking-tight">${category.name}</h1>
+            <p class="text-gray-500 dark:text-gray-500">${catArticles.length} artikel dalam kategori ini</p>
+          </div>
+        </div>
+
+        ${
+            catArticles.length > 0
+                ? `
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
+          ${catArticles.map((a) => renderArticleCard(a)).join("")}
+        </div>`
+                : `
+        <div class="text-center py-20 fade-up">
+          <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-300 dark:text-gray-700 mb-4"></i>
+          <p class="text-gray-400 dark:text-gray-600">Belum ada artikel dalam kategori ini.</p>
+        </div>`
+        }
+      </section>`;
+            }
+
+            // ============================
+            // RENDER: ABOUT PAGE
+            // ============================
+            function renderAbout() {
+                return `
+      <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+        <div class="text-center mb-12 fade-up">
+          <h1 class="font-display font-bold text-4xl sm:text-5xl tracking-tight mb-4">Tentang <span class="text-accent">DevPulse</span></h1>
+          <p class="text-lg text-gray-500 dark:text-gray-500 max-w-2xl mx-auto leading-relaxed">Misi kami adalah menjadi sumber belajar teknologi terpercaya untuk developer Indonesia dan komunitas global.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-16">
+          <div class="p-6 rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 fade-up">
+            <div class="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center mb-4">
+              <i data-lucide="target" class="w-5 h-5 text-accent"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">Visi</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-500 leading-relaxed">Menjadi platform edukasi teknologi nomor satu di Asia Tenggara yang mengutamakan kualitas konten, kedalaman analisis, dan relevansi praktis untuk developer profesional.</p>
+          </div>
+          <div class="p-6 rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 fade-up">
+            <div class="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center mb-4">
+              <i data-lucide="rocket" class="w-5 h-5 text-accent"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">Misi</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-500 leading-relaxed">Menyediakan artikel mendalam yang ditulis oleh praktisi berpengalaman, dengan fokus pada bahasa pemrograman terkini, infrastruktur cloud, DevOps, dan peluang investasi di sektor teknologi.</p>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-16 fade-up">
+          <div class="text-center p-5 rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850">
+            <p class="font-display font-bold text-3xl text-accent" data-count="${articles.length}">0</p>
+            <p class="text-sm text-gray-400 mt-1">Artikel</p>
+          </div>
+          <div class="text-center p-5 rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850">
+            <p class="font-display font-bold text-3xl text-accent" data-count="${categories.length}">0</p>
+            <p class="text-sm text-gray-400 mt-1">Kategori</p>
+          </div>
+          <div class="text-center p-5 rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850">
+            <p class="font-display font-bold text-3xl text-accent" data-count="${authors.length}">0</p>
+            <p class="text-sm text-gray-400 mt-1">Penulis</p>
+          </div>
+          <div class="text-center p-5 rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850">
+            <p class="font-display font-bold text-3xl text-accent" data-count="12">0</p>
+            <p class="text-sm text-gray-400 mt-1">Ribu Pembaca</p>
+          </div>
+        </div>
+
+        <!-- Tim -->
+        <div class="mb-16 fade-up">
+          <h2 class="font-display font-bold text-2xl mb-6 text-center">Tim Penulis</h2>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            ${authors
+                .map(
+                    (a) => `
+              <div class="text-center p-5 rounded-2xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850 group">
+                <img src="${a.avatar}" alt="${a.name}" class="w-16 h-16 rounded-2xl object-cover mx-auto mb-3 group-hover:scale-105 transition-transform">
+                <h4 class="font-display font-semibold text-sm">${a.name}</h4>
+                <p class="text-xs text-gray-400 mt-0.5">${a.role}</p>
+              </div>
+            `,
+                )
+                .join("")}
+          </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="fade-up">
+          <h2 class="font-display font-bold text-2xl mb-6 text-center">Tech Stack</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            ${[
+                { name: "Laravel 13", desc: "Backend Framework" },
+                { name: "Livewire 4", desc: "Frontend SPA" },
+                { name: "Filament 5", desc: "Admin Panel" },
+                { name: "Tailwind CSS v4", desc: "Styling" },
+                { name: "FrankenPHP", desc: "Application Server" },
+                { name: "MySQL 8.4", desc: "Database" },
+                { name: "Redis", desc: "Cache & Queue" },
+                { name: "Docker", desc: "Containerization" },
+                { name: "Laravel Horizon", desc: "Queue Monitoring" },
+            ]
+                .map(
+                    (t) => `
+              <div class="flex items-center gap-3 p-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-850">
+                <div class="w-2 h-2 rounded-full bg-accent flex-shrink-0"></div>
+                <div>
+                  <p class="text-sm font-medium">${t.name}</p>
+                  <p class="text-xs text-gray-400">${t.desc}</p>
+                </div>
+              </div>
+            `,
+                )
+                .join("")}
+          </div>
+        </div>
+      </section>`;
+            }
+
+            // ============================
+            // RENDER: 404
+            // ============================
+            function render404() {
+                return `
+      <section class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center fade-up">
+        <div class="font-display font-bold text-8xl sm:text-9xl text-accent/20 mb-4">404</div>
+        <h1 class="font-display font-bold text-2xl sm:text-3xl mb-3">Halaman Tidak Ditemukan</h1>
+        <p class="text-gray-500 dark:text-gray-500 mb-8 max-w-md mx-auto">Maaf, halaman yang kamu cari tidak ada atau sudah dipindahkan. Coba jelajahi artikel kami yang lain.</p>
+        <div class="flex flex-col sm:flex-row justify-center gap-3">
+          <a href="#home" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white font-medium transition-colors">
+            <i data-lucide="home" class="w-4 h-4"></i> Ke Beranda
+          </a>
+          <button onclick="openSearch()" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl border border-surface-200 dark:border-surface-700 text-gray-600 dark:text-gray-400 hover:border-accent/50 hover:text-accent font-medium transition-colors">
+            <i data-lucide="search" class="w-4 h-4"></i> Cari Artikel
+          </button>
+        </div>
+      </section>`;
+            }
+
+            // ============================
+            // ARTICLE PAGE SETUP
+            // ============================
+            function setupArticlePage(slug) {
+                // Reading progress bar
+                window.addEventListener(
+                    "scroll",
+                    function onScroll() {
+                        const article =
+                            document.getElementById("article-content");
+                        if (!article) {
+                            window.removeEventListener("scroll", onScroll);
+                            return;
+                        }
+                        const rect = article.getBoundingClientRect();
+                        const total = article.scrollHeight;
+                        const visible = Math.max(0, -rect.top);
+                        const progress = Math.min(
+                            100,
+                            (visible / (total - window.innerHeight)) * 100,
+                        );
+                        document.getElementById(
+                            "reading-progress",
+                        ).style.width = Math.max(0, progress) + "%";
+                    },
+                    { passive: true },
+                );
+
+                // TOC active state tracking
+                const tocLinks = document.querySelectorAll(".toc-link");
+                if (tocLinks.length > 0) {
+                    const observer = new IntersectionObserver(
+                        (entries) => {
+                            entries.forEach((entry) => {
+                                if (entry.isIntersecting) {
+                                    tocLinks.forEach((l) =>
+                                        l.classList.remove("active"),
+                                    );
+                                    const link = document.querySelector(
+                                        `.toc-link[data-toc="${entry.target.id}"]`,
+                                    );
+                                    if (link) link.classList.add("active");
+                                }
+                            });
+                        },
+                        { rootMargin: "-80px 0px -70% 0px", threshold: 0 },
+                    );
+                    tocLinks.forEach((link) => {
+                        const target = document.getElementById(
+                            link.dataset.toc,
+                        );
+                        if (target) observer.observe(target);
+                    });
+                }
+            }
+
+            // ============================
+            // SCROLL ANIMATIONS
+            // ============================
+            function observeAnimations() {
+                const elements = document.querySelectorAll(
+                    ".fade-up, .stagger-children",
+                );
+                const observer = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add("visible");
+                                observer.unobserve(entry.target);
+                            }
+                        });
+                    },
+                    { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
+                );
+                elements.forEach((el) => observer.observe(el));
+
+                // Counter animation
+                document.querySelectorAll("[data-count]").forEach((el) => {
+                    const target = parseInt(el.dataset.count);
+                    let current = 0;
+                    const step = Math.max(1, Math.floor(target / 30));
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        el.textContent = current;
+                    }, 40);
+                });
+            }
+
+            // ============================
+            // THEME MANAGEMENT
+            // ============================
+            function getTheme() {
+                const stored = localStorage.getItem("theme");
+                if (stored) return stored;
+                return window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark"
+                    : "light";
+            }
+
+            function setTheme(theme) {
+                localStorage.setItem("theme", theme);
+                if (theme === "system") {
+                    const isDark = window.matchMedia(
+                        "(prefers-color-scheme: dark)",
+                    ).matches;
+                    document.documentElement.classList.remove("light", "dark");
+                    document.documentElement.classList.add(
+                        isDark ? "dark" : "light",
+                    );
+                } else {
+                    document.documentElement.classList.remove("light", "dark");
+                    document.documentElement.classList.add(theme);
+                }
+                updateThemeIcon();
+                closeThemeDropdown();
+            }
+
+            function updateThemeIcon() {
+                const theme = getTheme();
+                const sun = document.getElementById("theme-icon-sun");
+                const moon = document.getElementById("theme-icon-moon");
+                const monitor = document.getElementById("theme-icon-monitor");
+                if (!sun || !moon || !monitor) return;
+                sun.classList.toggle("hidden", theme === "dark");
+                moon.classList.toggle("hidden", theme === "light");
+                monitor.classList.toggle("hidden", theme !== "system");
+            }
+
+            function toggleThemeDropdown() {
+                document
+                    .getElementById("theme-dropdown")
+                    .classList.toggle("hidden");
+            }
+            function closeThemeDropdown() {
+                document
+                    .getElementById("theme-dropdown")
+                    ?.classList.add("hidden");
+            }
+
+            // Listen untuk system theme change
+            window
+                .matchMedia("(prefers-color-scheme: dark)")
+                .addEventListener("change", () => {
+                    if (getTheme() === "system") setTheme("system");
+                });
+
+            // ============================
+            // SEARCH
+            // ============================
+            function openSearch(query = "") {
+                document
+                    .getElementById("search-modal")
+                    .classList.remove("hidden");
+                document.body.style.overflow = "hidden";
+                const input = document.getElementById("search-input");
+                input.value = query;
+                input.focus();
+                if (query) handleSearch(query);
+                else {
+                    document
+                        .getElementById("search-placeholder")
+                        .classList.remove("hidden");
+                    document
+                        .getElementById("search-list")
+                        .classList.add("hidden");
+                    document
+                        .getElementById("search-empty")
+                        .classList.add("hidden");
+                }
+            }
+
+            function closeSearch() {
+                document.getElementById("search-modal").classList.add("hidden");
+                document.body.style.overflow = "";
+            }
+
+            function handleSearch(query) {
+                const q = query.toLowerCase().trim();
+                const placeholder =
+                    document.getElementById("search-placeholder");
+                const list = document.getElementById("search-list");
+                const empty = document.getElementById("search-empty");
+
+                if (!q) {
+                    placeholder.classList.remove("hidden");
+                    list.classList.add("hidden");
+                    empty.classList.add("hidden");
+                    return;
+                }
+                placeholder.classList.add("hidden");
+
+                const results = articles.filter(
+                    (a) =>
+                        a.title.toLowerCase().includes(q) ||
+                        a.excerpt.toLowerCase().includes(q) ||
+                        a.tags.some((t) => t.toLowerCase().includes(q)) ||
+                        a.category.name.toLowerCase().includes(q) ||
+                        a.author.name.toLowerCase().includes(q),
+                );
+
+                if (results.length === 0) {
+                    list.classList.add("hidden");
+                    empty.classList.remove("hidden");
+                    return;
+                }
+                empty.classList.add("hidden");
+                list.classList.remove("hidden");
+
+                list.innerHTML = results
+                    .map((a) => {
+                        const highlighted = highlightText(a.title, q);
+                        return `        <a href="#article/${a.slug}" onclick="closeSearch()" class="flex gap-4 p-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors border-b border-surface-100 dark:border-surface-800 last:border-0">
+            <img src="${a.cover}" alt="" class="w-16 h-12 rounded-lg object-cover flex-shrink-0">
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium leading-snug line-clamp-2 mb-1">${highlighted}</p>
+              <div class="flex items-center gap-2 text-xs text-gray-400">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold text-white" style="background:${a.category.color}">${a.category.name}</span>
+                <span>${a.author.name}</span>
+                <span>${a.readTime} mnt</span>
+              </div>
+            </div>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-gray-300 dark:text-gray-600 flex-shrink-0 mt-1"></i>
+          </a>`;
+                    })
+                    .join("");
+
+                if (typeof lucide !== "undefined") lucide.createIcons();
+            }
+
+            function highlightText(text, query) {
+                if (!query) return text;
+                const regex = new RegExp(
+                    `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+                    "gi",
+                );
+                return text.replace(regex, "<mark>$1</mark>");
+            }
+
+            // Keyboard shortcut: Ctrl+K buka search, ESC tutup
+            document.addEventListener("keydown", (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+                    e.preventDefault();
+                    openSearch();
+                }
+                if (e.key === "Escape") {
+                    closeSearch();
+                    closeAuth();
+                    closeThemeDropdown();
+                    closeMobileMenu();
+                }
+            });
+
+            // Klik di luar theme dropdown untuk menutup
+            document.addEventListener("click", (e) => {
+                const wrap = document.getElementById("theme-dropdown-wrap");
+                if (wrap && !wrap.contains(e.target)) closeThemeDropdown();
+            });
+
+            // ============================
+            // MOBILE MENU
+            // ============================
+            function toggleMobileMenu() {
+                const menu = document.getElementById("mobile-menu");
+                const openIcon = document.getElementById("menu-icon-open");
+                const closeIcon = document.getElementById("menu-icon-close");
+                const isOpen = menu.classList.contains("show-menu");
+                if (isOpen) {
+                    menu.classList.remove("show-menu");
+                    menu.classList.add("hidden-menu");
+                    openIcon.classList.remove("hidden");
+                    closeIcon.classList.add("hidden");
+                    document.body.style.overflow = "";
+                } else {
+                    menu.classList.remove("hidden-menu");
+                    menu.classList.add("show-menu");
+                    openIcon.classList.add("hidden");
+                    closeIcon.classList.remove("hidden");
+                    document.body.style.overflow = "hidden";
+                }
+            }
+            function closeMobileMenu() {
+                const menu = document.getElementById("mobile-menu");
+                if (menu.classList.contains("show-menu")) toggleMobileMenu();
+            }
+
+            // ============================
+            // AUTH MODAL
+            // ============================
+            function openAuth() {
+                document
+                    .getElementById("auth-modal")
+                    .classList.remove("hidden");
+                document.body.style.overflow = "hidden";
+            }
+            function closeAuth() {
+                document.getElementById("auth-modal").classList.add("hidden");
+                document.body.style.overflow = "";
+            }
+            function switchAuthTab(tab) {
+                const loginForm = document.getElementById("auth-login-form");
+                const registerForm =
+                    document.getElementById("auth-register-form");
+                const loginTab = document.getElementById("auth-tab-login");
+                const registerTab =
+                    document.getElementById("auth-tab-register");
+                const title = document.getElementById("auth-title");
+
+                if (tab === "login") {
+                    loginForm.classList.remove("hidden");
+                    registerForm.classList.add("hidden");
+                    loginTab.classList.add(
+                        "bg-white",
+                        "dark:bg-surface-700",
+                        "text-accent",
+                        "shadow-sm",
+                    );
+                    loginTab.classList.remove("text-gray-500");
+                    registerTab.classList.remove(
+                        "bg-white",
+                        "dark:bg-surface-700",
+                        "text-accent",
+                        "shadow-sm",
+                    );
+                    registerTab.classList.add("text-gray-500");
+                    title.textContent = "Masuk ke DevPulse";
+                } else {
+                    registerForm.classList.remove("hidden");
+                    loginForm.classList.add("hidden");
+                    registerTab.classList.add(
+                        "bg-white",
+                        "dark:bg-surface-700",
+                        "text-accent",
+                        "shadow-sm",
+                    );
+                    registerTab.classList.remove("text-gray-500");
+                    loginTab.classList.remove(
+                        "bg-white",
+                        "dark:bg-surface-700",
+                        "text-accent",
+                        "shadow-sm",
+                    );
+                    loginTab.classList.add("text-gray-500");
+                    title.textContent = "Buat Akun DevPulse";
+                }
+            }
+            function handleAuth(e, type) {
+                e.preventDefault();
+                closeAuth();
+                showToast(
+                    type === "login"
+                        ? "Berhasil masuk! Selamat datang kembali."
+                        : "Akun berhasil dibuat! Silakan verifikasi email Anda.",
+                    "success",
+                );
+            }
+
+            // ============================
+            // CATEGORY FILTER (Homepage)
+            // ============================
+            function filterCategory(slug) {
+                activeCategory = slug;
+                router();
+            }
+
+            // ============================
+            // COMMENTS
+            // ============================
+            function addComment(articleId) {
+                const input = document.getElementById("comment-input");
+                const text = input.value.trim();
+                if (!text) {
+                    showToast("Komentar tidak boleh kosong.", "error");
+                    return;
+                }
+
+                const newComment = {
+                    id: Date.now(),
+                    articleId: articleId,
+                    author: "Tamu",
+                    avatar:
+                        "https://picsum.photos/seed/guest" +
+                        Date.now() +
+                        "/60/60.jpg",
+                    content: text,
+                    date: new Date().toISOString(),
+                    replies: [],
+                };
+                comments.push(newComment);
+
+                const list = document.getElementById("comments-list");
+                list.insertAdjacentHTML("beforeend", renderComment(newComment));
+                input.value = "";
+                if (typeof lucide !== "undefined") lucide.createIcons();
+                showToast("Komentar berhasil dikirim!", "success");
+            }
+
+            // ============================
+            // SHARE
+            // ============================
+            function shareArticle(platform, slug) {
+                const url =
+                    window.location.origin +
+                    window.location.pathname +
+                    "#article/" +
+                    slug;
+                const article = getArticle(slug);
+                const title = article ? article.title : "DevPulse";
+                switch (platform) {
+                    case "twitter":
+                        window.open(
+                            `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+                            "_blank",
+                        );
+                        break;
+                    case "linkedin":
+                        window.open(
+                            `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+                            "_blank",
+                        );
+                        break;
+                    case "copy":
+                        navigator.clipboard
+                            .writeText(url)
+                            .then(() =>
+                                showToast("Link berhasil disalin!", "success"),
+                            )
+                            .catch(() =>
+                                showToast("Gagal menyalin link.", "error"),
+                            );
+                        break;
+                }
+            }
+
+            // ============================
+            // BOOKMARK
+            // ============================
+            function toggleBookmark(slug) {
+                let bookmarks = JSON.parse(
+                    localStorage.getItem("bookmarks") || "[]",
+                );
+                if (bookmarks.includes(slug)) {
+                    bookmarks = bookmarks.filter((s) => s !== slug);
+                    showToast("Artikel dihapus dari bookmark.", "info");
+                } else {
+                    bookmarks.push(slug);
+                    showToast("Artikel disimpan ke bookmark!", "success");
+                }
+                localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+            }
+
+            // ============================
+            // NEWSLETTER
+            // ============================
+            function subscribeNewsletter(e) {
+                e.preventDefault();
+                const input = e.target.querySelector('input[type="email"]');
+                if (input) input.value = "";
+                showToast(
+                    "Berhasil berlangganan! Cek inbox untuk konfirmasi.",
+                    "success",
+                );
+            }
+
+            // ============================
+            // TOAST NOTIFICATION
+            // ============================
+            function showToast(message, type = "info") {
+                const container = document.getElementById("toast-container");
+                const colors = {
+                    success: "bg-emerald-600 text-white",
+                    error: "bg-red-600 text-white",
+                    info: "bg-surface-800 dark:bg-surface-200 text-white dark:text-surface-900",
+                };
+                const icons = {
+                    success: "check-circle",
+                    error: "alert-circle",
+                    info: "info",
+                };
+
+                const toast = document.createElement("div");
+                toast.className = `toast pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl text-sm font-medium ${colors[type] || colors.info}`;
+                toast.innerHTML = `<i data-lucide="${icons[type] || "info"}" class="w-4 h-4 flex-shrink-0"></i><span>${message}</span>`;
+                container.appendChild(toast);
+                if (typeof lucide !== "undefined") lucide.createIcons();
+
+                setTimeout(() => {
+                    toast.classList.add("toast-out");
+                    toast.addEventListener("animationend", () =>
+                        toast.remove(),
+                    );
+                }, 3500);
+            }
+
+            // ============================
+            // FOOTER CATEGORIES
+            // ============================
+            function setupFooterCategories() {
+                const el = document.getElementById("footer-categories");
+                if (!el) return;
+                el.innerHTML = categories
+                    .slice(0, 5)
+                    .map(
+                        (c) =>
+                            `<li><a href="#category/${c.slug}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-accent transition-colors">${c.name}</a></li>`,
+                    )
+                    .join("");
+            }
+        </script>
+
+        <!-- Structured Data: WebSite + Article -->
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "DevPulse",
+                "url": "https://devpulse.id",
+                "description": "Blog teknologi profesional membahas pemrograman, cloud, DevOps, dan investasi teknologi.",
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://devpulse.id/search?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                }
+            }
+        </script>
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Article",
+                "headline": "PHP 8.5 Pipe Operator: Panduan Lengkap dan Contoh Praktis",
+                "datePublished": "2026-05-10",
+                "author": { "@type": "Person", "name": "Andi Pratama" },
+                "publisher": { "@type": "Organization", "name": "DevPulse" },
+                "description": "Pipe Operator |> akhirnya hadir di PHP 8.5. Fitur ini mengubah cara kita menulis fungsi berantai menjadi lebih bersih dan mudah dibaca."
+            }
+        </script>
+    </body>
+</html>

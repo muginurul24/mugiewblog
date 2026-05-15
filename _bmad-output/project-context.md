@@ -26,6 +26,8 @@
 | Database | MySQL | 8.4 LTS |
 | Cache/Queue | Redis | 7.x |
 | CSS | Tailwind CSS | 4.x |
+| Icons | FontAwesome Free | 7.2 |
+| Animation | Animate.css | 4.1 |
 | JS Package Manager | Bun | latest |
 | Testing | Pest | 4.x |
 | Code Style | Laravel Pint | latest |
@@ -41,6 +43,8 @@
 - ✅ Livewire 4: View-based components, SPA routing, Islands pattern, lazy loading
 - ✅ Filament 5: All resources must use proper Filament form/table builders
 - ✅ Tailwind v4: CSS-first config (`@import "tailwindcss"`, NO `tailwind.config.js`)
+- ✅ FontAwesome Free 7.2: Three styles (fas/far/fab), aria-hidden required, Tailwind sizing preferred
+- ✅ Animate.css 4.1: Entrance/exit/attention animations, prefers-reduced-motion MANDATORY
 
 ---
 
@@ -83,7 +87,9 @@
 - Tailwind utility classes (NO custom CSS unless necessary)
 - Alpine.js for client-side reactivity (bundled with Livewire 4)
 - Dark mode via class strategy + inline blocking script
-- Icons: Blade Heroicons or Lucide
+- **FontAwesome Free 7.2** for icons: `fas`/`far`/`fab`, always `aria-hidden="true"`, use Tailwind sizing
+- **Animate.css 4.1** for animations: `animate__animated` prefix, respect `prefers-reduced-motion`
+- Heroicons (Blade components) for app-specific minimal icons
 
 ---
 

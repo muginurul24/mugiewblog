@@ -1,4 +1,12 @@
-@import 'tailwindcss';
+@import url(https://fonts.bunny.net/css?family=geist-mono:100,200,300,400,500,600,700,800,900|plus-jakarta-sans:200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i);
+@import "tailwindcss";
+@import "animate.css";
+@import "./../fontawesome/css/all.min.css";
+
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -6,6 +14,23 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-mono:
+        "Geist Mono", ui-monospace, SF Mono, SF Mono-Regular, Consolas,
+        "Liberation Mono", Menlo, Courier, monospace;
+    --font-sans--font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    --font-mono--font-feature-settings: "liga", "calt";
+}
+
+@layer base {
+    html {
+        @apply bg-white dark:bg-black text-black dark:text-white scheme-light dark:scheme-dark scroll-smooth;
+    }
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        @apply cursor-pointer;
+    }
 }

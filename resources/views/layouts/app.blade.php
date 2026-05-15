@@ -99,6 +99,51 @@
                 </div>
 
                 <div class="flex items-center gap-1">
+                    @auth
+                        <div class="relative hidden sm:block" x-data="{ open: false }" @click.outside="open = false">
+                            <button
+                                type="button"
+                                class="flex h-10 items-center gap-2 rounded-lg px-2 text-surface-600 transition hover:bg-surface-100 hover:text-accent dark:text-surface-300 dark:hover:bg-surface-900"
+                                aria-label="Menu akun"
+                                @click="open = ! open"
+                            >
+                                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-100 text-xs font-bold text-accent dark:bg-surface-800">
+                                    {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                                </span>
+                                <i class="fas fa-chevron-down h-3 w-3" aria-hidden="true"></i>
+                            </button>
+                            <div
+                                x-cloak
+                                x-show="open"
+                                x-transition:enter="animate__animated animate__fadeIn animate__faster"
+                                class="absolute right-0 mt-2 w-48 overflow-hidden rounded-lg border border-surface-200 bg-white p-1 shadow-lg dark:border-surface-800 dark:bg-surface-900"
+                            >
+                                <a href="{{ route('profile') }}" wire:navigate class="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-surface-100 dark:hover:bg-surface-800">
+                                    <i class="fas fa-user h-4 w-4 text-accent" aria-hidden="true"></i>
+                                    Profil
+                                </a>
+                                @if (auth()->user()->isAdmin() || auth()->user()->isEditor())
+                                    <a href="{{ route('filament.backoffice.pages.dashboard') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-surface-100 dark:hover:bg-surface-800">
+                                        <i class="fas fa-gauge-high h-4 w-4 text-accent" aria-hidden="true"></i>
+                                        Admin
+                                    </a>
+                                @endif
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm hover:bg-surface-100 dark:hover:bg-surface-800">
+                                        <i class="fas fa-right-from-bracket h-4 w-4 text-accent" aria-hidden="true"></i>
+                                        Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" wire:navigate class="hidden h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-surface-600 transition hover:bg-surface-100 hover:text-accent dark:text-surface-300 dark:hover:bg-surface-900 sm:inline-flex">
+                            <i class="fas fa-right-to-bracket h-4 w-4" aria-hidden="true"></i>
+                            Masuk
+                        </a>
+                    @endauth
+
                     <div class="relative" x-data="{ open: false }" @click.outside="open = false">
                         <button
                             type="button"
@@ -161,6 +206,19 @@
                     @foreach ($navigationCategories as $category)
                         <a href="{{ $category->url() }}" wire:navigate class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-100 dark:hover:bg-surface-900" @click="mobileMenuOpen = false">{{ $category->name }}</a>
                     @endforeach
+                    @auth
+                        <a href="{{ route('profile') }}" wire:navigate class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-100 dark:hover:bg-surface-900" @click="mobileMenuOpen = false">Profil</a>
+                        @if (auth()->user()->isAdmin() || auth()->user()->isEditor())
+                            <a href="{{ route('filament.backoffice.pages.dashboard') }}" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-100 dark:hover:bg-surface-900">Admin</a>
+                        @endif
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full rounded-lg px-3 py-2 text-left text-sm font-medium hover:bg-surface-100 dark:hover:bg-surface-900">Keluar</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" wire:navigate class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-100 dark:hover:bg-surface-900" @click="mobileMenuOpen = false">Masuk</a>
+                        <a href="{{ route('register') }}" wire:navigate class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-100 dark:hover:bg-surface-900" @click="mobileMenuOpen = false">Daftar</a>
+                    @endauth
                 </nav>
             </div>
         </header>

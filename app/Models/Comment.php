@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\CommentStatus;
+use App\Notifications\CommentApprovedNotification;
 use Database\Factories\CommentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Notification;
 
 #[Fillable([
     'article_id',
@@ -83,5 +85,52 @@ class Comment extends Model
     public function scopeApproved(Builder $query): Builder
     {
         return $query->where('status', CommentStatus::Approved->value);
+    }
+
+    public function approve(): bool
+    {
+        $wasApproved = $this->status === CommentStatus::Approved;
+
+        $updated = $this->update([
+            'status' => CommentStatus::Approved,
+            'approved_at' => $this->approved_at ?? now(),
+        ]);
+
+        if ($updated && ! $wasApproved) {
+            $this->refresh();
+            $this->notifyCommenterOfApproval();
+        }
+
+        return $updated;
+    }
+
+    public function reject(): bool
+    {
+        return $this->update([
+            'status' => CommentStatus::Rejected,
+            'approved_at' => null,
+        ]);
+    }
+
+    public function markAsSpam(): bool
+    {
+        return $this->update([
+            'status' => CommentStatus::Spam,
+            'approved_at' => null,
+        ]);
+    }
+
+    private function notifyCommenterOfApproval(): void
+    {
+        if ($this->author !== null) {
+            $this->author->notify(new CommentApprovedNotification($this));
+
+            return;
+        }
+
+        if (filled($this->guest_email)) {
+            Notification::route('mail', $this->guest_email)
+                ->notify(new CommentApprovedNotification($this));
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Widgets\BlogStats;
 use App\Filament\Widgets\PendingComments;
 use App\Filament\Widgets\RecentArticles;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -30,7 +31,14 @@ class BackofficePanelProvider extends PanelProvider
             ->id('backoffice')
             ->path('admin')
             ->login()
+            ->passwordReset()
+            ->emailVerification()
             ->profile()
+            ->multiFactorAuthentication([
+                AppAuthentication::make()
+                    ->brandName('MugiewBlog Admin')
+                    ->recoverable(),
+            ], isRequired: app()->isProduction())
             ->brandName('MugiewBlog Admin')
             ->colors([
                 'primary' => Color::Amber,

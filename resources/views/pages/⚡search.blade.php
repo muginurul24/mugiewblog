@@ -1,8 +1,7 @@
 <?php
 
-use App\Models\Article;
+use App\Services\SearchService;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -24,21 +23,8 @@ new class extends Component {
     {
         $term = trim($this->query);
 
-        return Article::query()
-            ->published()
-            ->when($term !== '', function (Builder $query) use ($term): Builder {
-                if (in_array(DB::connection()->getDriverName(), ['mysql', 'pgsql'], true) && mb_strlen($term) >= 3) {
-                    return $query->whereFullText(['title', 'excerpt', 'content_md'], $term);
-                }
-
-                return $query->where(function (Builder $query) use ($term): void {
-                    $query
-                        ->where('title', 'like', "%{$term}%")
-                        ->orWhere('excerpt', 'like', "%{$term}%")
-                        ->orWhereHas('category', fn (Builder $categoryQuery): Builder => $categoryQuery->where('name', 'like', "%{$term}%"))
-                        ->orWhereHas('tags', fn (Builder $tagQuery): Builder => $tagQuery->where('name', 'like', "%{$term}%"));
-                });
-            })
+        return app(SearchService::class)
+            ->publishedArticles($term)
             ->with(['author', 'category'])
             ->withCount(['comments' => fn (Builder $query) => $query->approved()])
             ->latest('published_at')

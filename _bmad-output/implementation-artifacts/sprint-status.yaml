@@ -51,7 +51,7 @@ epics:
     status: in_progress
     priority: P0
     total_tasks: 16
-    completed_tasks: 4
+    completed_tasks: 13
     file: epics/02-authentication-authorization.md
 
   - id: epic-03-filament-admin
@@ -75,7 +75,7 @@ epics:
     status: in_progress
     priority: P0
     total_tasks: 23
-    completed_tasks: 9
+    completed_tasks: 16
     file: epics/05-blog-features.md
 
   - id: epic-06-theme-ux
@@ -99,14 +99,14 @@ epics:
     status: in_progress
     priority: P0
     total_tasks: 14
-    completed_tasks: 5
+    completed_tasks: 9
     file: epics/08-testing.md
 
 summary:
   total_epics: 8
   total_tasks: 140
-  completed_tasks: 81
-  progress_percent: 58
+  completed_tasks: 101
+  progress_percent: 72
   mvp_target: 2026-06-26
 
 # HOW TO UPDATE:

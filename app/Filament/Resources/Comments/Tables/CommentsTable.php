@@ -61,26 +61,17 @@ class CommentsTable
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (Comment $record): bool => $record->status !== CommentStatus::Approved)
-                    ->action(fn (Comment $record): bool => $record->update([
-                        'status' => CommentStatus::Approved,
-                        'approved_at' => now(),
-                    ])),
+                    ->action(fn (Comment $record): bool => $record->approve()),
                 Action::make('reject')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn (Comment $record): bool => $record->status === CommentStatus::Pending)
-                    ->action(fn (Comment $record): bool => $record->update([
-                        'status' => CommentStatus::Rejected,
-                        'approved_at' => null,
-                    ])),
+                    ->action(fn (Comment $record): bool => $record->reject()),
                 Action::make('spam')
                     ->color('gray')
                     ->requiresConfirmation()
                     ->visible(fn (Comment $record): bool => $record->status !== CommentStatus::Spam)
-                    ->action(fn (Comment $record): bool => $record->update([
-                        'status' => CommentStatus::Spam,
-                        'approved_at' => null,
-                    ])),
+                    ->action(fn (Comment $record): bool => $record->markAsSpam()),
                 ViewAction::make(),
                 EditAction::make(),
             ])
@@ -89,24 +80,15 @@ class CommentsTable
                     BulkAction::make('approve')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->action(fn (Collection $records): bool => $records->each->update([
-                            'status' => CommentStatus::Approved,
-                            'approved_at' => now(),
-                        ])->isNotEmpty()),
+                        ->action(fn (Collection $records): bool => $records->each->approve()->isNotEmpty()),
                     BulkAction::make('reject')
                         ->color('danger')
                         ->requiresConfirmation()
-                        ->action(fn (Collection $records): bool => $records->each->update([
-                            'status' => CommentStatus::Rejected,
-                            'approved_at' => null,
-                        ])->isNotEmpty()),
+                        ->action(fn (Collection $records): bool => $records->each->reject()->isNotEmpty()),
                     BulkAction::make('spam')
                         ->color('gray')
                         ->requiresConfirmation()
-                        ->action(fn (Collection $records): bool => $records->each->update([
-                            'status' => CommentStatus::Spam,
-                            'approved_at' => null,
-                        ])->isNotEmpty()),
+                        ->action(fn (Collection $records): bool => $records->each->markAsSpam()->isNotEmpty()),
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),

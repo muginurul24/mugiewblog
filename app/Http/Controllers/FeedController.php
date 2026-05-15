@@ -9,6 +9,18 @@ use Illuminate\Http\Response;
 
 class FeedController extends Controller
 {
+    public function robots(): Response
+    {
+        return response(implode("\n", [
+            'User-agent: *',
+            'Allow: /',
+            'Disallow: /admin',
+            'Disallow: /livewire-*/',
+            'Sitemap: '.route('sitemap'),
+            '',
+        ]))->header('Content-Type', 'text/plain; charset=UTF-8');
+    }
+
     public function rss(): Response
     {
         $articles = Article::query()

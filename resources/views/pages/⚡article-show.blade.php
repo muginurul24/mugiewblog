@@ -2,8 +2,10 @@
 
 use App\Enums\ArticleStatus;
 use App\Enums\CommentStatus;
+use App\Events\CommentCreated;
 use App\Models\Article;
 use App\Models\Comment;
+use App\Services\CommentSpamDetector;
 use App\Support\ArticleContent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\RateLimiter;
@@ -56,15 +58,29 @@ new class extends Component {
         $validated = $this->validate();
         $this->ensureCommentIsNotRateLimited();
 
-        Comment::create([
+        $commentStatus = app(CommentSpamDetector::class)->isSpam([
+            'name' => $validated['guestName'],
+            'email' => $validated['guestEmail'],
+            'content' => $validated['commentContent'],
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ])
+            ? CommentStatus::Spam
+            : CommentStatus::Pending;
+
+        $comment = Comment::create([
             'article_id' => $this->article->id,
             'guest_name' => $validated['guestName'],
             'guest_email' => $validated['guestEmail'],
             'content' => $validated['commentContent'],
-            'status' => CommentStatus::Pending,
+            'status' => $commentStatus,
             'ip_address' => request()->ip(),
             'user_agent' => Str::limit((string) request()->userAgent(), 500),
         ]);
+
+        if ($commentStatus === CommentStatus::Pending) {
+            CommentCreated::dispatch($comment);
+        }
 
         $this->reset(['guestName', 'guestEmail', 'commentContent', 'website']);
         session()->flash('comment', 'Komentar terkirim dan menunggu moderasi.');

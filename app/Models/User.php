@@ -4,6 +4,10 @@ namespace App\Models;
 
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Auth\MustVerifyEmail;
@@ -26,16 +30,26 @@ use Illuminate\Notifications\Notifiable;
     'github_url',
     'twitter_url',
     'website_url',
+    'oauth_provider',
+    'oauth_provider_id',
     'role',
     'is_active',
     'two_factor_enabled',
     'two_factor_secret',
+    'app_authentication_secret',
+    'app_authentication_recovery_codes',
 ])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser, MustVerifyEmailContract
+#[Hidden(['password', 'remember_token', 'two_factor_secret', 'app_authentication_secret', 'app_authentication_recovery_codes'])]
+class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, MustVerifyEmailContract
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, MustVerifyEmail, Notifiable, SoftDeletes;
+    use HasFactory;
+
+    use InteractsWithAppAuthentication;
+    use InteractsWithAppAuthenticationRecovery;
+    use MustVerifyEmail;
+    use Notifiable;
+    use SoftDeletes;
 
     /**
      * Get the attributes that should be cast.
@@ -50,6 +64,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmailContr
             'role' => UserRole::class,
             'is_active' => 'boolean',
             'two_factor_enabled' => 'boolean',
+            'app_authentication_recovery_codes' => 'encrypted:array',
         ];
     }
 

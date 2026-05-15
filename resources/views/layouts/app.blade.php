@@ -22,16 +22,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $pageDescription }}">
+    <meta name="robots" content="index,follow,max-image-preview:large">
+    <meta name="theme-color" content="#d4943a">
     <link rel="canonical" href="{{ $canonicalUrl }}">
+    <link rel="alternate" type="application/rss+xml" title="MugiewBlog RSS" href="{{ route('feed') }}">
 
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
+    <meta property="og:site_name" content="MugiewBlog">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ $canonicalUrl }}">
     <meta property="og:image" content="{{ $shareImage }}">
     <meta name="twitter:card" content="summary_large_image">
 
     <title>{{ $pageTitle }}</title>
+    <style>[x-cloak] { display: none !important; }</style>
+    <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => 'MugiewBlog',
+            'url' => route('home'),
+            'description' => $pageDescription,
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => route('search').'?q={search_term_string}',
+                'query-input' => 'required name=search_term_string',
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles

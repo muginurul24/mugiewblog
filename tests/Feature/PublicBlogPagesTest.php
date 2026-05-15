@@ -12,8 +12,11 @@ it('should render homepage when published articles exist', function () {
 
     $this->get(route('home'))
         ->assertSuccessful()
+        ->assertHeader('x-content-type-options', 'nosniff')
+        ->assertHeader('x-frame-options', 'SAMEORIGIN')
         ->assertSeeText('Byte-sized insight')
-        ->assertSeeText('Artikel Terbaru');
+        ->assertSeeText('Artikel Terbaru')
+        ->assertSee('application/rss+xml', false);
 });
 
 it('should render article page when article is published', function () {

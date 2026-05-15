@@ -6,6 +6,9 @@ use App\Models\Article;
 use App\Models\Comment;
 use App\Support\ArticleContent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -22,6 +25,8 @@ new class extends Component {
     #[Validate('required|string|min:8|max:2000')]
     public string $commentContent = '';
 
+    public string $website = '';
+
     public function mount(Article $article): void
     {
         abort_unless(
@@ -37,7 +42,19 @@ new class extends Component {
 
     public function submitComment(): void
     {
+        $this->guestName = Str::of($this->guestName)->squish()->toString();
+        $this->guestEmail = Str::lower(trim($this->guestEmail));
+        $this->commentContent = trim($this->commentContent);
+
+        if (filled($this->website)) {
+            $this->reset(['guestName', 'guestEmail', 'commentContent', 'website']);
+            session()->flash('comment', 'Komentar terkirim dan menunggu moderasi.');
+
+            return;
+        }
+
         $validated = $this->validate();
+        $this->ensureCommentIsNotRateLimited();
 
         Comment::create([
             'article_id' => $this->article->id,
@@ -47,8 +64,29 @@ new class extends Component {
             'status' => CommentStatus::Pending,
         ]);
 
-        $this->reset(['guestName', 'guestEmail', 'commentContent']);
+        $this->reset(['guestName', 'guestEmail', 'commentContent', 'website']);
         session()->flash('comment', 'Komentar terkirim dan menunggu moderasi.');
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    private function ensureCommentIsNotRateLimited(): void
+    {
+        $key = 'comment:'.sha1((request()->ip() ?: 'unknown').'|'.$this->article->id.'|'.$this->guestEmail);
+
+        $executed = RateLimiter::attempt(
+            $key,
+            3,
+            fn (): bool => true,
+            600,
+        );
+
+        if (! $executed) {
+            throw ValidationException::withMessages([
+                'commentContent' => 'Terlalu banyak percobaan. Coba lagi dalam '.RateLimiter::availableIn($key).' detik.',
+            ]);
+        }
     }
 
     #[Computed]
@@ -228,6 +266,10 @@ new class extends Component {
                     @endif
 
                     <form wire:submit="submitComment" class="mt-5 grid gap-4">
+                        <div class="hidden" aria-hidden="true">
+                            <label for="comment-website">Website</label>
+                            <input id="comment-website" wire:model="website" type="text" tabindex="-1" autocomplete="off">
+                        </div>
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <label for="guest-name" class="mb-1 block text-sm font-semibold">Nama</label>

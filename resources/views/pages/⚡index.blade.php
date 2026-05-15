@@ -5,6 +5,9 @@ use App\Models\Category;
 use App\Models\NewsletterSubscriber;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Validate;
@@ -20,6 +23,8 @@ new class extends Component {
     #[Validate('required|email|max:255')]
     public string $email = '';
 
+    public string $website = '';
+
     public function filterCategory(?string $slug): void
     {
         $this->category = $slug;
@@ -28,7 +33,16 @@ new class extends Component {
 
     public function subscribe(): void
     {
+        $this->email = Str::lower(trim($this->email));
+
+        if (filled($this->website)) {
+            $this->reset(['email', 'website']);
+
+            return;
+        }
+
         $this->validateOnly('email');
+        $this->ensureSubscriptionIsNotRateLimited();
 
         NewsletterSubscriber::query()->updateOrCreate(
             ['email' => $this->email],
@@ -43,6 +57,27 @@ new class extends Component {
 
         $this->reset('email');
         session()->flash('newsletter', 'Newsletter aktif. Artikel baru akan masuk ke inbox Anda.');
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    private function ensureSubscriptionIsNotRateLimited(): void
+    {
+        $key = 'newsletter:'.sha1((request()->ip() ?: 'unknown').'|'.$this->email);
+
+        $executed = RateLimiter::attempt(
+            $key,
+            5,
+            fn (): bool => true,
+            600,
+        );
+
+        if (! $executed) {
+            throw ValidationException::withMessages([
+                'email' => 'Terlalu banyak percobaan. Coba lagi dalam '.RateLimiter::availableIn($key).' detik.',
+            ]);
+        }
     }
 
     #[Computed]
@@ -225,6 +260,10 @@ new class extends Component {
                 @endif
 
                 <form wire:submit="subscribe" class="mt-4 space-y-3">
+                    <div class="hidden" aria-hidden="true">
+                        <label for="newsletter-website">Website</label>
+                        <input id="newsletter-website" wire:model="website" type="text" tabindex="-1" autocomplete="off">
+                    </div>
                     <label for="newsletter-email" class="sr-only">Email newsletter</label>
                     <input
                         id="newsletter-email"

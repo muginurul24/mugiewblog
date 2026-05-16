@@ -1,8 +1,12 @@
 <?php
 
+use App\Filament\Widgets\ArticleCategoriesChart;
+use App\Filament\Widgets\ArticleViewsChart;
+use App\Filament\Widgets\BlogStats;
 use App\Models\Article;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
@@ -23,7 +27,23 @@ it('should render admin dashboard at the production admin path', function () {
     $this->actingAs($admin)
         ->get('/admin')
         ->assertSuccessful()
-        ->assertSeeText('MugiewBlog Admin');
+        ->assertSeeText('MugiewBlog Admin')
+        ->assertSee('data-backoffice-logo', false);
+});
+
+it('should render custom dashboard widgets for admin users', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    Livewire::test(BlogStats::class)
+        ->assertSeeText('Ringkasan editorial');
+
+    Livewire::test(ArticleViewsChart::class)
+        ->assertSeeText('Views per bulan');
+
+    Livewire::test(ArticleCategoriesChart::class)
+        ->assertSeeText('Distribusi kategori');
 });
 
 it('should render backoffice article creation page when user is admin', function () {

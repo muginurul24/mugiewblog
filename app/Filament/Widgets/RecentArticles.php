@@ -11,29 +11,35 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RecentArticles extends TableWidget
 {
-    protected int|string|array $columnSpan = 'full';
+    protected static ?int $sort = 4;
+
+    protected int|string|array $columnSpan = [
+        'md' => 2,
+        'xl' => 2,
+    ];
 
     public function table(Table $table): Table
     {
         return $table
+            ->heading('Artikel terbaru')
             ->query(fn (): Builder => Article::query()
-                ->with(['author', 'category'])
+                ->with('author')
                 ->latest()
                 ->limit(5))
             ->columns([
                 TextColumn::make('title')
+                    ->label('Judul')
                     ->searchable()
-                    ->limit(50),
+                    ->limit(42),
                 TextColumn::make('author.name')
-                    ->label('Author'),
-                TextColumn::make('category.name')
-                    ->badge()
-                    ->placeholder('-'),
+                    ->label('Penulis'),
                 TextColumn::make('status')
                     ->badge()
+                    ->label('Status')
                     ->formatStateUsing(fn (ArticleStatus $state): string => $state->label())
                     ->color(fn (ArticleStatus $state): string => $state->color()),
                 TextColumn::make('created_at')
+                    ->label('Dibuat')
                     ->dateTime(),
             ]);
     }

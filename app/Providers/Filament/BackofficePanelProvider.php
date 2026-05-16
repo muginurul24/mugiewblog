@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\ArticleCategoriesChart;
+use App\Filament\Widgets\ArticleViewsChart;
 use App\Filament\Widgets\BlogStats;
 use App\Filament\Widgets\PendingComments;
 use App\Filament\Widgets\RecentArticles;
@@ -10,11 +12,9 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -40,20 +40,30 @@ class BackofficePanelProvider extends PanelProvider
                     ->recoverable(),
             ], isRequired: app()->isProduction())
             ->brandName('MugiewBlog Admin')
+            ->brandLogo(fn () => view('filament.backoffice.logo'))
+            ->brandLogoHeight('2rem')
+            ->favicon(asset('favicon.ico'))
+            ->font('DM Sans')
             ->colors([
-                'primary' => Color::Amber,
+                'danger' => Color::Rose,
+                'gray' => Color::Taupe,
+                'info' => Color::Sky,
+                'primary' => Color::hex('#D4943A'),
+                'success' => Color::Emerald,
+                'warning' => Color::Amber,
             ])
+            ->viteTheme('resources/css/filament/backoffice/theme.css')
+            ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->databaseNotificationsPolling('20s')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
-            ->pages([
-                Dashboard::class,
-            ])
+            ->pages([])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
                 BlogStats::class,
+                ArticleViewsChart::class,
+                ArticleCategoriesChart::class,
                 RecentArticles::class,
                 PendingComments::class,
             ])

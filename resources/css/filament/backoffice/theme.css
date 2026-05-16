@@ -1,0 +1,186 @@
+@import url("https://fonts.bunny.net/css?family=space-grotesk:500,600,700|jetbrains-mono:400,500,600");
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+
+@source "../../../../app/Filament/**/*";
+@source "../../../../resources/views/filament/**/*";
+
+@theme {
+    --font-display:
+        "Space Grotesk", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-mono:
+        "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas,
+        "Liberation Mono", Menlo, Courier, monospace;
+}
+
+@layer base {
+    .fi-body {
+        letter-spacing: 0;
+    }
+
+    .fi-body code,
+    .fi-body pre,
+    .fi-body kbd {
+        font-family: var(--font-mono);
+    }
+}
+
+@layer components {
+    .fi-body {
+        background:
+            linear-gradient(180deg, rgb(250 250 245 / 0.98), rgb(243 242 236 / 0.9)),
+            #fafaf5;
+    }
+
+    .dark .fi-body {
+        background:
+            linear-gradient(180deg, rgb(13 13 12 / 1), rgb(24 23 22 / 0.96)),
+            #0d0d0c;
+    }
+
+    .fi-main {
+        @apply max-w-none;
+    }
+
+    .fi-topbar {
+        @apply border-b border-gray-200/80 bg-gray-50/85 shadow-none backdrop-blur-xl dark:border-white/10 dark:bg-gray-950/80;
+    }
+
+    .fi-sidebar {
+        @apply border-e border-white/10 bg-[#181716] dark:bg-[#0d0d0c];
+    }
+
+    .fi-sidebar-header {
+        @apply justify-start border-b border-white/10 px-4;
+    }
+
+    .fi-sidebar-nav {
+        @apply gap-y-6 px-4 py-5;
+    }
+
+    .fi-sidebar-nav-groups {
+        @apply gap-y-6;
+    }
+
+    .fi-sidebar-group-btn {
+        @apply px-2 py-1;
+    }
+
+    .fi-sidebar-group-label {
+        @apply text-xs font-semibold text-gray-400;
+    }
+
+    .fi-sidebar-item-btn,
+    .fi-sidebar-database-notifications-btn {
+        @apply rounded-lg px-3 py-2;
+    }
+
+    .fi-sidebar-item-label,
+    .fi-sidebar-database-notifications-btn-label {
+        @apply text-gray-300;
+    }
+
+    .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+        @apply bg-primary-500/15;
+    }
+
+    .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label,
+    .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-icon {
+        @apply text-primary-400;
+    }
+
+    .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn {
+        @apply hover:bg-white/5 focus-visible:bg-white/5;
+    }
+
+    .fi-sidebar-footer {
+        @apply mx-3 border-t border-white/10 pt-3;
+    }
+
+    .fi-page-header-main-ctn {
+        @apply gap-y-6 py-6;
+    }
+
+    .fi-header-heading,
+    .fi-ta-header-heading,
+    .fi-section-header-heading,
+    .fi-wi-stats-overview-stat-value {
+        font-family: var(--font-display);
+        letter-spacing: 0;
+    }
+
+    .fi-header-heading {
+        @apply text-2xl font-bold sm:text-3xl;
+    }
+
+    .fi-section:not(.fi-section-not-contained),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-simple-main {
+        @apply rounded-lg border border-gray-200 bg-white shadow-none ring-0 dark:border-white/10 dark:bg-gray-900;
+    }
+
+    .fi-section:not(.fi-section-not-contained),
+    .fi-wi-stats-overview-stat {
+        @apply transition duration-200;
+    }
+
+    .fi-section:not(.fi-section-not-contained):hover,
+    .fi-wi-stats-overview-stat:hover {
+        @apply -translate-y-0.5 border-primary-500/30 shadow-lg shadow-primary-950/5 dark:shadow-black/25;
+    }
+
+    .fi-wi-stats-overview-stat {
+        @apply p-5;
+    }
+
+    .fi-wi-stats-overview-stat-label {
+        @apply text-xs font-semibold;
+    }
+
+    .fi-wi-stats-overview-stat-value {
+        @apply text-2xl font-bold;
+    }
+
+    .fi-ta-row:not(.fi-ta-row-not-reorderable) {
+        @apply transition;
+    }
+
+    .fi-ta-row:hover {
+        @apply bg-primary-500/[0.04] dark:bg-primary-400/[0.06];
+    }
+
+    .fi-ta-header,
+    .fi-ta-header-toolbar,
+    .fi-ta-selection-indicator,
+    .fi-ta-filter-indicators,
+    .fi-ta-filters-above-content-ctn,
+    .fi-pagination {
+        @apply border-gray-200 dark:border-white/10;
+    }
+
+    .fi-input-wrp,
+    .fi-select-input,
+    .fi-fo-textarea,
+    .fi-btn,
+    .fi-dropdown-panel {
+        @apply rounded-lg;
+    }
+
+    .fi-btn.fi-color:not(.fi-outlined):not(label) {
+        @apply shadow-sm shadow-primary-950/10;
+    }
+
+    .fi-logo {
+        @apply text-white;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-section:not(.fi-section-not-contained),
+    .fi-wi-stats-overview-stat,
+    .fi-ta-row {
+        transition: none;
+    }
+}

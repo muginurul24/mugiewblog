@@ -11,11 +11,17 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PendingComments extends TableWidget
 {
-    protected int|string|array $columnSpan = 'full';
+    protected static ?int $sort = 5;
+
+    protected int|string|array $columnSpan = [
+        'md' => 2,
+        'xl' => 2,
+    ];
 
     public function table(Table $table): Table
     {
         return $table
+            ->heading('Komentar menunggu moderasi')
             ->query(fn (): Builder => Comment::query()
                 ->where('status', 'pending')
                 ->with(['article', 'author'])
@@ -23,17 +29,16 @@ class PendingComments extends TableWidget
                 ->limit(5))
             ->columns([
                 TextColumn::make('article.title')
-                    ->label('Article')
-                    ->limit(40),
-                TextColumn::make('guest_name')
-                    ->label('Guest')
-                    ->placeholder('Registered user'),
-                TextColumn::make('author.name')
-                    ->label('User')
-                    ->placeholder('-'),
+                    ->label('Artikel')
+                    ->limit(28),
+                TextColumn::make('commenter')
+                    ->label('Komentator')
+                    ->state(fn (Comment $record): string => $record->author?->name ?? $record->guest_name ?? '-'),
                 TextColumn::make('content')
-                    ->limit(70),
+                    ->label('Isi')
+                    ->limit(42),
                 TextColumn::make('created_at')
+                    ->label('Dibuat')
                     ->dateTime(),
             ])
             ->recordActions([

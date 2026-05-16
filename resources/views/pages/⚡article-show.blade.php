@@ -35,12 +35,7 @@ new class extends Component {
 
     public function mount(Article $article): void
     {
-        abort_unless(
-            $article->status === ArticleStatus::Published
-                && $article->published_at !== null
-                && $article->published_at->lte(now()),
-            404,
-        );
+        abort_unless($article->status === ArticleStatus::Published && $article->published_at !== null && $article->published_at->lte(now()), 404);
 
         $this->slug = $article->slug;
         $article->increment('view_count');
@@ -48,7 +43,7 @@ new class extends Component {
 
     public function submitComment(): void
     {
-        if (! $this->ensureAuthenticatedAndVerified()) {
+        if (!$this->ensureAuthenticatedAndVerified()) {
             return;
         }
         $this->commentContent = trim($this->commentContent);
@@ -95,15 +90,11 @@ new class extends Component {
 
     public function startReply(int $commentId): void
     {
-        if (! $this->ensureAuthenticatedAndVerified()) {
+        if (!$this->ensureAuthenticatedAndVerified()) {
             return;
         }
 
-        $comment = $this->article
-            ->comments()
-            ->approved()
-            ->whereKey($commentId)
-            ->firstOrFail();
+        $comment = $this->article->comments()->approved()->whereKey($commentId)->firstOrFail();
 
         abort_if($this->commentDepth($comment) >= 3, 422);
 
@@ -118,7 +109,7 @@ new class extends Component {
 
     public function submitReply(): void
     {
-        if (! $this->ensureAuthenticatedAndVerified()) {
+        if (!$this->ensureAuthenticatedAndVerified()) {
             return;
         }
 
@@ -126,11 +117,7 @@ new class extends Component {
             'replyContent' => ['required', 'string', 'min:8', 'max:2000'],
         ]);
 
-        $parent = $this->article
-            ->comments()
-            ->approved()
-            ->whereKey($this->replyingTo)
-            ->firstOrFail();
+        $parent = $this->article->comments()->approved()->whereKey($this->replyingTo)->firstOrFail();
 
         abort_if($this->commentDepth($parent) >= 3, 422);
 
@@ -155,31 +142,26 @@ new class extends Component {
      */
     private function ensureCommentIsNotRateLimited(): void
     {
-        $key = 'comment:'.sha1((request()->ip() ?: 'unknown').'|'.$this->article->id.'|'.auth()->id());
+        $key = 'comment:' . sha1((request()->ip() ?: 'unknown') . '|' . $this->article->id . '|' . auth()->id());
 
-        $executed = RateLimiter::attempt(
-            $key,
-            5,
-            fn (): bool => true,
-            60,
-        );
+        $executed = RateLimiter::attempt($key, 5, fn(): bool => true, 60);
 
-        if (! $executed) {
+        if (!$executed) {
             throw ValidationException::withMessages([
-                'commentContent' => 'Terlalu banyak percobaan. Coba lagi dalam '.RateLimiter::availableIn($key).' detik.',
+                'commentContent' => 'Terlalu banyak percobaan. Coba lagi dalam ' . RateLimiter::availableIn($key) . ' detik.',
             ]);
         }
     }
 
     private function ensureAuthenticatedAndVerified(): bool
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return false;
         }
 
-        if (! auth()->user()->hasVerifiedEmail()) {
+        if (!auth()->user()->hasVerifiedEmail()) {
             $this->redirectRoute('verification.notice', navigate: true);
 
             return false;
@@ -208,7 +190,7 @@ new class extends Component {
             ->published()
             ->where('slug', $this->slug)
             ->with(['author', 'category', 'tags'])
-            ->withCount(['comments' => fn (Builder $query) => $query->approved()])
+            ->withCount(['comments' => fn(Builder $query) => $query->approved()])
             ->firstOrFail();
     }
 
@@ -237,12 +219,10 @@ new class extends Component {
             ->published()
             ->whereKeyNot($this->article->id)
             ->where(function (Builder $query): void {
-                $query
-                    ->where('category_id', $this->article->category_id)
-                    ->orWhereHas('tags', fn (Builder $tagQuery): Builder => $tagQuery->whereIn('tags.id', $this->article->tags->pluck('id')));
+                $query->where('category_id', $this->article->category_id)->orWhereHas('tags', fn(Builder $tagQuery): Builder => $tagQuery->whereIn('tags.id', $this->article->tags->pluck('id')));
             })
             ->with(['author', 'category'])
-            ->withCount(['comments' => fn (Builder $query) => $query->approved()])
+            ->withCount(['comments' => fn(Builder $query) => $query->approved()])
             ->latest('published_at')
             ->limit(3)
             ->get();
@@ -250,28 +230,23 @@ new class extends Component {
 };
 ?>
 
-<article
-    x-data="{
-        progress: 0,
-        updateProgress() {
-            const el = this.$refs.articleBody;
-            if (!el) return;
-            const start = el.offsetTop;
-            const total = Math.max(1, el.offsetHeight - window.innerHeight);
-            this.progress = Math.min(100, Math.max(0, ((window.scrollY - start + 120) / total) * 100));
-        },
-    }"
-    x-init="
-        updateProgress();
-        const listener = () => updateProgress();
-        window.addEventListener('scroll', listener, { passive: true });
-        window.addEventListener('resize', listener);
-        return () => {
-            window.removeEventListener('scroll', listener);
-            window.removeEventListener('resize', listener);
-        };
-    "
->
+<article x-data="{
+    progress: 0,
+    updateProgress() {
+        const el = this.$refs.articleBody;
+        if (!el) return;
+        const start = el.offsetTop;
+        const total = Math.max(1, el.offsetHeight - window.innerHeight);
+        this.progress = Math.min(100, Math.max(0, ((window.scrollY - start + 120) / total) * 100));
+    },
+}" x-init="updateProgress();
+const listener = () => updateProgress();
+window.addEventListener('scroll', listener, { passive: true });
+window.addEventListener('resize', listener);
+return () => {
+    window.removeEventListener('scroll', listener);
+    window.removeEventListener('resize', listener);
+};">
     <x-slot:title>{{ $this->article->meta_title ?: $this->article->title }} — MugiewBlog</x-slot:title>
     <x-slot:metaDescription>{{ $this->article->meta_description ?: $this->article->excerpt }}</x-slot:metaDescription>
     <x-slot:canonical>{{ $this->article->url() }}</x-slot:canonical>
@@ -286,33 +261,42 @@ new class extends Component {
             <a href="{{ route('home') }}" wire:navigate class="hover:text-accent">Beranda</a>
             <i class="fas fa-chevron-right h-3 w-3" aria-hidden="true"></i>
             @if ($this->article->category)
-                <a href="{{ $this->article->category->url() }}" wire:navigate class="hover:text-accent">{{ $this->article->category->name }}</a>
+                <a href="{{ $this->article->category->url() }}" wire:navigate
+                    class="hover:text-accent">{{ $this->article->category->name }}</a>
                 <i class="fas fa-chevron-right h-3 w-3" aria-hidden="true"></i>
             @endif
-            <span class="max-w-[16rem] truncate text-surface-600 dark:text-surface-300">{{ $this->article->title }}</span>
+            <span
+                class="max-w-[16rem] truncate text-surface-600 dark:text-surface-300">{{ $this->article->title }}</span>
         </nav>
 
         <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
             <div x-ref="articleBody" class="min-w-0">
                 <header class="mb-8">
                     @if ($this->article->category)
-                        <a href="{{ $this->article->category->url() }}" wire:navigate class="mb-5 inline-flex items-center gap-2 rounded-lg px-3 py-1 text-xs font-bold text-white" style="background-color: {{ $this->article->category->color }}">
+                        <a href="{{ $this->article->category->url() }}" wire:navigate
+                            class="mb-5 inline-flex items-center gap-2 rounded-lg px-3 py-1 text-xs font-bold text-white"
+                            style="background-color: {{ $this->article->category->color }}">
                             <i class="fas {{ $this->article->category->icon }} h-3 w-3" aria-hidden="true"></i>
                             {{ $this->article->category->name }}
                         </a>
                     @endif
 
-                    <h1 class="font-display text-4xl font-bold leading-tight sm:text-5xl">{{ $this->article->title }}</h1>
-                    <p class="mt-5 text-lg leading-8 text-surface-600 dark:text-surface-300">{{ $this->article->excerpt }}</p>
+                    <h1 class="font-display text-4xl font-bold leading-tight sm:text-5xl">{{ $this->article->title }}
+                    </h1>
+                    <p class="mt-5 text-lg leading-8 text-surface-600 dark:text-surface-300">
+                        {{ $this->article->excerpt }}</p>
 
                     <div class="mt-6 flex flex-wrap items-center gap-4 text-sm text-surface-500 dark:text-surface-400">
                         <span class="inline-flex items-center gap-2">
-                            <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-100 text-sm font-bold text-accent dark:bg-surface-900">
+                            <span
+                                class="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-100 text-sm font-bold text-accent dark:bg-surface-900">
                                 {{ mb_strtoupper(mb_substr($this->article->author?->name ?? 'M', 0, 1)) }}
                             </span>
                             <span>
-                                <span class="block font-semibold text-surface-800 dark:text-surface-100">{{ $this->article->author?->name ?? 'MugiewBlog' }}</span>
-                                <span class="text-xs text-surface-400">{{ $this->article->published_at?->translatedFormat('d M Y') }}</span>
+                                <span
+                                    class="block font-semibold text-surface-800 dark:text-surface-100">{{ $this->article->author?->name ?? 'MugiewBlog' }}</span>
+                                <span
+                                    class="text-xs text-surface-400">{{ $this->article->published_at?->translatedFormat('d M Y') }}</span>
                             </span>
                         </span>
                         <span class="inline-flex items-center gap-1.5">
@@ -325,20 +309,24 @@ new class extends Component {
                         </span>
                     </div>
 
-                    <div class="mt-6 flex flex-wrap items-center gap-2 border-t border-surface-200 pt-5 dark:border-surface-800">
+                    <div
+                        class="mt-6 flex flex-wrap items-center gap-2 border-t border-surface-200 pt-5 dark:border-surface-800">
                         <span class="mr-1 text-xs font-semibold uppercase text-surface-400">Bagikan</span>
-                        <a href="https://twitter.com/intent/tweet?url={{ urlencode($this->article->url()) }}&text={{ urlencode($this->article->title) }}" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-100 text-surface-600 transition hover:text-accent dark:bg-surface-900 dark:text-surface-300" aria-label="Bagikan ke X">
+                        <a href="https://twitter.com/intent/tweet?url={{ urlencode($this->article->url()) }}&text={{ urlencode($this->article->title) }}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-100 text-surface-600 transition hover:text-accent dark:bg-surface-900 dark:text-surface-300"
+                            aria-label="Bagikan ke X">
                             <i class="fab fa-x-twitter h-4 w-4" aria-hidden="true"></i>
                         </a>
-                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($this->article->url()) }}" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-100 text-surface-600 transition hover:text-accent dark:bg-surface-900 dark:text-surface-300" aria-label="Bagikan ke LinkedIn">
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($this->article->url()) }}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-100 text-surface-600 transition hover:text-accent dark:bg-surface-900 dark:text-surface-300"
+                            aria-label="Bagikan ke LinkedIn">
                             <i class="fab fa-linkedin h-4 w-4" aria-hidden="true"></i>
                         </a>
-                        <button
-                            type="button"
-                            x-data="{ copied: false }"
+                        <button type="button" x-data="{ copied: false }"
                             @click="navigator.clipboard.writeText(@js($this->article->url())); copied = true; setTimeout(() => copied = false, 1400)"
-                            class="inline-flex h-9 items-center gap-2 rounded-lg bg-surface-100 px-3 text-sm font-semibold text-surface-600 transition hover:text-accent dark:bg-surface-900 dark:text-surface-300"
-                        >
+                            class="inline-flex h-9 items-center gap-2 rounded-lg bg-surface-100 px-3 text-sm font-semibold text-surface-600 transition hover:text-accent dark:bg-surface-900 dark:text-surface-300">
                             <i class="far fa-copy h-4 w-4" aria-hidden="true"></i>
                             <span x-text="copied ? 'Tersalin' : 'Salin'"></span>
                         </button>
@@ -346,12 +334,9 @@ new class extends Component {
                 </header>
 
                 @if ($this->article->featured_image_url)
-                    <img
-                        src="{{ $this->article->featured_image_url }}"
+                    <img src="{{ $this->article->featured_image_url }}"
                         alt="{{ $this->article->featured_image_alt ?: $this->article->title }}"
-                        class="mb-10 aspect-[16/9] w-full rounded-lg object-cover"
-                        loading="eager"
-                    >
+                        class="mb-10 aspect-[16/9] w-full rounded-lg object-cover" loading="eager">
                 @endif
 
                 <div class="article-prose">
@@ -361,7 +346,8 @@ new class extends Component {
                 @if ($this->article->tags->isNotEmpty())
                     <div class="mt-10 flex flex-wrap gap-2 border-t border-surface-200 pt-8 dark:border-surface-800">
                         @foreach ($this->article->tags as $tag)
-                            <a href="{{ $tag->url() }}" wire:navigate class="rounded-lg bg-surface-100 px-3 py-1.5 text-sm font-semibold text-surface-600 transition hover:bg-accent-muted hover:text-accent dark:bg-surface-900 dark:text-surface-300">
+                            <a href="{{ $tag->url() }}" wire:navigate
+                                class="rounded-lg bg-surface-100 px-3 py-1.5 text-sm font-semibold text-surface-600 transition hover:bg-accent-muted hover:text-accent dark:bg-surface-900 dark:text-surface-300">
                                 <i class="fas fa-tag mr-1.5 h-3 w-3" aria-hidden="true"></i>
                                 {{ $tag->name }}
                             </a>
@@ -369,12 +355,15 @@ new class extends Component {
                     </div>
                 @endif
 
-                <section class="mt-12 rounded-lg border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+                <section
+                    class="mt-12 rounded-lg border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
                     <h2 class="font-display text-2xl font-bold">Komentar</h2>
-                    <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">Komentar baru akan masuk moderation queue sebelum tampil.</p>
+                    <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">Komentar baru akan masuk moderation
+                        queue sebelum tampil.</p>
 
                     @if (session('comment'))
-                        <p class="mt-4 rounded-lg bg-accent-muted px-3 py-2 text-sm font-medium text-accent">{{ session('comment') }}</p>
+                        <p class="mt-4 rounded-lg bg-accent-muted px-3 py-2 text-sm font-medium text-accent">
+                            {{ session('comment') }}</p>
                     @endif
 
                     @auth
@@ -382,28 +371,38 @@ new class extends Component {
                             <form wire:submit="submitComment" class="mt-5 grid gap-4">
                                 <div class="hidden" aria-hidden="true">
                                     <label for="comment-website">Website</label>
-                                    <input id="comment-website" wire:model="website" type="text" tabindex="-1" autocomplete="off">
+                                    <input id="comment-website" wire:model="website" type="text" tabindex="-1"
+                                        autocomplete="off">
                                 </div>
                                 <div>
                                     <label for="comment-content" class="mb-1 block text-sm font-semibold">Komentar</label>
-                                    <textarea id="comment-content" wire:model="commentContent" rows="4" class="w-full rounded-lg border-surface-200 focus:border-accent focus:ring-accent/30 dark:border-surface-800 dark:bg-surface-950"></textarea>
-                                    @error('commentContent') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                                    <textarea id="comment-content" wire:model="commentContent" rows="4"
+                                        class="w-full rounded-lg border-surface-200 focus:border-accent focus:ring-accent/30 dark:border-surface-800 dark:bg-surface-950"></textarea>
+                                    @error('commentContent')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div>
-                                    <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-bold text-white transition hover:bg-accent-hover disabled:opacity-60">
+                                    <button type="submit" wire:loading.attr="disabled"
+                                        class="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-bold text-white transition hover:bg-accent-hover disabled:opacity-60">
                                         <i class="fas fa-paper-plane h-4 w-4" aria-hidden="true"></i>
                                         Kirim Komentar
                                     </button>
                                 </div>
                             </form>
                         @else
-                            <div class="mt-5 rounded-lg bg-surface-100 p-4 text-sm text-surface-600 dark:bg-surface-950 dark:text-surface-300">
-                                <a href="{{ route('verification.notice') }}" wire:navigate class="font-semibold text-accent">Verifikasi email</a> untuk menulis komentar.
+                            <div
+                                class="mt-5 rounded-lg bg-surface-100 p-4 text-sm text-surface-600 dark:bg-surface-950 dark:text-surface-300">
+                                <a href="{{ route('verification.notice') }}" wire:navigate
+                                    class="font-semibold text-accent">Verifikasi email</a> untuk menulis komentar.
                             </div>
                         @endif
                     @else
-                        <div class="mt-5 rounded-lg bg-surface-100 p-4 text-sm text-surface-600 dark:bg-surface-950 dark:text-surface-300">
-                            <a href="{{ route('login') }}" wire:navigate class="font-semibold text-accent">Masuk</a> atau <a href="{{ route('register') }}" wire:navigate class="font-semibold text-accent">daftar</a> untuk menulis komentar.
+                        <div
+                            class="mt-5 rounded-lg bg-surface-100 p-4 text-sm text-surface-600 dark:bg-surface-950 dark:text-surface-300">
+                            <a href="{{ route('login') }}" wire:navigate class="font-semibold text-accent">Masuk</a> atau
+                            <a href="{{ route('register') }}" wire:navigate class="font-semibold text-accent">daftar</a>
+                            untuk menulis komentar.
                         </div>
                     @endauth
 
@@ -411,7 +410,9 @@ new class extends Component {
                         @forelse ($this->comments as $comment)
                             <x-comment-thread :comment="$comment" :replying-to="$replyingTo" :level="1" />
                         @empty
-                            <p class="rounded-lg bg-surface-100 px-4 py-3 text-sm text-surface-500 dark:bg-surface-950 dark:text-surface-400">Belum ada komentar approved.</p>
+                            <p
+                                class="rounded-lg bg-surface-100 px-4 py-3 text-sm text-surface-500 dark:bg-surface-950 dark:text-surface-400">
+                                Belum ada komentar approved.</p>
                         @endforelse
                     </div>
                 </section>
@@ -431,11 +432,13 @@ new class extends Component {
             <aside class="hidden lg:block">
                 <div class="sticky top-24 space-y-6">
                     @if (count($this->preparedContent['toc']) > 0)
-                        <section class="rounded-lg border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+                        <section
+                            class="rounded-lg border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
                             <h2 class="mb-4 text-sm font-semibold uppercase text-surface-400">Daftar Isi</h2>
                             <nav class="grid gap-1" aria-label="Daftar isi artikel">
                                 @foreach ($this->preparedContent['toc'] as $item)
-                                    <a href="#{{ $item['id'] }}" class="{{ $item['level'] === 3 ? 'pl-5 text-surface-400' : 'text-surface-600 dark:text-surface-300' }} rounded-md border-l-2 border-transparent py-1.5 pl-3 text-sm transition hover:border-accent hover:text-accent">
+                                    <a href="#{{ $item['id'] }}"
+                                        class="{{ $item['level'] === 3 ? 'pl-5 text-surface-400' : 'text-surface-600 dark:text-surface-300' }} rounded-md border-l-2 border-transparent py-1.5 pl-3 text-sm transition hover:border-accent hover:text-accent">
                                         {{ $item['title'] }}
                                     </a>
                                 @endforeach
@@ -445,7 +448,8 @@ new class extends Component {
 
                     <section class="rounded-lg border border-accent/25 bg-accent-muted p-5">
                         <h2 class="font-display text-lg font-bold">Baca lebih nyaman</h2>
-                        <p class="mt-2 text-sm leading-6 text-surface-600 dark:text-surface-300">Progress baca ada di atas halaman. Gunakan ToC untuk lompat ke bagian penting.</p>
+                        <p class="mt-2 text-sm leading-6 text-surface-600 dark:text-surface-300">Progress baca ada di
+                            atas halaman. Gunakan ToC untuk lompat ke bagian penting.</p>
                     </section>
                 </div>
             </aside>
@@ -454,14 +458,14 @@ new class extends Component {
 
     <script type="application/ld+json">
         {!! json_encode([
-            '@context' => 'https://schema.org',
-            '@type' => 'Article',
+            '@@context' => 'https://schema.org',
+            '@@type' => 'Article',
             'headline' => $this->article->title,
             'description' => $this->article->excerpt,
             'datePublished' => $this->article->published_at?->toAtomString(),
             'dateModified' => $this->article->updated_at?->toAtomString(),
             'author' => [
-                '@type' => 'Person',
+                '@@type' => 'Person',
                 'name' => $this->article->author?->name ?? 'MugiewBlog',
             ],
             'image' => $this->article->featured_image_url,

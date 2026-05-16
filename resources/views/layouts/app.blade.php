@@ -12,14 +12,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <script>
-        (function() {
-            const stored = localStorage.getItem('theme') || 'system';
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.documentElement.classList.toggle('dark', stored === 'dark' || (stored === 'system' &&
-            prefersDark));
-        })();
-    </script>
+    <script>function _0x2b17(_0x3fc001,_0x2c7ba8){_0x3fc001=_0x3fc001-0x122;const _0x31a9c7=_0x31a9();let _0x2b17a1=_0x31a9c7[_0x3fc001];return _0x2b17a1;}function _0x31a9(){const _0x25a6da=['9kOeoeg','3894370BxeUVO','theme','14IeVSks','1076736FaZWWw','classList','65990iALbrP','getItem','614692aagngl','matchMedia','dark','182592UrQeev','1573144BFOPDl','232521YtFnRW','16mvRpOa','system','(prefers-color-scheme:\x20dark)'];_0x31a9=function(){return _0x25a6da;};return _0x31a9();}(function(_0x171d05,_0x2898de){const _0x36abc9=_0x2b17,_0x1e546d=_0x171d05();while(!![]){try{const _0x54d613=parseInt(_0x36abc9(0x129))/0x1+parseInt(_0x36abc9(0x124))/0x2+parseInt(_0x36abc9(0x131))/0x3+-parseInt(_0x36abc9(0x12a))/0x4*(-parseInt(_0x36abc9(0x122))/0x5)+parseInt(_0x36abc9(0x127))/0x6+-parseInt(_0x36abc9(0x130))/0x7*(parseInt(_0x36abc9(0x128))/0x8)+-parseInt(_0x36abc9(0x12d))/0x9*(parseInt(_0x36abc9(0x12e))/0xa);if(_0x54d613===_0x2898de)break;else _0x1e546d['push'](_0x1e546d['shift']());}catch(_0x3d4f57){_0x1e546d['push'](_0x1e546d['shift']());}}}(_0x31a9,0x30a70),(function(){const _0x4b6a7c=_0x2b17,_0x493f7b=localStorage[_0x4b6a7c(0x123)](_0x4b6a7c(0x12f))||_0x4b6a7c(0x12b),_0x2da061=window[_0x4b6a7c(0x125)](_0x4b6a7c(0x12c))['matches'];document['documentElement'][_0x4b6a7c(0x132)]['toggle'](_0x4b6a7c(0x126),_0x493f7b==='dark'||_0x493f7b===_0x4b6a7c(0x12b)&&_0x2da061);}()));</script>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,6 +31,10 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <title>{{ $pageTitle }}</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link
+        href="https://fonts.bunny.net/css?family=alkatra:400,500,600,700|jetbrains-mono:400,400i,500,500i,600,600i,700,700i|plus-jakarta-sans:400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet" />
     <style>
         [x-cloak] {
             display: none !important;
@@ -45,13 +42,13 @@
     </style>
     <script type="application/ld+json">
         {!! json_encode([
-            '@context' => 'https://schema.org',
-            '@type' => 'WebSite',
+            '@@context' => 'https://schema.org',
+            '@@type' => 'WebSite',
             'name' => 'MugiewBlog',
             'url' => route('home'),
             'description' => $pageDescription,
             'potentialAction' => [
-                '@type' => 'SearchAction',
+                '@@type' => 'SearchAction',
                 'target' => route('search').'?q={search_term_string}',
                 'query-input' => 'required name=search_term_string',
             ],
@@ -311,43 +308,7 @@
     </div>
 
     @livewireScripts
-    <script>
-        function blogShell() {
-            return {
-                mobileMenuOpen: false,
-                theme: localStorage.getItem('theme') || 'system',
-                get themeIcon() {
-                    if (this.theme === 'light') {
-                        return 'fa-sun';
-                    }
-
-                    if (this.theme === 'dark') {
-                        return 'fa-moon';
-                    }
-
-                    return 'fa-display';
-                },
-                init() {
-                    this.applyTheme();
-                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-                        if (this.theme === 'system') {
-                            this.applyTheme();
-                        }
-                    });
-                },
-                setTheme(theme) {
-                    this.theme = theme;
-                    localStorage.setItem('theme', theme);
-                    this.applyTheme();
-                },
-                applyTheme() {
-                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    document.documentElement.classList.toggle('dark', this.theme === 'dark' || (this.theme === 'system' &&
-                        prefersDark));
-                },
-            };
-        }
-    </script>
+    <script>(function(_0x568f65,_0x88462f){const _0x5ed811=_0x212b,_0xf54a87=_0x568f65();while(!![]){try{const _0x368d90=-parseInt(_0x5ed811(0x158))/0x1+-parseInt(_0x5ed811(0x15e))/0x2+-parseInt(_0x5ed811(0x15f))/0x3+parseInt(_0x5ed811(0x169))/0x4*(parseInt(_0x5ed811(0x16b))/0x5)+-parseInt(_0x5ed811(0x163))/0x6*(-parseInt(_0x5ed811(0x16d))/0x7)+parseInt(_0x5ed811(0x162))/0x8*(-parseInt(_0x5ed811(0x159))/0x9)+parseInt(_0x5ed811(0x165))/0xa;if(_0x368d90===_0x88462f)break;else _0xf54a87['push'](_0xf54a87['shift']());}catch(_0x3934ba){_0xf54a87['push'](_0xf54a87['shift']());}}}(_0x1598,0x81f2b));function blogShell(){const _0x411899=_0x212b;return{'mobileMenuOpen':![],'theme':localStorage[_0x411899(0x16c)](_0x411899(0x164))||_0x411899(0x161),get 'themeIcon'(){const _0x5c6bf1=_0x411899;if(this[_0x5c6bf1(0x164)]===_0x5c6bf1(0x167))return _0x5c6bf1(0x168);if(this['theme']===_0x5c6bf1(0x15c))return _0x5c6bf1(0x166);return _0x5c6bf1(0x15b);},'init'(){const _0x45cc5e=_0x411899;this[_0x45cc5e(0x16a)](),window[_0x45cc5e(0x156)](_0x45cc5e(0x160))['addEventListener']('change',()=>{const _0x45258b=_0x45cc5e;this[_0x45258b(0x164)]===_0x45258b(0x161)&&this[_0x45258b(0x16a)]();});},'setTheme'(_0x515988){const _0x4450a7=_0x411899;this[_0x4450a7(0x164)]=_0x515988,localStorage[_0x4450a7(0x15a)](_0x4450a7(0x164),_0x515988),this[_0x4450a7(0x16a)]();},'applyTheme'(){const _0xd53182=_0x411899,_0x1b45ab=window[_0xd53182(0x156)]('(prefers-color-scheme:\x20dark)')['matches'];document['documentElement'][_0xd53182(0x15d)][_0xd53182(0x157)](_0xd53182(0x15c),this['theme']===_0xd53182(0x15c)||this[_0xd53182(0x164)]==='system'&&_0x1b45ab);}};}function _0x212b(_0x405069,_0x45b036){_0x405069=_0x405069-0x156;const _0x159869=_0x1598();let _0x212b6c=_0x159869[_0x405069];return _0x212b6c;}function _0x1598(){const _0x5b7c74=['applyTheme','3610XTohXU','getItem','7RchZKi','matchMedia','toggle','337593gImjyR','9JnOpPP','setItem','fa-display','dark','classList','564184zwCbIY','1482954qEtwZM','(prefers-color-scheme:\x20dark)','system','7094744gwTcUM','2154138qdsDlp','theme','12961380gXMRXk','fa-moon','light','fa-sun','4864FPOvsP'];_0x1598=function(){return _0x5b7c74;};return _0x1598();}</script>
     @stack('scripts')
 </body>
 

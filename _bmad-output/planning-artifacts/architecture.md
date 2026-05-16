@@ -1,4 +1,5 @@
 # Architecture Document
+
 ## MugiewBlog — Technical Architecture & Design Decisions
 
 **Version:** 1.0.0  
@@ -9,6 +10,7 @@
 ---
 
 ## Table of Contents
+
 1. [Architecture Overview](#1-architecture-overview)
 2. [Technology Decisions](#2-technology-decisions)
 3. [Database Design](#3-database-design)
@@ -30,7 +32,9 @@
 ## 1. Architecture Overview
 
 ### 1.1 Architectural Style
+
 **Monolith with service layer** — Single Laravel application with clear separation:
+
 - **Livewire SPA** for public-facing frontend
 - **Filament 5** for admin panel
 - **Service classes** for business logic (not fat controllers/models)
@@ -49,17 +53,17 @@ Request → FrankenPHP (Caddy) → Laravel Octane Worker (in-memory)
 
 ### 1.3 Directory Convention (Key Decisions)
 
-| Directory | Purpose |
-|---|---|
-| `app/Services/` | Business logic (ArticleService, SearchService, etc.) |
-| `app/Livewire/Pages/` | Full-page Livewire components (SPA routes) |
-| `app/Livewire/Layouts/` | SPA layout shell |
-| `app/Livewire/Components/` | Reusable UI components |
-| `app/Filament/Resources/` | Admin CRUD resources |
-| `app/Enums/` | PHP 8.5 typed enums |
-| `app/Events/` | Domain events |
-| `app/Jobs/` | Queue jobs |
-| `app/Policies/` | Laravel authorization policies |
+| Directory                  | Purpose                                              |
+| -------------------------- | ---------------------------------------------------- |
+| `app/Services/`            | Business logic (ArticleService, SearchService, etc.) |
+| `app/Livewire/Pages/`      | Full-page Livewire components (SPA routes)           |
+| `app/Livewire/Layouts/`    | SPA layout shell                                     |
+| `app/Livewire/Components/` | Reusable UI components                               |
+| `app/Filament/Resources/`  | Admin CRUD resources                                 |
+| `app/Enums/`               | PHP 8.5 typed enums                                  |
+| `app/Events/`              | Domain events                                        |
+| `app/Jobs/`                | Queue jobs                                           |
+| `app/Policies/`            | Laravel authorization policies                       |
 
 ---
 
@@ -67,25 +71,26 @@ Request → FrankenPHP (Caddy) → Laravel Octane Worker (in-memory)
 
 ### 2.1 Why Laravel 13 + PHP 8.5
 
-| Decision | Rationale |
-|---|---|
-| **PHP 8.5 Pipe Operator** | `|>` enables readable data transformation pipelines |
-| **`clone with`** | Immutable updates for DTOs and value objects |
-| **`#[\NoDiscard]`** | Compile-time enforcement for methods whose return values must be consumed |
-| **Asymmetric visibility** | `public private(set)` for read-only from outside, writable internally |
-| **Typed class constants** | Type-safe constants on Enums and config classes |
+| Decision                  | Rationale                                                                 |
+| ------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
+| **PHP 8.5 Pipe Operator** | `                                                                         | >` enables readable data transformation pipelines |
+| **`clone with`**          | Immutable updates for DTOs and value objects                              |
+| **`#[\NoDiscard]`**       | Compile-time enforcement for methods whose return values must be consumed |
+| **Asymmetric visibility** | `public private(set)` for read-only from outside, writable internally     |
+| **Typed class constants** | Type-safe constants on Enums and config classes                           |
 
 ### 2.2 Why Livewire 4 SPA (not Inertia.js)
 
-| Livewire 4 | Inertia.js |
-|---|---|
-| No JS framework dependency (no Vue/React) | Requires Vue/React/Svelte |
-| Server-rendered, SEO-friendly by default | Needs SSR setup for SEO |
-| Native Laravel ecosystem | Sits between Laravel and JS |
-| View-based components (`.blade.php`) | JS component files |
-| Islands architecture for partial updates | Full page hydration |
+| Livewire 4                                | Inertia.js                  |
+| ----------------------------------------- | --------------------------- |
+| No JS framework dependency (no Vue/React) | Requires Vue/React/Svelte   |
+| Server-rendered, SEO-friendly by default  | Needs SSR setup for SEO     |
+| Native Laravel ecosystem                  | Sits between Laravel and JS |
+| View-based components (`.blade.php`)      | JS component files          |
+| Islands architecture for partial updates  | Full page hydration         |
 
 **Decision:** Livewire 4 SPA dipilih karena:
+
 1. Semua state di server — lebih aman
 2. SEO out-of-the-box tanpa SSR setup
 3. Satu bahasa (PHP) untuk full stack
@@ -94,13 +99,13 @@ Request → FrankenPHP (Caddy) → Laravel Octane Worker (in-memory)
 
 ### 2.3 Why Filament 5 (not Nova or custom)
 
-| Filament 5 | Laravel Nova |
-|---|---|
-| Free & open source | Paid ($199/site) |
-| Livewire-native | Vue-based |
-| Extensible plugin ecosystem | Limited plugins |
-| Filament Blueprint for AI generation | None |
-| Community-driven, aktif | Laravel team maintained |
+| Filament 5                           | Laravel Nova            |
+| ------------------------------------ | ----------------------- |
+| Free & open source                   | Paid ($199/site)        |
+| Livewire-native                      | Vue-based               |
+| Extensible plugin ecosystem          | Limited plugins         |
+| Filament Blueprint for AI generation | None                    |
+| Community-driven, aktif              | Laravel team maintained |
 
 ### 2.4 Why FrankenPHP Worker Mode
 
@@ -189,6 +194,7 @@ Series (1) ──────< SeriesArticle (N) >── Article (1)
 ### 3.2 Complete Migration Schema
 
 #### 3.2.1 users
+
 ```php
 Schema::create('users', function (Blueprint $table) {
     $table->id();
@@ -209,13 +215,14 @@ Schema::create('users', function (Blueprint $table) {
     $table->rememberToken();
     $table->timestamps();
     $table->softDeletes();
-    
+
     $table->index('role');
     $table->index('is_active');
 });
 ```
 
 #### 3.2.2 categories
+
 ```php
 Schema::create('categories', function (Blueprint $table) {
     $table->id();
@@ -225,13 +232,14 @@ Schema::create('categories', function (Blueprint $table) {
     $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
     $table->integer('sort_order')->default(0);
     $table->timestamps();
-    
+
     $table->index('parent_id');
     $table->index('sort_order');
 });
 ```
 
 #### 3.2.3 tags
+
 ```php
 Schema::create('tags', function (Blueprint $table) {
     $table->id();
@@ -242,6 +250,7 @@ Schema::create('tags', function (Blueprint $table) {
 ```
 
 #### 3.2.4 articles
+
 ```php
 Schema::create('articles', function (Blueprint $table) {
     $table->id();
@@ -263,7 +272,7 @@ Schema::create('articles', function (Blueprint $table) {
     $table->boolean('is_featured')->default(false);
     $table->timestamps();
     $table->softDeletes();
-    
+
     $table->index('status');
     $table->index('published_at');
     $table->index('category_id');
@@ -273,6 +282,7 @@ Schema::create('articles', function (Blueprint $table) {
 ```
 
 #### 3.2.5 taggables (polymorphic)
+
 ```php
 Schema::create('taggables', function (Blueprint $table) {
     $table->id();
@@ -283,6 +293,7 @@ Schema::create('taggables', function (Blueprint $table) {
 ```
 
 #### 3.2.6 comments
+
 ```php
 Schema::create('comments', function (Blueprint $table) {
     $table->id();
@@ -294,7 +305,7 @@ Schema::create('comments', function (Blueprint $table) {
     $table->string('ip_address', 45)->nullable();
     $table->text('user_agent')->nullable();
     $table->timestamps();
-    
+
     $table->index('status');
     $table->index('parent_id');
     $table->index(['article_id', 'status']);
@@ -302,6 +313,7 @@ Schema::create('comments', function (Blueprint $table) {
 ```
 
 #### 3.2.7 media
+
 ```php
 Schema::create('media', function (Blueprint $table) {
     $table->id();
@@ -318,18 +330,20 @@ Schema::create('media', function (Blueprint $table) {
 ```
 
 #### 3.2.8 bookmarks
+
 ```php
 Schema::create('bookmarks', function (Blueprint $table) {
     $table->id();
     $table->foreignId('user_id')->constrained()->cascadeOnDelete();
     $table->foreignId('article_id')->constrained()->cascadeOnDelete();
     $table->timestamps();
-    
+
     $table->unique(['user_id', 'article_id']);
 });
 ```
 
 #### 3.2.9 series
+
 ```php
 Schema::create('series', function (Blueprint $table) {
     $table->id();
@@ -345,12 +359,13 @@ Schema::create('series_articles', function (Blueprint $table) {
     $table->foreignId('article_id')->constrained()->cascadeOnDelete();
     $table->integer('sort_order')->default(0);
     $table->timestamps();
-    
+
     $table->unique(['series_id', 'article_id']);
 });
 ```
 
 #### 3.2.10 newsletter_subscribers
+
 ```php
 Schema::create('newsletter_subscribers', function (Blueprint $table) {
     $table->id();
@@ -500,7 +515,7 @@ Article List:
   → author (user), category, tags, comments_count
 
 Article Detail:
-  → author (user), category, tags, 
+  → author (user), category, tags,
   → comments (nested: user, replies.user),
   → relatedPosts (limit 3, published)
 
@@ -582,6 +597,7 @@ Route::get('/feed', [App\Http\Controllers\SeoController::class, 'feed']);
 ### 5.3 Key Livewire Patterns
 
 #### Lazy Loading (Performance)
+
 ```php
 // Components that can load after initial render
 #[Lazy]
@@ -592,6 +608,7 @@ final class CommentSection extends Component
 ```
 
 #### Optimistic UI (Bookmarks)
+
 ```php
 final class BookmarkButton extends Component
 {
@@ -601,7 +618,7 @@ final class BookmarkButton extends Component
     {
         // Optimistic update first
         $this->dispatch('bookmark-toggled');
-        
+
         // Then persist
         auth()->user()->bookmarks()->toggle($this->article);
     }
@@ -609,6 +626,7 @@ final class BookmarkButton extends Component
 ```
 
 #### Islands Pattern (Independent Updates)
+
 ```php
 // Components that update independently without re-rendering parent
 #[Island]
@@ -679,7 +697,7 @@ final class ArticleResource extends Resource
         return $form->schema([
             Section::make('Content')->schema([
                 TextInput::make('title')->required()->live(onBlur: true)
-                    ->afterStateUpdated(fn ($state, $set) => 
+                    ->afterStateUpdated(fn ($state, $set) =>
                         $set('slug', Str::slug($state))),
                 TextInput::make('slug')->required()->unique(ignoreRecord: true),
                 Textarea::make('excerpt')->rows(3)->autosize(),
@@ -694,7 +712,7 @@ final class ArticleResource extends Resource
                     ->multiple()
                     ->createOptionForm([...]),
             ])->columns(1),
-            
+
             Section::make('Media')->schema([
                 FileUpload::make('featured_image')
                     ->image()
@@ -702,7 +720,7 @@ final class ArticleResource extends Resource
                     ->imageEditor()
                     ->optimize('webp'),
             ]),
-            
+
             Section::make('Publishing')->schema([
                 Select::make('status')
                     ->options(ArticleStatus::class)
@@ -712,7 +730,7 @@ final class ArticleResource extends Resource
                     ->visible(fn ($get) => $get('status') === 'scheduled'),
                 Toggle::make('is_featured'),
             ]),
-            
+
             Section::make('SEO')->schema([
                 TextInput::make('meta_title')
                     ->maxLength(60)
@@ -762,13 +780,13 @@ final class ArticleResource extends Resource
 
 ### 6.3 Dashboard Widgets
 
-| Widget | Type | Data Source |
-|---|---|---|
-| StatsOverview | StatsWidget | Total articles, published, pending comments, users |
-| ArticlesChart | ChartWidget | Articles published per month (6 months) |
-| CommentsChart | ChartWidget | Comments per month |
-| RecentArticles | TableWidget | Last 5 articles |
-| PendingComments | TableWidget | Comments awaiting moderation |
+| Widget          | Type        | Data Source                                        |
+| --------------- | ----------- | -------------------------------------------------- |
+| StatsOverview   | StatsWidget | Total articles, published, pending comments, users |
+| ArticlesChart   | ChartWidget | Articles published per month (6 months)            |
+| CommentsChart   | ChartWidget | Comments per month                                 |
+| RecentArticles  | TableWidget | Last 5 articles                                    |
+| PendingComments | TableWidget | Comments awaiting moderation                       |
 
 ---
 
@@ -839,17 +857,17 @@ Laravel 13 provides native Passkey support via:
 
 ### 8.1 Cache Strategy Matrix
 
-| Data | Cache Key | TTL | Tag | Invalidation Trigger |
-|---|---|---|---|---|
-| Homepage (paginated) | `articles.paginated.{page}.{category?}` | 30 min | `articles` | Article CRUD, category change |
-| Article detail | `articles.show.{slug}` | 60 min | `articles` | Article update/delete |
-| Related posts | `articles.related.{id}` | 60 min | `articles` | Article update/delete |
-| Categories (all) | `categories.all` | 24 hr | `categories` | Category CRUD |
-| Tags (all) | `tags.all` | 24 hr | `tags` | Tag CRUD |
-| Sitemap | `sitemap.xml` | 24 hr | — | Article publish/unpublish |
-| RSS Feed | `rss.feed` | 1 hr | `articles` | Article publish |
-| User profile | `user.{id}.profile` | 30 min | — | Profile update |
-| Trending articles | `articles.trending` | 1 hr | `articles` | View count update |
+| Data                 | Cache Key                               | TTL    | Tag          | Invalidation Trigger          |
+| -------------------- | --------------------------------------- | ------ | ------------ | ----------------------------- |
+| Homepage (paginated) | `articles.paginated.{page}.{category?}` | 30 min | `articles`   | Article CRUD, category change |
+| Article detail       | `articles.show.{slug}`                  | 60 min | `articles`   | Article update/delete         |
+| Related posts        | `articles.related.{id}`                 | 60 min | `articles`   | Article update/delete         |
+| Categories (all)     | `categories.all`                        | 24 hr  | `categories` | Category CRUD                 |
+| Tags (all)           | `tags.all`                              | 24 hr  | `tags`       | Tag CRUD                      |
+| Sitemap              | `sitemap.xml`                           | 24 hr  | —            | Article publish/unpublish     |
+| RSS Feed             | `rss.feed`                              | 1 hr   | `articles`   | Article publish               |
+| User profile         | `user.{id}.profile`                     | 30 min | —            | Profile update                |
+| Trending articles    | `articles.trending`                     | 1 hr   | `articles`   | View count update             |
 
 ### 8.2 Cache Implementation
 
@@ -859,12 +877,12 @@ final class ArticleService
     public function getPaginated(int $page = 1, ?string $category = null): LengthAwarePaginator
     {
         $cacheKey = "articles.paginated.{$page}." . ($category ?? 'all');
-        
+
         return Cache::tags(['articles'])->remember(
             $cacheKey,
             now()->addMinutes(30),
             fn () => Article::published()
-                ->when($category, fn ($q) => $q->whereHas('category', 
+                ->when($category, fn ($q) => $q->whereHas('category',
                     fn ($q) => $q->where('slug', $category)))
                 ->with(['author', 'category', 'tags'])
                 ->withCount('comments')
@@ -918,6 +936,7 @@ final class ArticleObserver
 ### 9.1 Search Strategy
 
 **Phase 1 (MVP): MySQL FULLTEXT Search**
+
 - Native MySQL `MATCH ... AGAINST` via Eloquent
 - Index pada `title`, `excerpt`, `content_md`
 - Boolean mode untuk operator AND/OR
@@ -941,6 +960,7 @@ final class SearchService
 ```
 
 **Phase 2 (Future): Laravel Scout + Meilisearch**
+
 - Typo-tolerant search
 - Faceted filtering (kategori, tag, author)
 - Instant search (as-you-type)
@@ -953,9 +973,9 @@ final class SearchBar extends Component
 {
     #[Locked]
     public string $query = '';
-    
+
     public array $results = [];
-    
+
     // Debounced search (300ms after last keystroke)
     #[On('search-updated')]
     public function search(): void
@@ -964,7 +984,7 @@ final class SearchBar extends Component
             $this->results = [];
             return;
         }
-        
+
         $this->results = app(SearchService::class)
             ->quickSearch($this->query)
             ->take(5)
@@ -1010,11 +1030,11 @@ final class ArticleShow extends Component
 ```blade
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "Article",
+  "@@context": "https://schema.org",
+  "@@type": "Article",
   "headline": "{{ $article->title }}",
   "author": {
-    "@type": "Person",
+    "@@type": "Person",
     "name": "{{ $article->author->name }}"
   },
   "datePublished": "{{ $article->published_at->toIso8601String() }}",
@@ -1036,7 +1056,7 @@ final class SeoService
         return Cache::remember('sitemap.xml', now()->addDay(), function () {
             $articles = Article::published()->get(['slug', 'updated_at']);
             $categories = Category::all(['slug', 'updated_at']);
-            
+
             return view('seo.sitemap', compact('articles', 'categories'))->render();
         });
     }
@@ -1049,7 +1069,7 @@ final class SeoService
                 ->latest('published_at')
                 ->limit(20)
                 ->get();
-            
+
             return response()->view('seo.feed', compact('articles'))
                 ->header('Content-Type', 'application/rss+xml');
         });
@@ -1069,7 +1089,7 @@ final class SecurityHeadersMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
-        
+
         return $response->withHeaders([
             'X-Frame-Options' => 'DENY',
             'X-Content-Type-Options' => 'nosniff',
@@ -1097,23 +1117,23 @@ final class SecurityHeadersMiddleware
 
 ```php
 // In RouteServiceProvider or bootstrap/app.php
-RateLimiter::for('login', fn (Request $request) => 
+RateLimiter::for('login', fn (Request $request) =>
     Limit::perMinute(5)->by($request->ip() . '|' . $request->input('email'))
 );
 
-RateLimiter::for('register', fn (Request $request) => 
+RateLimiter::for('register', fn (Request $request) =>
     Limit::perHour(3)->by($request->ip())
 );
 
-RateLimiter::for('search', fn (Request $request) => 
+RateLimiter::for('search', fn (Request $request) =>
     Limit::perMinute(30)->by($request->ip())
 );
 
-RateLimiter::for('comment', fn (Request $request) => 
+RateLimiter::for('comment', fn (Request $request) =>
     Limit::perMinute(5)->by($request->user()?->id ?: $request->ip())
 );
 
-RateLimiter::for('api', fn (Request $request) => 
+RateLimiter::for('api', fn (Request $request) =>
     Limit::perMinute(60)->by($request->user()?->id ?: $request->ip())
 );
 ```
@@ -1139,12 +1159,12 @@ FileUpload::make('featured_image')
 
 ### 12.1 Job Categories
 
-| Queue | Jobs | Priority |
-|---|---|---|
-| `default` | General processing | Normal |
-| `emails` | Email notifications, newsletter broadcasts | Normal |
-| `images` | Image optimization, WebP conversion | Low |
-| `search` | Search index updates (future) | Low |
+| Queue     | Jobs                                       | Priority |
+| --------- | ------------------------------------------ | -------- |
+| `default` | General processing                         | Normal   |
+| `emails`  | Email notifications, newsletter broadcasts | Normal   |
+| `images`  | Image optimization, WebP conversion        | Low      |
+| `search`  | Search index updates (future)              | Low      |
 
 ### 12.2 Key Jobs
 
@@ -1153,7 +1173,7 @@ FileUpload::make('featured_image')
 final class PublishScheduledArticles extends Command
 {
     protected $signature = 'articles:publish-scheduled';
-    
+
     public function handle(): void
     {
         Article::where('status', 'scheduled')
@@ -1175,7 +1195,7 @@ final class SendCommentNotification implements ShouldQueue
     public function handle(): void
     {
         $author = $this->comment->article->author;
-        
+
         $author->notify(new NewCommentNotification($this->comment));
     }
 }
@@ -1248,6 +1268,7 @@ Workers configured per queue with auto-balancing: `emails` (2 workers), `images`
 ### 13.2 Implementation
 
 **Inline Script (in layouts::app.blade.php `<head>`):**
+
 ```blade
 <script>
 (function() {
@@ -1259,6 +1280,7 @@ Workers configured per queue with auto-balancing: `emails` (2 workers), `images`
 ```
 
 **Tailwind CSS v4 Configuration (app.css):**
+
 ```css
 @import "tailwindcss";
 
@@ -1272,6 +1294,7 @@ Workers configured per queue with auto-balancing: `emails` (2 workers), `images`
 ```
 
 **ThemeToggle Component (Alpine.js):**
+
 ```blade
 <div x-data="themeToggle">
     <button @click="toggle" aria-label="Toggle theme">
@@ -1284,13 +1307,13 @@ Workers configured per queue with auto-balancing: `emails` (2 workers), `images`
 document.addEventListener('alpine:init', () => {
     Alpine.data('themeToggle', () => ({
         theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
-        
+
         toggle() {
             this.theme = this.theme === 'dark' ? 'light' : 'dark';
             document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', this.theme);
         },
-        
+
         // Watch system preference changes
         init() {
             window.matchMedia('(prefers-color-scheme: dark)')
@@ -1347,73 +1370,73 @@ ENV SERVER_NAME=":80"
 ### 14.2 Docker Compose (Full Stack)
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
-  app:
-    build:
-      context: .
-      target: production
-    ports:
-      - "${APP_PORT:-80}:80"
-      - "${APP_PORT_SSL:-443}:443"
-    environment:
-      FRANKENPHP_CONFIG: "worker ./public/index.php"
-      SERVER_NAME: "${APP_DOMAIN:-localhost}"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    volumes:
-      - ./storage:/app/storage
+    app:
+        build:
+            context: .
+            target: production
+        ports:
+            - "${APP_PORT:-80}:80"
+            - "${APP_PORT_SSL:-443}:443"
+        environment:
+            FRANKENPHP_CONFIG: "worker ./public/index.php"
+            SERVER_NAME: "${APP_DOMAIN:-localhost}"
+        depends_on:
+            mysql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        volumes:
+            - ./storage:/app/storage
 
-  mysql:
-    image: mysql:8.4
-    environment:
-      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
-      MYSQL_DATABASE: "${DB_DATABASE}"
-      MYSQL_USER: "${DB_USERNAME}"
-      MYSQL_PASSWORD: "${DB_PASSWORD}"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    mysql:
+        image: mysql:8.4
+        environment:
+            MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+            MYSQL_DATABASE: "${DB_DATABASE}"
+            MYSQL_USER: "${DB_USERNAME}"
+            MYSQL_PASSWORD: "${DB_PASSWORD}"
+        volumes:
+            - mysql_data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  redis:
-    image: redis:7-alpine
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    redis:
+        image: redis:7-alpine
+        volumes:
+            - redis_data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  queue:
-    build:
-      context: .
-      target: production
-    command: php artisan queue:work --tries=3 --sleep=3
-    depends_on:
-      - app
-    environment:
-      FRANKENPHP_CONFIG: "worker ./public/index.php"
+    queue:
+        build:
+            context: .
+            target: production
+        command: php artisan queue:work --tries=3 --sleep=3
+        depends_on:
+            - app
+        environment:
+            FRANKENPHP_CONFIG: "worker ./public/index.php"
 
-  scheduler:
-    build:
-      context: .
-      target: production
-    command: php artisan schedule:work
-    depends_on:
-      - app
+    scheduler:
+        build:
+            context: .
+            target: production
+        command: php artisan schedule:work
+        depends_on:
+            - app
 
 volumes:
-  mysql_data:
-  redis_data:
+    mysql_data:
+    redis_data:
 ```
 
 ---
@@ -1421,6 +1444,7 @@ volumes:
 ## 15. Notification Architecture
 
 ### 15.1 Strategy
+
 Database notifications via Filament bell icon + optional email fallback.
 
 ```
@@ -1431,10 +1455,10 @@ Events → Listeners (ShouldQueue) → Notification Classes → Database + Mail
 
 ### 15.2 Channel Configuration
 
-| Channel | Use Case | Queue |
-|---|---|---|
-| `database` | Admin bell notifications, user notification center | `notifications` |
-| `mail` | Email for comment replies, article published, welcome | `emails` |
+| Channel    | Use Case                                              | Queue           |
+| ---------- | ----------------------------------------------------- | --------------- |
+| `database` | Admin bell notifications, user notification center    | `notifications` |
+| `mail`     | Email for comment replies, article published, welcome | `emails`        |
 
 ### 15.3 Notification Classes
 
@@ -1531,12 +1555,14 @@ Queue::route('notifications', [
 ### 15.6 Filament Bell Integration
 
 Panel provider sudah dikonfigurasi:
+
 ```php
 ->databaseNotifications()              // Bell icon with dropdown
 ->databaseNotificationsPolling('20s')  // Poll every 20 detik (Filament default: 30s)
 ```
 
 Bell icon otomatis muncul di Filament top bar, menampilkan:
+
 - Unread count badge
 - Dropdown dengan 5 notifikasi terbaru
 - "Mark all as read" button
@@ -1544,13 +1570,13 @@ Bell icon otomatis muncul di Filament top bar, menampilkan:
 
 ### 15.7 Notification Types & Triggers
 
-| Trigger | Notification | Recipient | Channels |
-|---|---|---|---|
-| Comment created | `NewCommentNotification` | Article author | database + mail |
-| Comment needs approval | `CommentNeedsModeration` | Admin, Editor | database |
-| Comment approved | `CommentApprovedNotification` | Comment author | database |
-| Article published (Phase 2) | `ArticlePublishedNotification` | Newsletter subs | mail |
-| Welcome (Phase 2) | `WelcomeNotification` | New user | database + mail |
+| Trigger                     | Notification                   | Recipient       | Channels        |
+| --------------------------- | ------------------------------ | --------------- | --------------- |
+| Comment created             | `NewCommentNotification`       | Article author  | database + mail |
+| Comment needs approval      | `CommentNeedsModeration`       | Admin, Editor   | database        |
+| Comment approved            | `CommentApprovedNotification`  | Comment author  | database        |
+| Article published (Phase 2) | `ArticlePublishedNotification` | Newsletter subs | mail            |
+| Welcome (Phase 2)           | `WelcomeNotification`          | New user        | database + mail |
 
 ---
 
@@ -1636,14 +1662,14 @@ test('user can register with valid data', function () {
 
 ## Appendix: Key Architectural Decisions Log
 
-| Decision | Date | Rationale |
-|---|---|---|
-| Livewire 4 SPA over Inertia | 2026-05-15 | Simpler architecture, no JS framework dependency, better SEO |
-| MySQL FULLTEXT over Meilisearch (MVP) | 2026-05-15 | Fewer dependencies, sufficient for MVP, upgrade later |
-| Filament 5 over custom admin | 2026-05-15 | Faster development, built-in Livewire 4 support |
-| FrankenPHP worker mode over FPM | 2026-05-15 | 3-4x performance, simpler deployment |
-| Redis tags for cache invalidation | 2026-05-15 | Granular cache flushing without losing all cache |
-| Class-based dark mode over media query | 2026-05-15 | Better control, localStorage persistence, anti-FOUC |
+| Decision                               | Date       | Rationale                                                    |
+| -------------------------------------- | ---------- | ------------------------------------------------------------ |
+| Livewire 4 SPA over Inertia            | 2026-05-15 | Simpler architecture, no JS framework dependency, better SEO |
+| MySQL FULLTEXT over Meilisearch (MVP)  | 2026-05-15 | Fewer dependencies, sufficient for MVP, upgrade later        |
+| Filament 5 over custom admin           | 2026-05-15 | Faster development, built-in Livewire 4 support              |
+| FrankenPHP worker mode over FPM        | 2026-05-15 | 3-4x performance, simpler deployment                         |
+| Redis tags for cache invalidation      | 2026-05-15 | Granular cache flushing without losing all cache             |
+| Class-based dark mode over media query | 2026-05-15 | Better control, localStorage persistence, anti-FOUC          |
 
 ---
 

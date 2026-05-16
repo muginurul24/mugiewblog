@@ -55,9 +55,28 @@ it('should render safe github flavored markdown for technical articles', functio
         ->toContain('<ol>')
         ->toContain('<table>')
         ->toContain('<code>inline_code</code>')
-        ->toContain('<pre><code class="language-php">')
+        ->toContain('<pre><code class="hljs language-php">')
+        ->toContain('hljs-keyword')
         ->not->toContain('<script')
         ->not->toContain('href="javascript:');
+});
+
+it('should highlight comments and caddy directives when rendering code fences', function () {
+    $html = Article::renderMarkdown(<<<'MARKDOWN'
+        ```caddyfile
+        # reverse proxy untuk app
+        example.test {
+            encode zstd gzip
+            reverse_proxy app:8000
+        }
+        ```
+        MARKDOWN);
+
+    expect($html)
+        ->toContain('class="hljs language-caddyfile"')
+        ->toContain('class="hljs-comment"')
+        ->toContain('class="hljs-keyword">encode</span>')
+        ->toContain('class="hljs-keyword">reverse_proxy</span>');
 });
 
 it('should expose relationships when blog data exists', function () {

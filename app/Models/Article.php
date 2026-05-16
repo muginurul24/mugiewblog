@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ArticleStatus;
+use App\Support\MarkdownRenderer;
 use Database\Factories\ArticleFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -182,10 +183,7 @@ class Article extends Model
     #[\NoDiscard]
     public static function renderMarkdown(string $markdown): string
     {
-        return (string) Str::markdown($markdown, [
-            'html_input' => 'strip',
-            'allow_unsafe_links' => false,
-        ]);
+        return MarkdownRenderer::render($markdown);
     }
 
     #[\NoDiscard]

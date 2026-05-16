@@ -19,6 +19,8 @@ final class ArticleContent
             return ['html' => '', 'toc' => []];
         }
 
+        $html = MarkdownRenderer::highlightHtml($html);
+
         $previous = libxml_use_internal_errors(true);
         $document = new DOMDocument('1.0', 'UTF-8');
         $document->loadHTML(
@@ -126,6 +128,14 @@ final class ArticleContent
             $wrapper = $document->createElement('div');
             $wrapper->setAttribute('class', 'article-code-block');
 
+            $code = $pre->getElementsByTagName('code')->item(0);
+            $language = $code instanceof DOMElement
+                ? self::languageFromCode($code)
+                : 'plaintext';
+
+            $languageLabel = $document->createElement('span', strtoupper($language));
+            $languageLabel->setAttribute('class', 'article-code-language');
+
             $button = $document->createElement('button');
             $button->setAttribute('type', 'button');
             $button->setAttribute('class', 'article-code-copy');
@@ -137,6 +147,7 @@ final class ArticleContent
             $button->appendChild($label);
 
             $parent->replaceChild($wrapper, $pre);
+            $wrapper->appendChild($languageLabel);
             $wrapper->appendChild($button);
             $wrapper->appendChild($pre);
         }
@@ -168,5 +179,13 @@ final class ArticleContent
         return collect(iterator_to_array($element->childNodes))
             ->map(fn (DOMNode $node): string => $element->ownerDocument?->saveHTML($node) ?: '')
             ->implode('');
+    }
+
+    #[\NoDiscard]
+    private static function languageFromCode(DOMElement $code): string
+    {
+        preg_match('/language-([a-z0-9_-]+)/i', $code->getAttribute('class'), $matches);
+
+        return $matches[1] ?? 'plaintext';
     }
 }

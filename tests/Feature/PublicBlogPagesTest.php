@@ -21,6 +21,65 @@ it('should render homepage when published articles exist', function () {
         ->assertSee('application/rss+xml', false);
 });
 
+it('should hide category navigation when no categories exist', function () {
+    $this->get(route('home'))
+        ->assertSuccessful()
+        ->assertDontSee('data-nav="categories"', false)
+        ->assertDontSee('data-nav="mobile-categories"', false);
+});
+
+it('should render accessible category navigation when categories exist', function () {
+    $this->seed();
+
+    $category = Category::query()
+        ->whereHas('articles', fn ($query) => $query->published())
+        ->firstOrFail();
+
+    $this->get(route('home'))
+        ->assertSuccessful()
+        ->assertSee('data-nav="categories"', false)
+        ->assertSee('aria-controls="desktop-category-menu"', false)
+        ->assertSee('aria-haspopup="menu"', false)
+        ->assertSee('data-nav="mobile-categories"', false)
+        ->assertSee('data-category-nav="'.$category->slug.'"', false);
+});
+
+it('should expose the active public navigation item to assistive technology', function () {
+    $this->seed();
+
+    $category = Category::query()
+        ->whereHas('articles', fn ($query) => $query->published())
+        ->firstOrFail();
+
+    $this->get(route('home'))
+        ->assertSuccessful()
+        ->assertSeeInOrder([
+            'data-nav="home"',
+            'aria-current="page"',
+            'Beranda',
+        ], false);
+
+    $this->get(route('about'))
+        ->assertSuccessful()
+        ->assertSeeInOrder([
+            'data-nav="about"',
+            'aria-current="page"',
+            'Tentang',
+        ], false);
+
+    $this->get($category->url())
+        ->assertSuccessful()
+        ->assertSeeInOrder([
+            'data-nav="categories"',
+            'Kategori',
+        ], false)
+        ->assertSeeInOrder([
+            'data-category-nav="'.$category->slug.'"',
+            'aria-current="page"',
+            $category->name,
+        ], false);
+});
+
 it('should render article page when article is published', function () {
     $this->seed();
 

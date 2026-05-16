@@ -6,6 +6,11 @@
     );
     $canonicalUrl = (string) ($canonical ?? url()->current());
     $shareImage = (string) ($ogImage ?? asset('favicon.ico'));
+    $isHomeRoute = request()->routeIs('home');
+    $isCategoryRoute = request()->routeIs('categories.show');
+    $isAboutRoute = request()->routeIs('about');
+    $currentCategory = request()->route('category');
+    $activeCategoryId = $currentCategory instanceof \App\Models\Category ? $currentCategory->getKey() : null;
 @endphp
 
 <!DOCTYPE html>
@@ -77,17 +82,64 @@
 
                 <nav class="ml-4 hidden items-center gap-1 md:flex" aria-label="Navigasi utama">
                     <a href="{{ route('home') }}" wire:navigate
-                        class="rounded-lg px-3 py-2 text-sm font-medium text-surface-600 transition hover:bg-surface-100 hover:text-accent dark:text-surface-300 dark:hover:bg-surface-900">
+                        data-nav="home"
+                        @class([
+                            'rounded-lg px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+                            'bg-surface-100 text-accent dark:bg-surface-900' => $isHomeRoute,
+                            'text-surface-600 hover:bg-surface-100 hover:text-accent dark:text-surface-300 dark:hover:bg-surface-900' => ! $isHomeRoute,
+                        ])
+                        @if ($isHomeRoute) aria-current="page" @endif>
                         Beranda
                     </a>
-                    @foreach ($navigationCategories->take(4) as $category)
-                        <a href="{{ $category->url() }}" wire:navigate
-                            class="rounded-lg px-3 py-2 text-sm font-medium text-surface-600 transition hover:bg-surface-100 hover:text-accent dark:text-surface-300 dark:hover:bg-surface-900">
-                            {{ $category->name }}
-                        </a>
-                    @endforeach
+
+                    @if ($navigationCategories->isNotEmpty())
+                        <div class="relative" x-data="{ open: false }" @click.outside="open = false"
+                            @keydown.escape.window="open = false">
+                            <button type="button" data-nav="categories" aria-controls="desktop-category-menu"
+                                aria-haspopup="menu" :aria-expanded="open.toString()"
+                                @click="open = ! open"
+                                @keydown.arrow-down.prevent="open = true; $nextTick(() => $refs.firstDesktopCategory?.focus())"
+                                @class([
+                                    'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+                                    'bg-surface-100 text-accent dark:bg-surface-900' => $isCategoryRoute,
+                                    'text-surface-600 hover:bg-surface-100 hover:text-accent dark:text-surface-300 dark:hover:bg-surface-900' => ! $isCategoryRoute,
+                                ])>
+                                Kategori
+                                <i class="fas fa-chevron-down h-3 w-3 transition" :class="{ 'rotate-180': open }"
+                                    aria-hidden="true"></i>
+                            </button>
+
+                            <div id="desktop-category-menu" x-cloak x-show="open" role="menu"
+                                x-transition:enter="animate__animated animate__fadeIn animate__faster"
+                                class="absolute left-0 mt-2 min-w-56 overflow-hidden rounded-lg border border-surface-200 bg-white p-1 shadow-lg dark:border-surface-800 dark:bg-surface-900">
+                                @foreach ($navigationCategories as $category)
+                                    @php($isActiveCategory = $activeCategoryId === $category->getKey())
+                                    <a href="{{ $category->url() }}" wire:navigate role="menuitem"
+                                        data-category-nav="{{ $category->slug }}"
+                                        @if ($loop->first) x-ref="firstDesktopCategory" @endif
+                                        @click="open = false"
+                                        @class([
+                                            'flex items-center justify-between gap-4 rounded-md px-3 py-2 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+                                            'bg-surface-100 font-semibold text-accent dark:bg-surface-800' => $isActiveCategory,
+                                            'text-surface-700 hover:bg-surface-100 hover:text-accent dark:text-surface-200 dark:hover:bg-surface-800' => ! $isActiveCategory,
+                                        ])
+                                        @if ($isActiveCategory) aria-current="page" @endif>
+                                        <span>{{ $category->name }}</span>
+                                        <span class="text-xs text-surface-400">{{ $category->articles_count }}</span>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <a href="{{ route('about') }}" wire:navigate
-                        class="rounded-lg px-3 py-2 text-sm font-medium text-surface-600 transition hover:bg-surface-100 hover:text-accent dark:text-surface-300 dark:hover:bg-surface-900">
+                        data-nav="about"
+                        @class([
+                            'rounded-lg px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+                            'bg-surface-100 text-accent dark:bg-surface-900' => $isAboutRoute,
+                            'text-surface-600 hover:bg-surface-100 hover:text-accent dark:text-surface-300 dark:hover:bg-surface-900' => ! $isAboutRoute,
+                        ])
+                        @if ($isAboutRoute) aria-current="page" @endif>
                         Tentang
                     </a>
                 </nav>
@@ -204,15 +256,56 @@
                 </form>
                 <nav class="grid gap-1" aria-label="Navigasi mobile">
                     <a href="{{ route('home') }}" wire:navigate
-                        class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-100 dark:hover:bg-surface-900"
+                        data-nav="mobile-home"
+                        @class([
+                            'rounded-lg px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+                            'bg-surface-100 text-accent dark:bg-surface-900' => $isHomeRoute,
+                            'hover:bg-surface-100 dark:hover:bg-surface-900' => ! $isHomeRoute,
+                        ])
+                        @if ($isHomeRoute) aria-current="page" @endif
                         @click="mobileMenuOpen = false">Beranda</a>
-                    @foreach ($navigationCategories as $category)
-                        <a href="{{ $category->url() }}" wire:navigate
-                            class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-100 dark:hover:bg-surface-900"
-                            @click="mobileMenuOpen = false">{{ $category->name }}</a>
-                    @endforeach
+
+                    @if ($navigationCategories->isNotEmpty())
+                        <div x-data="{ categoriesOpen: @js($isCategoryRoute) }" class="grid gap-1">
+                            <button type="button" data-nav="mobile-categories" aria-controls="mobile-category-menu"
+                                :aria-expanded="categoriesOpen.toString()" @click="categoriesOpen = ! categoriesOpen"
+                                @class([
+                                    'flex items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+                                    'bg-surface-100 text-accent dark:bg-surface-900' => $isCategoryRoute,
+                                    'hover:bg-surface-100 dark:hover:bg-surface-900' => ! $isCategoryRoute,
+                                ])>
+                                <span>Kategori</span>
+                                <i class="fas fa-chevron-down h-3 w-3 transition"
+                                    :class="{ 'rotate-180': categoriesOpen }" aria-hidden="true"></i>
+                            </button>
+
+                            <div id="mobile-category-menu" x-cloak x-show="categoriesOpen"
+                                x-transition:enter="animate__animated animate__fadeIn animate__faster"
+                                class="grid gap-1 pl-3">
+                                @foreach ($navigationCategories as $category)
+                                    @php($isActiveCategory = $activeCategoryId === $category->getKey())
+                                    <a href="{{ $category->url() }}" wire:navigate
+                                        data-category-nav="{{ $category->slug }}"
+                                        @class([
+                                            'rounded-lg px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+                                            'bg-surface-100 text-accent dark:bg-surface-900' => $isActiveCategory,
+                                            'hover:bg-surface-100 dark:hover:bg-surface-900' => ! $isActiveCategory,
+                                        ])
+                                        @if ($isActiveCategory) aria-current="page" @endif
+                                        @click="mobileMenuOpen = false">{{ $category->name }}</a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <a href="{{ route('about') }}" wire:navigate
-                        class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-100 dark:hover:bg-surface-900"
+                        data-nav="mobile-about"
+                        @class([
+                            'rounded-lg px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+                            'bg-surface-100 text-accent dark:bg-surface-900' => $isAboutRoute,
+                            'hover:bg-surface-100 dark:hover:bg-surface-900' => ! $isAboutRoute,
+                        ])
+                        @if ($isAboutRoute) aria-current="page" @endif
                         @click="mobileMenuOpen = false">Tentang</a>
                     @auth
                         <a href="{{ route('profile') }}" wire:navigate

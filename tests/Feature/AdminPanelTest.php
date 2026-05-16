@@ -17,6 +17,7 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
@@ -158,6 +159,15 @@ it('should save working site settings when admin submits the settings page', fun
         ->rss_enabled->toBeFalse()
         ->newsletter_enabled->toBeFalse()
         ->articles_per_page->toBe(12);
+});
+
+it('should cache only the current site settings identifier', function () {
+    $siteSetting = SiteSetting::factory()->create();
+
+    Cache::forever('site-settings.current', (object) ['legacy' => true]);
+
+    expect(SiteSetting::current()->is($siteSetting))->toBeTrue()
+        ->and(Cache::get('site-settings.current'))->toBe($siteSetting->id);
 });
 
 it('should expose cache management only to admins', function () {

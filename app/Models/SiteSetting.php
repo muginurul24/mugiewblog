@@ -49,10 +49,17 @@ class SiteSetting extends Model
     #[\NoDiscard]
     public static function current(): self
     {
-        return Cache::rememberForever(
-            self::CACHE_KEY,
-            fn (): self => self::query()->firstOrCreate([], self::defaults()),
-        );
+        $id = Cache::get(self::CACHE_KEY);
+
+        if (! is_int($id)) {
+            return tap(self::query()->firstOrCreate([], self::defaults()), function (self $siteSetting): void {
+                Cache::forever(self::CACHE_KEY, $siteSetting->getKey());
+            });
+        }
+
+        return self::query()->find($id) ?? tap(self::query()->firstOrCreate([], self::defaults()), function (self $siteSetting): void {
+            Cache::forever(self::CACHE_KEY, $siteSetting->getKey());
+        });
     }
 
     public static function forgetCurrent(): void

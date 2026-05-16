@@ -258,8 +258,7 @@
     }
 
     .article-prose :where(pre) {
-        margin-top: 1.6em;
-        margin-bottom: 1.6em;
+        margin: 0;
         overflow-x: auto;
         border: 1px solid var(--color-surface-800);
         border-radius: 0.75rem;
@@ -284,6 +283,38 @@
         overflow-wrap: normal;
         white-space: pre;
         word-break: normal;
+    }
+
+    .article-prose :where(.article-code-block) {
+        position: relative;
+        margin-top: 1.6em;
+        margin-bottom: 1.6em;
+    }
+
+    .article-prose :where(.article-code-copy) {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        z-index: 1;
+        border: 1px solid rgb(255 255 255 / 0.12);
+        border-radius: 0.5rem;
+        background: rgb(24 23 22 / 0.9);
+        padding: 0.35rem 0.6rem;
+        color: var(--color-surface-200);
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1;
+        transition:
+            border-color 0.2s ease,
+            color 0.2s ease,
+            background-color 0.2s ease;
+    }
+
+    .article-prose :where(.article-code-copy:hover, .article-code-copy:focus-visible) {
+        border-color: rgb(212 148 58 / 0.7);
+        background: rgb(36 35 33 / 0.96);
+        color: #f2cf91;
+        outline: none;
     }
 
     .article-prose :where(blockquote) {

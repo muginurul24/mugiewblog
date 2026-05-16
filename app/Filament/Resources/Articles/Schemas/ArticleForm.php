@@ -128,11 +128,15 @@ class ArticleForm
                             ->columnSpanFull(),
                         TextInput::make('meta_title')
                             ->label('Meta title')
-                            ->maxLength(60),
+                            ->maxLength(60)
+                            ->live(onBlur: true)
+                            ->helperText(fn (?string $state): string => mb_strlen($state ?? '').'/60 karakter'),
                         Textarea::make('meta_description')
                             ->label('Meta description')
                             ->rows(3)
                             ->maxLength(160)
+                            ->live(onBlur: true)
+                            ->helperText(fn (?string $state): string => mb_strlen($state ?? '').'/160 karakter')
                             ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),

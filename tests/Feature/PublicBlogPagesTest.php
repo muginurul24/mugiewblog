@@ -134,7 +134,9 @@ it('should prepare responsive article markdown content when rich markdown exists
         ->and($prepared['html'])->toContain('id="bagian-utama"')
         ->and($prepared['html'])->toContain('loading="lazy"')
         ->and($prepared['html'])->toContain('decoding="async"')
-        ->and($prepared['html'])->toContain('class="article-table-scroll"');
+        ->and($prepared['html'])->toContain('class="article-table-scroll"')
+        ->and($prepared['html'])->toContain('class="article-code-block"')
+        ->and($prepared['html'])->toContain('data-copy-code-button');
 });
 
 it('should render article markdown patterns on public article pages', function () {
@@ -165,7 +167,9 @@ it('should render article markdown patterns on public article pages', function (
         ->assertSee('class="article-prose"', false)
         ->assertSee('<ul>', false)
         ->assertSee('<pre><code class="language-php">', false)
-        ->assertSee('class="article-table-scroll"', false);
+        ->assertSee('class="article-table-scroll"', false)
+        ->assertSee('class="article-code-copy"', false)
+        ->assertSeeText('Salin kode');
 });
 
 it('should render category and tag pages when taxonomy exists', function () {
@@ -176,11 +180,13 @@ it('should render category and tag pages when taxonomy exists', function () {
 
     $this->get($category->url())
         ->assertSuccessful()
-        ->assertSeeText($category->name);
+        ->assertSeeText($category->name)
+        ->assertSee('BreadcrumbList', false);
 
     $this->get($tag->url())
         ->assertSuccessful()
-        ->assertSeeText($tag->name);
+        ->assertSeeText($tag->name)
+        ->assertSee('BreadcrumbList', false);
 });
 
 it('should render search results when query matches content', function () {

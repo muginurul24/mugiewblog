@@ -39,6 +39,7 @@ final class ArticleContent
 
         self::prepareMedia($root);
         self::wrapTables($document, $root);
+        self::wrapCodeBlocks($document, $root);
 
         foreach ($root->getElementsByTagName('*') as $node) {
             if (! $node instanceof DOMElement || ! in_array($node->tagName, ['h2', 'h3'], true)) {
@@ -102,6 +103,42 @@ final class ArticleContent
 
             $parent->replaceChild($wrapper, $table);
             $wrapper->appendChild($table);
+        }
+    }
+
+    private static function wrapCodeBlocks(DOMDocument $document, DOMElement $root): void
+    {
+        foreach (iterator_to_array($root->getElementsByTagName('pre')) as $pre) {
+            if (! $pre instanceof DOMElement) {
+                continue;
+            }
+
+            $parent = $pre->parentNode;
+
+            if ($parent instanceof DOMElement && Str::contains($parent->getAttribute('class'), 'article-code-block')) {
+                continue;
+            }
+
+            if (! $parent instanceof DOMNode) {
+                continue;
+            }
+
+            $wrapper = $document->createElement('div');
+            $wrapper->setAttribute('class', 'article-code-block');
+
+            $button = $document->createElement('button');
+            $button->setAttribute('type', 'button');
+            $button->setAttribute('class', 'article-code-copy');
+            $button->setAttribute('data-copy-code-button', '');
+            $button->setAttribute('aria-label', 'Salin blok kode');
+
+            $label = $document->createElement('span', 'Salin kode');
+            $label->setAttribute('data-copy-code-label', '');
+            $button->appendChild($label);
+
+            $parent->replaceChild($wrapper, $pre);
+            $wrapper->appendChild($button);
+            $wrapper->appendChild($pre);
         }
     }
 

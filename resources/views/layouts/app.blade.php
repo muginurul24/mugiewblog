@@ -159,14 +159,7 @@
                 </nav>
 
                 <div class="ml-auto hidden items-center gap-2 lg:flex">
-                    <form action="{{ route('search') }}" method="GET" class="relative">
-                        <label for="global-search" class="sr-only">Cari artikel</label>
-                        <i class="fas fa-search pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-surface-400"
-                            aria-hidden="true"></i>
-                        <input id="global-search" name="q" value="{{ request('q') }}" type="search"
-                            placeholder="Cari artikel..."
-                            class="h-10 w-72 rounded-lg border-surface-200 bg-white pl-9 pr-3 text-sm text-surface-900 placeholder:text-surface-400 focus:border-accent focus:ring-accent/30 dark:border-surface-800 dark:bg-surface-900 dark:text-surface-50">
-                    </form>
+                    <livewire:global-search />
                 </div>
 
                 <div class="ms-auto flex items-center gap-1">

@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Comment;
 use App\Services\CommentSpamDetector;
 use App\Support\ArticleContent;
+use App\Support\BreadcrumbSchema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -239,6 +240,24 @@ new class extends Component {
         const total = Math.max(1, el.offsetHeight - window.innerHeight);
         this.progress = Math.min(100, Math.max(0, ((window.scrollY - start + 120) / total) * 100));
     },
+    async copyCode(button) {
+        const code = button.closest('.article-code-block')?.querySelector('code');
+        const label = button.querySelector('[data-copy-code-label]');
+
+        if (!code || !label || !navigator.clipboard) {
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(code.innerText);
+            const original = label.textContent;
+            label.textContent = 'Tersalin';
+            setTimeout(() => label.textContent = original, 1400);
+        } catch (error) {
+            label.textContent = 'Gagal';
+            setTimeout(() => label.textContent = 'Salin kode', 1400);
+        }
+    },
 }" x-init="updateProgress();
 const listener = () => updateProgress();
 window.addEventListener('scroll', listener, { passive: true });
@@ -246,7 +265,7 @@ window.addEventListener('resize', listener);
 return () => {
     window.removeEventListener('scroll', listener);
     window.removeEventListener('resize', listener);
-};">
+};" @click="const button = $event.target.closest('[data-copy-code-button]'); if (button) copyCode(button)">
     <x-slot:title>{{ $this->article->meta_title ?: $this->article->title }} — MugiewBlog</x-slot:title>
     <x-slot:metaDescription>{{ $this->article->meta_description ?: $this->article->excerpt }}</x-slot:metaDescription>
     <x-slot:canonical>{{ $this->article->url() }}</x-slot:canonical>
@@ -336,6 +355,12 @@ return () => {
                             class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-100 text-surface-600 transition hover:text-accent dark:bg-surface-900 dark:text-surface-300"
                             aria-label="Bagikan ke LinkedIn">
                             <i class="fab fa-linkedin h-4 w-4" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://wa.me/?text={{ urlencode($this->article->title.' '.$this->article->url()) }}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-100 text-surface-600 transition hover:text-accent dark:bg-surface-900 dark:text-surface-300"
+                            aria-label="Bagikan ke WhatsApp">
+                            <i class="fab fa-whatsapp h-4 w-4" aria-hidden="true"></i>
                         </a>
                         <button type="button" x-data="{ copied: false }"
                             @click="navigator.clipboard.writeText(@js($this->article->url())); copied = true; setTimeout(() => copied = false, 1400)"
@@ -482,5 +507,8 @@ return () => {
             'image' => $this->article->featured_image_url,
             'mainEntityOfPage' => $this->article->url(),
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+    <script type="application/ld+json">
+        {!! json_encode(BreadcrumbSchema::forArticle($this->article), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
 </article>

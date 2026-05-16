@@ -2,6 +2,7 @@
 
 use App\Models\Article;
 use App\Models\Category;
+use App\Support\BreadcrumbSchema;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -99,4 +100,8 @@ new class extends Component {
             />
         @endif
     </section>
+
+    <script type="application/ld+json">
+        {!! json_encode(BreadcrumbSchema::forCategory($this->category), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
 </div>

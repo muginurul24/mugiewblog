@@ -19,18 +19,6 @@ RUN install-php-extensions \
 
 COPY --from=docker.io/composer:2 /usr/bin/composer /usr/bin/composer
 
-FROM docker.io/oven/bun:1 AS assets
-
-WORKDIR /app
-
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
-
-COPY resources ./resources
-COPY public ./public
-COPY vite.config.* ./
-RUN bun run build
-
 FROM php-base AS vendor
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -47,6 +35,20 @@ RUN composer install \
 COPY . .
 RUN composer dump-autoload --optimize \
     && php artisan package:discover --ansi
+
+FROM docker.io/oven/bun:1 AS assets
+
+WORKDIR /app
+
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+
+COPY --from=vendor /app/vendor ./vendor
+COPY app/Filament ./app/Filament
+COPY resources ./resources
+COPY public ./public
+COPY vite.config.* ./
+RUN bun run build
 
 FROM php-base AS production
 

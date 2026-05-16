@@ -1,5 +1,7 @@
 <?php
 
+use App\Filament\Pages\CacheQueue;
+use App\Filament\Pages\Settings;
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Comments\CommentResource;
@@ -11,6 +13,7 @@ use App\Filament\Widgets\ArticleCategoriesChart;
 use App\Filament\Widgets\ArticleViewsChart;
 use App\Filament\Widgets\BlogStats;
 use App\Models\Article;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -108,6 +111,74 @@ it('should render system resources when user is admin', function () {
         ->assertSeeText('Media');
 });
 
+it('should render polished management pages when user is admin', function () {
+    $this->seed();
+
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)
+        ->get(route('filament.backoffice.resources.categories.index'))
+        ->assertSuccessful()
+        ->assertSeeText('Peta kategori');
+
+    $this->actingAs($admin)
+        ->get(route('filament.backoffice.resources.media.index'))
+        ->assertSuccessful()
+        ->assertSeeText('Media terbaru');
+
+    $this->actingAs($admin)
+        ->get(route('filament.backoffice.resources.newsletter-subscribers.index'))
+        ->assertSuccessful()
+        ->assertSeeText('Status subscriber');
+});
+
+it('should save working site settings when admin submits the settings page', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    Livewire::test(Settings::class)
+        ->fillForm([
+            'site_name' => 'DevPulse',
+            'tagline' => 'Catatan engineering',
+            'site_url' => 'https://devpulse.test',
+            'site_description' => 'Blog untuk tim engineering.',
+            'default_og_image' => 'https://devpulse.test/og.webp',
+            'contact_email' => 'hello@devpulse.test',
+            'sitemap_enabled' => true,
+            'rss_enabled' => false,
+            'newsletter_enabled' => false,
+            'articles_per_page' => 12,
+        ])
+        ->call('save')
+        ->assertNotified();
+
+    expect(SiteSetting::current())
+        ->site_name->toBe('DevPulse')
+        ->rss_enabled->toBeFalse()
+        ->newsletter_enabled->toBeFalse()
+        ->articles_per_page->toBe(12);
+});
+
+it('should expose cache management only to admins', function () {
+    $admin = User::factory()->admin()->create();
+    $editor = User::factory()->editor()->create();
+
+    $this->actingAs($admin)
+        ->get(route('filament.backoffice.pages.cache'))
+        ->assertSuccessful()
+        ->assertSeeText('Cache management');
+
+    $this->actingAs($editor)
+        ->get(route('filament.backoffice.pages.cache'))
+        ->assertForbidden();
+
+    $this->actingAs($admin);
+
+    Livewire::test(CacheQueue::class)
+        ->assertSeeText('Cache management');
+});
+
 it('should expose meaningful backoffice navigation icons', function () {
     expect(ArticleResource::getNavigationIcon())->toBe(Heroicon::OutlinedDocumentText)
         ->and(CategoryResource::getNavigationIcon())->toBe(Heroicon::OutlinedFolder)
@@ -116,4 +187,16 @@ it('should expose meaningful backoffice navigation icons', function () {
         ->and(NewsletterSubscriberResource::getNavigationIcon())->toBe(Heroicon::OutlinedEnvelope)
         ->and(UserResource::getNavigationIcon())->toBe(Heroicon::OutlinedUserGroup)
         ->and(MediaResource::getNavigationIcon())->toBe(Heroicon::OutlinedPhoto);
+});
+
+it('should expose uploaded and fallback avatars for users', function () {
+    $uploaded = User::factory()->create(['avatar' => 'avatars/rafi.webp']);
+    $fallback = User::factory()->create(['avatar' => null]);
+
+    expect($uploaded->avatar_url)
+        ->toContain('/storage/avatars/rafi.webp')
+        ->and($fallback->avatar_url)
+        ->toBe("https://picsum.photos/id/{$fallback->id}/200/200")
+        ->and($fallback->getFilamentAvatarUrl())
+        ->toBe($fallback->avatar_url);
 });

@@ -25,6 +25,7 @@ class MediaForm
                             ->visibility('public')
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
                             ->maxSize(5120)
+                            ->preventFilePathTampering()
                             ->required()
                             ->columnSpanFull(),
                         Grid::make(2)

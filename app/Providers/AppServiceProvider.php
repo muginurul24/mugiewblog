@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Events\CommentCreated;
 use App\Listeners\SendCommentNotifications;
 use App\Models\Category;
+use App\Models\SiteSetting;
 use App\Models\Tag;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -36,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer(['layouts.app', 'layouts::app'], function ($view): void {
             $view->with([
+                'siteSettings' => SiteSetting::current(),
                 'navigationCategories' => Category::query()
                     ->withCount(['articles' => fn ($query) => $query->published()])
                     ->orderBy('sort_order')

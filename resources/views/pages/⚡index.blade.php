@@ -3,6 +3,7 @@
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\NewsletterSubscriber;
+use App\Models\SiteSetting;
 use App\Models\Tag;
 use App\Notifications\ConfirmNewsletterSubscription;
 use Illuminate\Database\Eloquent\Builder;
@@ -117,7 +118,7 @@ new class extends Component {
             ->with(['author', 'category'])
             ->withCount(['comments' => fn (Builder $query) => $query->approved()])
             ->latest('published_at')
-            ->paginate(11);
+            ->paginate(SiteSetting::current()->articles_per_page);
     }
 
     #[Computed]
@@ -263,7 +264,8 @@ new class extends Component {
                 </div>
             </section>
 
-            <section class="rounded-lg border border-accent/25 bg-accent-muted p-5">
+            @if (SiteSetting::current()->newsletter_enabled)
+                <section class="rounded-lg border border-accent/25 bg-accent-muted p-5">
                 <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white/70 text-accent dark:bg-surface-900">
                     <i class="far fa-envelope h-5 w-5" aria-hidden="true"></i>
                 </div>
@@ -295,7 +297,8 @@ new class extends Component {
                         Berlangganan
                     </button>
                 </form>
-            </section>
+                </section>
+            @endif
         </aside>
     </section>
 

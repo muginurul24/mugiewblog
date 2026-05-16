@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use App\Enums\UserRole;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -70,9 +71,16 @@ class UserForm
                     ]),
                 Section::make('Tautan profil')
                     ->schema([
-                        TextInput::make('avatar')
-                            ->url()
-                            ->maxLength(255),
+                        FileUpload::make('avatar')
+                            ->label('Avatar')
+                            ->avatar()
+                            ->image()
+                            ->disk('public')
+                            ->directory('avatars')
+                            ->visibility('public')
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(2048)
+                            ->preventFilePathTampering(),
                         TextInput::make('github_url')
                             ->url()
                             ->maxLength(255),

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -52,10 +53,10 @@ class CategoryForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('color')
+                                ColorPicker::make('color')
                                     ->label('Warna')
                                     ->required()
-                                    ->maxLength(32)
+                                    ->regex('/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b$/')
                                     ->default('#D4943A'),
                                 TextInput::make('icon')
                                     ->label('Ikon')

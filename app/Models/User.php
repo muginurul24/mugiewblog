@@ -9,6 +9,7 @@ use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecover
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
@@ -19,6 +20,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 #[Fillable([
     'name',
@@ -40,7 +43,7 @@ use Illuminate\Notifications\Notifiable;
     'app_authentication_recovery_codes',
 ])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'app_authentication_secret', 'app_authentication_recovery_codes'])]
-class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, MustVerifyEmailContract
+class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasAvatar, MustVerifyEmailContract
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
@@ -138,5 +141,25 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->is_active && ($this->isAdmin() || $this->isEditor());
+    }
+
+    #[\NoDiscard]
+    public function getAvatarUrlAttribute(): string
+    {
+        if (filled($this->avatar)) {
+            if (Str::startsWith($this->avatar, ['http://', 'https://'])) {
+                return $this->avatar;
+            }
+
+            return Storage::disk('public')->url($this->avatar);
+        }
+
+        return 'https://picsum.photos/id/'.($this->getKey() ?? 0).'/200/200';
+    }
+
+    #[\NoDiscard]
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url;
     }
 }

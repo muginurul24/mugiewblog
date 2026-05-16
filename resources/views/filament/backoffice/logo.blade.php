@@ -4,7 +4,7 @@
         M
     </span>
 
-    <span class="font-display text-lg font-bold dark:text-white text-black">
+    <span class="font-display text-lg font-bold dark:text-white text-indigo-400">
         Mugiew<span class="dark:text-primary-400 text-primary-600">Blog</span>
     </span>
 </div>

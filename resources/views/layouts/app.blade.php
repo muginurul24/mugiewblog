@@ -1,11 +1,10 @@
 @php
-    $pageTitle = trim((string) ($title ?? config('app.name', 'MugiewBlog')));
+    $pageTitle = trim((string) ($title ?? $siteSettings->site_name));
     $pageDescription = trim(
-        (string) ($metaDescription ??
-            'MugiewBlog membahas Laravel, pemrograman modern, DevOps, cloud, AI engineering, dan investasi teknologi untuk developer Indonesia.'),
+        (string) ($metaDescription ?? $siteSettings->site_description),
     );
     $canonicalUrl = (string) ($canonical ?? url()->current());
-    $shareImage = (string) ($ogImage ?? asset('favicon.ico'));
+    $shareImage = (string) ($ogImage ?? ($siteSettings->default_og_image ?: asset('favicon.ico')));
     $isHomeRoute = request()->routeIs('home');
     $isCategoryRoute = request()->routeIs('categories.show');
     $isAboutRoute = request()->routeIs('about');
@@ -35,11 +34,13 @@
     <meta name="robots" content="index,follow,max-image-preview:large">
     <meta name="theme-color" content="#d4943a">
     <link rel="canonical" href="{{ $canonicalUrl }}">
-    <link rel="alternate" type="application/rss+xml" title="MugiewBlog RSS" href="{{ route('feed') }}">
+    @if ($siteSettings->rss_enabled)
+        <link rel="alternate" type="application/rss+xml" title="{{ $siteSettings->site_name }} RSS" href="{{ route('feed') }}">
+    @endif
 
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
-    <meta property="og:site_name" content="MugiewBlog">
+    <meta property="og:site_name" content="{{ $siteSettings->site_name }}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ $canonicalUrl }}">
     <meta property="og:image" content="{{ $shareImage }}">
@@ -59,7 +60,7 @@
         {!! json_encode([
             '@@context' => 'https://schema.org',
             '@@type' => 'WebSite',
-            'name' => 'MugiewBlog',
+            'name' => $siteSettings->site_name,
             'url' => route('home'),
             'description' => $pageDescription,
             'potentialAction' => [
@@ -86,12 +87,12 @@
             class="sticky top-0 z-50 border-b border-surface-200/80 bg-surface-50/90 backdrop-blur-xl dark:border-surface-800/80 dark:bg-surface-950/90">
             <div class="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
                 <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-3"
-                    aria-label="MugiewBlog home">
+                    aria-label="{{ $siteSettings->site_name }} home">
                     <span
                         class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white">
                         M
                     </span>
-                    <span class="font-display text-lg font-bold">Mugiew<span class="text-accent">Blog</span></span>
+                    <span class="font-display text-lg font-bold">{{ $siteSettings->site_name }}</span>
                 </a>
 
                 <nav class="ml-4 hidden items-center gap-1 md:flex" aria-label="Navigasi utama">
@@ -168,10 +169,11 @@
                             <button type="button"
                                 class="flex h-10 items-center gap-2 rounded-lg px-2 text-surface-600 transition hover:bg-surface-100 hover:text-accent dark:text-surface-300 dark:hover:bg-surface-900"
                                 aria-label="Menu akun" @click="open = ! open">
-                                <span
-                                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-100 text-xs font-bold text-accent dark:bg-surface-800">
-                                    {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
-                                </span>
+                                <img
+                                    src="{{ auth()->user()->avatar_url }}"
+                                    alt="{{ auth()->user()->name }}"
+                                    class="h-8 w-8 rounded-lg object-cover"
+                                >
                                 <i class="fas fa-chevron-down h-3 w-3" aria-hidden="true"></i>
                             </button>
                             <div x-cloak x-show="open"
@@ -402,7 +404,7 @@
             </div>
             <div
                 class="border-t border-surface-200 px-4 py-5 text-center text-xs text-surface-400 dark:border-surface-800">
-                &copy; {{ now()->year }} MugiewBlog. Dibangun dengan Laravel, Livewire, dan Filament.
+                &copy; {{ now()->year }} {{ $siteSettings->site_name }}. Dibangun dengan Laravel, Livewire, dan Filament.
             </div>
         </footer>
     </div>

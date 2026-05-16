@@ -1,7 +1,7 @@
 {!! '<?xml version="1.0" encoding="UTF-8"?>' !!}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>{{ config('app.name', 'MugiewBlog') }}</title>
+        <title>{{ \App\Models\SiteSetting::current()->site_name }}</title>
         <link>{{ route('home') }}</link>
         <description>Artikel Laravel, cloud, DevOps, AI engineering, dan investasi teknologi.</description>
         <language>id-ID</language>

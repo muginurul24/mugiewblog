@@ -2,6 +2,7 @@
 
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\SiteSetting;
 use App\Models\Tag;
 use App\Models\User;
 use App\Support\ArticleContent;
@@ -149,6 +150,7 @@ it('should prepare responsive article markdown content when rich markdown exists
         ->and($prepared['html'])->toContain('decoding="async"')
         ->and($prepared['html'])->toContain('class="article-table-scroll"')
         ->and($prepared['html'])->toContain('class="article-code-block"')
+        ->and($prepared['html'])->toContain('class="article-code-language"')
         ->and($prepared['html'])->toContain('data-copy-code-button');
 });
 
@@ -179,9 +181,10 @@ it('should render article markdown patterns on public article pages', function (
         ->assertSuccessful()
         ->assertSee('class="article-prose"', false)
         ->assertSee('<ul>', false)
-        ->assertSee('<pre><code class="language-php">', false)
+        ->assertSee('<pre><code class="hljs language-php">', false)
         ->assertSee('class="article-table-scroll"', false)
         ->assertSee('class="article-code-copy"', false)
+        ->assertSeeText('PHP')
         ->assertSeeText('Salin kode');
 });
 
@@ -218,6 +221,21 @@ it('should expose loading skeletons on the homepage article grid', function () {
     $this->get(route('home'))
         ->assertSuccessful()
         ->assertSee('data-home-skeleton', false);
+});
+
+it('should honor public distribution settings when feeds or newsletter are disabled', function () {
+    SiteSetting::factory()->create([
+        'newsletter_enabled' => false,
+        'rss_enabled' => false,
+        'sitemap_enabled' => false,
+    ]);
+
+    $this->get(route('home'))
+        ->assertSuccessful()
+        ->assertDontSeeText('Newsletter mingguan');
+
+    $this->get(route('feed'))->assertNotFound();
+    $this->get(route('sitemap'))->assertNotFound();
 });
 
 it('should render rss feed and sitemap when published content exists', function () {

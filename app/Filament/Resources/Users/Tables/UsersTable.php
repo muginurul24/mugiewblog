@@ -9,6 +9,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -20,6 +21,10 @@ class UsersTable
         return $table
             ->modifyQueryUsing(fn ($query) => $query->withCount(['articles', 'comments']))
             ->columns([
+                ImageColumn::make('avatar_url')
+                    ->label('Avatar')
+                    ->state(fn (User $record): string => $record->avatar_url)
+                    ->circular(),
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()

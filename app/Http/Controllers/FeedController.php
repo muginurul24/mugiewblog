@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\SiteSetting;
 use App\Models\Tag;
 use Illuminate\Http\Response;
 
@@ -11,18 +12,22 @@ class FeedController extends Controller
 {
     public function robots(): Response
     {
+        $siteSettings = SiteSetting::current();
+
         return response(implode("\n", [
             'User-agent: *',
             'Allow: /',
             'Disallow: /admin',
             'Disallow: /livewire-*/',
-            'Sitemap: '.route('sitemap'),
+            ...($siteSettings->sitemap_enabled ? ['Sitemap: '.route('sitemap')] : []),
             '',
         ]))->header('Content-Type', 'text/plain; charset=UTF-8');
     }
 
     public function rss(): Response
     {
+        abort_unless(SiteSetting::current()->rss_enabled, 404);
+
         $articles = Article::query()
             ->published()
             ->with(['author', 'category', 'tags'])
@@ -37,6 +42,8 @@ class FeedController extends Controller
 
     public function sitemap(): Response
     {
+        abort_unless(SiteSetting::current()->sitemap_enabled, 404);
+
         $articles = Article::query()
             ->published()
             ->latest('updated_at')

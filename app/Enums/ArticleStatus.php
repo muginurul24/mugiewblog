@@ -15,8 +15,8 @@ enum ArticleStatus: string
         return match ($this) {
             self::Draft => 'Draft',
             self::Review => 'Review',
-            self::Published => 'Published',
-            self::Scheduled => 'Scheduled',
+            self::Published => 'Terbit',
+            self::Scheduled => 'Terjadwal',
         };
     }
 

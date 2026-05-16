@@ -26,24 +26,28 @@ class CommentsTable
             ->modifyQueryUsing(fn ($query) => $query->with(['article', 'author']))
             ->columns([
                 TextColumn::make('article.title')
+                    ->label('Artikel')
                     ->searchable()
                     ->limit(40),
                 TextColumn::make('guest_name')
-                    ->label('Guest')
+                    ->label('Tamu')
                     ->searchable()
-                    ->placeholder('Registered user'),
+                    ->placeholder('Pengguna terdaftar'),
                 TextColumn::make('author.name')
-                    ->label('User')
+                    ->label('Pengguna')
                     ->searchable()
                     ->placeholder('-'),
                 TextColumn::make('content')
+                    ->label('Komentar')
                     ->limit(70)
                     ->searchable(),
                 TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (CommentStatus $state): string => $state->label())
                     ->color(fn (CommentStatus $state): string => $state->color()),
                 TextColumn::make('approved_at')
+                    ->label('Disetujui')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('created_at')
@@ -53,21 +57,26 @@ class CommentsTable
             ])
             ->filters([
                 SelectFilter::make('status')
+                    ->label('Status')
                     ->options(CommentStatus::options()),
                 TrashedFilter::make(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->recordActions([
                 Action::make('approve')
+                    ->label('Setujui')
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (Comment $record): bool => $record->status !== CommentStatus::Approved)
                     ->action(fn (Comment $record): bool => $record->approve()),
                 Action::make('reject')
+                    ->label('Tolak')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn (Comment $record): bool => $record->status === CommentStatus::Pending)
                     ->action(fn (Comment $record): bool => $record->reject()),
                 Action::make('spam')
+                    ->label('Spam')
                     ->color('gray')
                     ->requiresConfirmation()
                     ->visible(fn (Comment $record): bool => $record->status !== CommentStatus::Spam)
@@ -78,14 +87,17 @@ class CommentsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('approve')
+                        ->label('Setujui')
                         ->color('success')
                         ->requiresConfirmation()
                         ->action(fn (Collection $records): bool => $records->each->approve()->isNotEmpty()),
                     BulkAction::make('reject')
+                        ->label('Tolak')
                         ->color('danger')
                         ->requiresConfirmation()
                         ->action(fn (Collection $records): bool => $records->each->reject()->isNotEmpty()),
                     BulkAction::make('spam')
+                        ->label('Spam')
                         ->color('gray')
                         ->requiresConfirmation()
                         ->action(fn (Collection $records): bool => $records->each->markAsSpam()->isNotEmpty()),

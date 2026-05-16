@@ -13,9 +13,9 @@ enum CommentStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Pending => 'Pending',
-            self::Approved => 'Approved',
-            self::Rejected => 'Rejected',
+            self::Pending => 'Menunggu',
+            self::Approved => 'Disetujui',
+            self::Rejected => 'Ditolak',
             self::Spam => 'Spam',
         };
     }

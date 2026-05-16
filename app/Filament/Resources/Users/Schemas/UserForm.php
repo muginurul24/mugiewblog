@@ -18,11 +18,12 @@ class UserForm
     {
         return $schema
             ->components([
-                Section::make('Identity')
+                Section::make('Identitas')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
+                                    ->label('Nama')
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('username')
@@ -30,7 +31,7 @@ class UserForm
                                     ->maxLength(255)
                                     ->unique(ignoreRecord: true),
                                 TextInput::make('email')
-                                    ->label('Email address')
+                                    ->label('Alamat email')
                                     ->email()
                                     ->required()
                                     ->maxLength(255)
@@ -44,7 +45,7 @@ class UserForm
                             ->columnSpanFull(),
                     ])
                     ->columnSpan(2),
-                Section::make('Access')
+                Section::make('Akses')
                     ->schema([
                         Select::make('role')
                             ->options(UserRole::options())
@@ -52,20 +53,22 @@ class UserForm
                             ->disabled(fn (): bool => ! auth()->user()?->isAdmin())
                             ->required(),
                         Toggle::make('is_active')
+                            ->label('Aktif')
                             ->default(true)
                             ->required(),
                         Toggle::make('two_factor_enabled')
-                            ->label('2FA enabled')
+                            ->label('2FA aktif')
                             ->default(false)
                             ->required(),
                         TextInput::make('password')
+                            ->label('Password')
                             ->password()
                             ->revealable()
                             ->dehydrated(fn (?string $state): bool => filled($state))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->maxLength(255),
                     ]),
-                Section::make('Profile Links')
+                Section::make('Tautan profil')
                     ->schema([
                         TextInput::make('avatar')
                             ->url()

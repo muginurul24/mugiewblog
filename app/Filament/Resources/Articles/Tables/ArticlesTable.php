@@ -29,33 +29,40 @@ class ArticlesTable
             ->modifyQueryUsing(fn ($query) => $query->with(['author', 'category']))
             ->columns([
                 ImageColumn::make('featured_image_url')
-                    ->label('Image')
+                    ->label('Gambar')
                     ->square(),
                 TextColumn::make('title')
+                    ->label('Judul')
                     ->searchable()
                     ->sortable()
                     ->description(fn (Article $record): ?string => $record->excerpt),
                 TextColumn::make('author.name')
+                    ->label('Penulis')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('category.name')
+                    ->label('Kategori')
                     ->badge()
                     ->searchable(),
                 TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (ArticleStatus $state): string => $state->label())
                     ->color(fn (ArticleStatus $state): string => $state->color()),
                 IconColumn::make('is_featured')
-                    ->label('Featured')
+                    ->label('Unggulan')
                     ->boolean(),
                 TextColumn::make('published_at')
+                    ->label('Terbit')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('reading_time')
+                    ->label('Baca')
                     ->suffix(' min')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('view_count')
+                    ->label('Views')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
@@ -65,11 +72,14 @@ class ArticlesTable
             ])
             ->filters([
                 SelectFilter::make('status')
+                    ->label('Status')
                     ->options(ArticleStatus::options()),
                 SelectFilter::make('category')
+                    ->label('Kategori')
                     ->relationship('category', 'name'),
                 TrashedFilter::make(),
             ])
+            ->defaultSort('updated_at', 'desc')
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -77,6 +87,7 @@ class ArticlesTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('publish')
+                        ->label('Terbitkan')
                         ->color('success')
                         ->requiresConfirmation()
                         ->action(fn (Collection $records): bool => $records->each->update([
@@ -85,7 +96,7 @@ class ArticlesTable
                             'scheduled_at' => null,
                         ])->isNotEmpty()),
                     BulkAction::make('changeCategory')
-                        ->label('Change category')
+                        ->label('Ubah kategori')
                         ->schema([
                             Select::make('category_id')
                                 ->options(fn (): array => Category::query()

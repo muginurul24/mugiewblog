@@ -16,12 +16,13 @@ class TagsTable
             ->modifyQueryUsing(fn ($query) => $query->withCount('articles'))
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nama')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('slug')
                     ->searchable(),
                 TextColumn::make('articles_count')
-                    ->label('Articles')
+                    ->label('Artikel')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')

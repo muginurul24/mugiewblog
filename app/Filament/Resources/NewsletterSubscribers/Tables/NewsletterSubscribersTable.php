@@ -16,21 +16,30 @@ class NewsletterSubscribersTable
         return $table
             ->columns([
                 TextColumn::make('email')
-                    ->label('Email address')
+                    ->label('Alamat email')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
+                    ->label('Nama')
                     ->searchable(),
                 TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'subscribed' => 'Aktif',
+                        'unsubscribed' => 'Berhenti',
+                        default => 'Menunggu',
+                    })
                     ->color(fn (string $state): string => match ($state) {
                         'subscribed' => 'success',
                         'unsubscribed' => 'danger',
                         default => 'warning',
                     }),
                 TextColumn::make('source')
+                    ->label('Sumber')
                     ->searchable(),
                 TextColumn::make('subscribed_at')
+                    ->label('Aktif sejak')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('created_at')
@@ -40,12 +49,14 @@ class NewsletterSubscribersTable
             ])
             ->filters([
                 SelectFilter::make('status')
+                    ->label('Status')
                     ->options([
-                        'pending' => 'Pending',
-                        'subscribed' => 'Subscribed',
-                        'unsubscribed' => 'Unsubscribed',
+                        'pending' => 'Menunggu',
+                        'subscribed' => 'Aktif',
+                        'unsubscribed' => 'Berhenti',
                     ]),
             ])
+            ->defaultSort('created_at', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

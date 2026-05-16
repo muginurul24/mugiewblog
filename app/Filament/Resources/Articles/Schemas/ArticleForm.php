@@ -10,7 +10,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -23,9 +22,11 @@ class ArticleForm
     {
         return $schema
             ->components([
-                Section::make('Content')
+                Section::make('Naskah')
+                    ->description('Judul, slug, ringkasan, dan isi utama artikel.')
                     ->schema([
                         TextInput::make('title')
+                            ->label('Judul')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
@@ -35,24 +36,28 @@ class ArticleForm
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
                         Textarea::make('excerpt')
+                            ->label('Ringkasan')
                             ->rows(3)
                             ->maxLength(500)
                             ->columnSpanFull(),
                         MarkdownEditor::make('content_md')
-                            ->label('Content')
+                            ->label('Isi artikel')
                             ->required()
                             ->columnSpanFull(),
                     ])
+                    ->columns(2)
                     ->columnSpan(2),
-                Section::make('Publishing')
+                Section::make('Publikasi')
+                    ->description('Atur pemilik, taksonomi, status, dan jadwal tayang.')
                     ->schema([
                         Select::make('user_id')
-                            ->label('Author')
+                            ->label('Penulis')
                             ->relationship('author', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
                         Select::make('category_id')
+                            ->label('Kategori')
                             ->relationship('category', 'name')
                             ->searchable()
                             ->preload()
@@ -71,6 +76,7 @@ class ArticleForm
                                     ->maxLength(500),
                             ]),
                         Select::make('tags')
+                            ->label('Tag')
                             ->relationship('tags', 'name')
                             ->multiple()
                             ->searchable()
@@ -90,20 +96,24 @@ class ArticleForm
                                     ->maxLength(500),
                             ]),
                         Select::make('status')
+                            ->label('Status')
                             ->options(ArticleStatus::options())
                             ->default(ArticleStatus::Draft->value)
                             ->required()
                             ->live(),
                         DateTimePicker::make('published_at')
+                            ->label('Terbit pada')
                             ->seconds(false)
                             ->visible(fn (Get $get): bool => $get('status') === ArticleStatus::Published->value),
                         DateTimePicker::make('scheduled_at')
+                            ->label('Jadwal tayang')
                             ->seconds(false)
                             ->visible(fn (Get $get): bool => $get('status') === ArticleStatus::Scheduled->value),
                         Toggle::make('is_featured')
-                            ->label('Featured'),
+                            ->label('Artikel unggulan'),
                     ]),
                 Section::make('Media & SEO')
+                    ->description('Gambar utama dan metadata mesin pencari.')
                     ->schema([
                         FileUpload::make('featured_image')
                             ->image()
@@ -113,26 +123,17 @@ class ArticleForm
                             ->imageEditor()
                             ->columnSpanFull(),
                         TextInput::make('featured_image_alt')
+                            ->label('Alt text gambar utama')
                             ->maxLength(255)
                             ->columnSpanFull(),
                         TextInput::make('meta_title')
+                            ->label('Meta title')
                             ->maxLength(60),
                         Textarea::make('meta_description')
+                            ->label('Meta description')
                             ->rows(3)
                             ->maxLength(160)
                             ->columnSpanFull(),
-                    ])
-                    ->columnSpanFull(),
-                Grid::make(2)
-                    ->schema([
-                        TextInput::make('reading_time')
-                            ->numeric()
-                            ->minValue(1)
-                            ->default(1),
-                        TextInput::make('view_count')
-                            ->numeric()
-                            ->minValue(0)
-                            ->default(0),
                     ])
                     ->columnSpanFull(),
             ])

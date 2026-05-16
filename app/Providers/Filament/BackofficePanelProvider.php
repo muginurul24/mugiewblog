@@ -54,6 +54,11 @@ class BackofficePanelProvider extends PanelProvider
             ])
             ->viteTheme('resources/css/filament/backoffice/theme.css')
             ->sidebarCollapsibleOnDesktop()
+            ->navigationGroups([
+                'Editorial',
+                'Interaksi',
+                'Sistem',
+            ])
             ->databaseNotifications()
             ->databaseNotificationsPolling('20s')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

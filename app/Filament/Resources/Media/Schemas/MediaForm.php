@@ -16,6 +16,7 @@ class MediaForm
         return $schema
             ->components([
                 Section::make('File')
+                    ->description('Unggah aset yang siap dipakai di konten publik.')
                     ->schema([
                         FileUpload::make('path')
                             ->label('File')
@@ -29,25 +30,30 @@ class MediaForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('filename')
+                                    ->label('Nama file')
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('original_name')
+                                    ->label('Nama asli')
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('mime_type')
+                                    ->label('MIME type')
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('size')
+                                    ->label('Ukuran byte')
                                     ->numeric()
                                     ->minValue(0)
                                     ->required(),
                             ]),
                     ])
                     ->columnSpan(2),
-                Section::make('Ownership')
+                Section::make('Kepemilikan')
+                    ->description('Pemilik aset, folder, dan alt text publik.')
                     ->schema([
                         Select::make('user_id')
-                            ->label('Uploader')
+                            ->label('Pengunggah')
                             ->relationship('uploader', 'name')
                             ->searchable()
                             ->preload()
@@ -57,6 +63,7 @@ class MediaForm
                             ->required()
                             ->maxLength(255),
                         TextInput::make('alt_text')
+                            ->label('Alt text')
                             ->maxLength(255),
                     ]),
             ])

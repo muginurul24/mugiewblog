@@ -21,30 +21,32 @@ class UsersTable
             ->modifyQueryUsing(fn ($query) => $query->withCount(['articles', 'comments']))
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nama')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('username')
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email address')
+                    ->label('Alamat email')
                     ->searchable(),
                 TextColumn::make('role')
+                    ->label('Peran')
                     ->badge()
                     ->formatStateUsing(fn (UserRole $state): string => $state->label())
                     ->color(fn (UserRole $state): string => $state->color())
                     ->sortable(),
                 IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label('Aktif')
                     ->boolean(),
                 IconColumn::make('two_factor_enabled')
                     ->label('2FA')
                     ->boolean(),
                 TextColumn::make('articles_count')
-                    ->label('Articles')
+                    ->label('Artikel')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('comments_count')
-                    ->label('Comments')
+                    ->label('Komentar')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('email_verified_at')
@@ -66,15 +68,19 @@ class UsersTable
             ])
             ->filters([
                 SelectFilter::make('role')
+                    ->label('Peran')
                     ->options(UserRole::options()),
             ])
+            ->defaultSort('created_at', 'desc')
             ->recordActions([
                 Action::make('suspend')
+                    ->label('Nonaktifkan')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn (User $record): bool => $record->is_active)
                     ->action(fn (User $record): bool => $record->update(['is_active' => false])),
                 Action::make('activate')
+                    ->label('Aktifkan')
                     ->color('success')
                     ->visible(fn (User $record): bool => ! $record->is_active)
                     ->action(fn (User $record): bool => $record->update(['is_active' => true])),

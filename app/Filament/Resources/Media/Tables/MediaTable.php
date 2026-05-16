@@ -19,21 +19,25 @@ class MediaTable
             ->modifyQueryUsing(fn ($query) => $query->with('uploader'))
             ->columns([
                 ImageColumn::make('url')
-                    ->label('Preview')
+                    ->label('Pratinjau')
                     ->state(fn (Media $record): string => $record->url())
                     ->square(),
                 TextColumn::make('original_name')
+                    ->label('Nama file')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('folder')
+                    ->label('Folder')
                     ->badge()
                     ->searchable(),
                 TextColumn::make('uploader.name')
+                    ->label('Pengunggah')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('mime_type')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('size')
+                    ->label('Ukuran')
                     ->formatStateUsing(fn (int $state): string => number_format($state / 1024, 1).' KB')
                     ->sortable(),
                 TextColumn::make('created_at')
@@ -43,12 +47,14 @@ class MediaTable
             ])
             ->filters([
                 SelectFilter::make('folder')
+                    ->label('Folder')
                     ->options(fn (): array => Media::query()
                         ->distinct()
                         ->orderBy('folder')
                         ->pluck('folder', 'folder')
                         ->all()),
             ])
+            ->defaultSort('created_at', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

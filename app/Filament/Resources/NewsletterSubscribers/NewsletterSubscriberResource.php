@@ -19,9 +19,17 @@ class NewsletterSubscriberResource extends Resource
 {
     protected static ?string $model = NewsletterSubscriber::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Engagement';
+    protected static string|UnitEnum|null $navigationGroup = 'Interaksi';
+
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $navigationLabel = 'Newsletter';
+
+    protected static ?string $modelLabel = 'subscriber';
+
+    protected static ?string $pluralModelLabel = 'subscriber';
 
     protected static ?string $recordTitleAttribute = 'email';
 

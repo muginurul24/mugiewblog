@@ -1,10 +1,18 @@
 <?php
 
+use App\Filament\Resources\Articles\ArticleResource;
+use App\Filament\Resources\Categories\CategoryResource;
+use App\Filament\Resources\Comments\CommentResource;
+use App\Filament\Resources\Media\MediaResource;
+use App\Filament\Resources\NewsletterSubscribers\NewsletterSubscriberResource;
+use App\Filament\Resources\Tags\TagResource;
+use App\Filament\Resources\Users\UserResource;
 use App\Filament\Widgets\ArticleCategoriesChart;
 use App\Filament\Widgets\ArticleViewsChart;
 use App\Filament\Widgets\BlogStats;
 use App\Models\Article;
 use App\Models\User;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -18,7 +26,9 @@ it('should render backoffice article resource when user is admin', function () {
     $this->actingAs($admin)
         ->get(route('filament.backoffice.resources.articles.index'))
         ->assertSuccessful()
-        ->assertSeeText('Article');
+        ->assertSeeText('Artikel')
+        ->assertSeeText('Semua artikel')
+        ->assertSeeText('Terbit');
 });
 
 it('should render admin dashboard at the production admin path', function () {
@@ -88,10 +98,22 @@ it('should render system resources when user is admin', function () {
     $this->actingAs($admin)
         ->get(route('filament.backoffice.resources.users.index'))
         ->assertSuccessful()
-        ->assertSeeText('User');
+        ->assertSeeText('Pengguna')
+        ->assertSeeText('Semua pengguna')
+        ->assertSeeText('Pembaca');
 
     $this->actingAs($admin)
         ->get(route('filament.backoffice.resources.media.index'))
         ->assertSuccessful()
         ->assertSeeText('Media');
+});
+
+it('should expose meaningful backoffice navigation icons', function () {
+    expect(ArticleResource::getNavigationIcon())->toBe(Heroicon::OutlinedDocumentText)
+        ->and(CategoryResource::getNavigationIcon())->toBe(Heroicon::OutlinedFolder)
+        ->and(TagResource::getNavigationIcon())->toBe(Heroicon::OutlinedHashtag)
+        ->and(CommentResource::getNavigationIcon())->toBe(Heroicon::OutlinedChatBubbleLeftRight)
+        ->and(NewsletterSubscriberResource::getNavigationIcon())->toBe(Heroicon::OutlinedEnvelope)
+        ->and(UserResource::getNavigationIcon())->toBe(Heroicon::OutlinedUserGroup)
+        ->and(MediaResource::getNavigationIcon())->toBe(Heroicon::OutlinedPhoto);
 });

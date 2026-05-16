@@ -15,8 +15,11 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 new class extends Component {
+    use WithPagination;
+
     public string $slug;
 
     #[Validate('required|string|max:80')]
@@ -36,10 +39,13 @@ new class extends Component {
 
     public function mount(Article $article): void
     {
-        abort_unless($article->status === ArticleStatus::Published && $article->published_at !== null && $article->published_at->lte(now()), 404);
+        abort_unless($this->canViewArticle($article), 404);
 
         $this->slug = $article->slug;
-        $article->increment('view_count');
+
+        if ($article->status === ArticleStatus::Published && $article->published_at?->lte(now())) {
+            $article->increment('view_count');
+        }
     }
 
     public function submitComment(): void
@@ -184,15 +190,27 @@ new class extends Component {
         return $depth;
     }
 
+    private function canViewArticle(Article $article): bool
+    {
+        if ($article->status === ArticleStatus::Published && $article->published_at?->lte(now())) {
+            return true;
+        }
+
+        return auth()->user()?->can('view', $article) === true;
+    }
+
     #[Computed]
     public function article(): Article
     {
-        return Article::query()
-            ->published()
+        $article = Article::query()
             ->where('slug', $this->slug)
             ->with(['author', 'category', 'tags'])
             ->withCount(['comments' => fn(Builder $query) => $query->approved()])
             ->firstOrFail();
+
+        abort_unless($this->canViewArticle($article), 404);
+
+        return $article;
     }
 
     #[Computed]
@@ -210,7 +228,7 @@ new class extends Component {
             ->whereNull('parent_id')
             ->with(['author', 'repliesRecursive.author'])
             ->latest('approved_at')
-            ->get();
+            ->paginate(20, pageName: 'commentsPage');
     }
 
     #[Computed]
@@ -452,6 +470,12 @@ return () => {
                                 Belum ada komentar approved.</p>
                         @endforelse
                     </div>
+
+                    @if ($this->comments->hasPages())
+                        <div class="mt-6">
+                            {{ $this->comments->links() }}
+                        </div>
+                    @endif
                 </section>
 
                 @if ($this->relatedArticles->isNotEmpty())

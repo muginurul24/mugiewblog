@@ -117,7 +117,7 @@ new class extends Component {
             ->with(['author', 'category'])
             ->withCount(['comments' => fn (Builder $query) => $query->approved()])
             ->latest('published_at')
-            ->paginate(8);
+            ->paginate(11);
     }
 
     #[Computed]
@@ -207,6 +207,17 @@ new class extends Component {
             </div>
 
             @if ($this->articles->isNotEmpty())
+                <div wire:loading class="grid gap-5 sm:grid-cols-2" data-home-skeleton>
+                    @foreach (range(1, 4) as $placeholder)
+                        <div class="article-card animate-pulse p-5">
+                            <div class="h-40 rounded-lg bg-surface-100 dark:bg-surface-800"></div>
+                            <div class="mt-4 h-4 w-24 rounded bg-surface-100 dark:bg-surface-800"></div>
+                            <div class="mt-4 h-6 w-full rounded bg-surface-100 dark:bg-surface-800"></div>
+                            <div class="mt-2 h-6 w-4/5 rounded bg-surface-100 dark:bg-surface-800"></div>
+                            <div class="mt-4 h-4 w-full rounded bg-surface-100 dark:bg-surface-800"></div>
+                        </div>
+                    @endforeach
+                </div>
                 <div class="grid gap-5 sm:grid-cols-2" wire:loading.class="opacity-50">
                     @foreach ($this->articles as $article)
                         <x-article-card :article="$article" wire:key="article-{{ $article->id }}" class="motion-safe:animate__animated motion-safe:animate__fadeInUp motion-safe:animate__faster" />

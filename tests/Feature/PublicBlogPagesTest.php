@@ -3,6 +3,7 @@
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\User;
 use App\Support\ArticleContent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -90,6 +91,18 @@ it('should render article page when article is published', function () {
         ->assertSeeText($article->title)
         ->assertSeeText('Daftar Isi')
         ->assertSeeText('Komentar');
+});
+
+it('should allow authors to preview their own draft articles while keeping guests out', function () {
+    $author = User::factory()->author()->create();
+    $draft = Article::factory()->draft()->for($author, 'author')->create();
+
+    $this->get($draft->url())->assertNotFound();
+
+    $this->actingAs($author)
+        ->get($draft->url())
+        ->assertSuccessful()
+        ->assertSeeText($draft->title);
 });
 
 it('should render about page with editorial context and real blog stats', function () {
@@ -197,6 +210,14 @@ it('should render search results when query matches content', function () {
         ->assertSeeText('Hasil')
         ->assertSeeText('Laravel')
         ->assertSee('<mark', false);
+});
+
+it('should expose loading skeletons on the homepage article grid', function () {
+    $this->seed();
+
+    $this->get(route('home'))
+        ->assertSuccessful()
+        ->assertSee('data-home-skeleton', false);
 });
 
 it('should render rss feed and sitemap when published content exists', function () {

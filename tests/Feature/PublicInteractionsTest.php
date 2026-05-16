@@ -124,3 +124,17 @@ it('should ignore comment honeypot submissions when spam field is filled', funct
 
     expect(Comment::query()->count())->toBe(0);
 });
+
+it('should paginate root comments after twenty approved entries', function () {
+    $article = Article::factory()->published()->create();
+    Comment::factory()
+        ->count(21)
+        ->for($article)
+        ->create();
+
+    $component = Livewire::test('pages::article-show', ['article' => $article]);
+    $comments = $component->instance()->comments;
+
+    expect($comments->total())->toBe(21)
+        ->and($comments->perPage())->toBe(20);
+});

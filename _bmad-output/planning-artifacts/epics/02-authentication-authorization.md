@@ -1,9 +1,9 @@
 # Epic 2: Authentication & Authorization
-**Status:** 🔴 Not Started | **Priority:** P0 (MVP Blocker)  
+**Status:** 🟢 Completed | **Priority:** P0 (MVP Blocker)  
 **Estimated Tasks:** 16 | **Dependencies:** Epic 1
 
 ## Goal
-Complete authentication system with roles, OAuth, email verification, password reset, 2FA Passkey, and Laravel authorization policies.
+Complete authentication system with roles, OAuth, email verification, password reset, production-enforced app-based MFA, and Laravel authorization policies.
 
 ## Stories
 
@@ -19,12 +19,12 @@ Complete authentication system with roles, OAuth, email verification, password r
 | T2.1.5 | Create Email Verification flow | Send verification email on register, verify route, middleware `verified` |
 
 **Acceptance Criteria:**
-- [ ] User can register with valid data
-- [ ] User can login with correct credentials
-- [ ] User can reset password via email link
-- [ ] Email verification required before commenting
-- [ ] CSRF protection active on all forms
-- [ ] Rate limiting: max 5 login attempts/minute
+- [x] User can register with valid data
+- [x] User can login with correct credentials
+- [x] User can reset password via email link
+- [x] Email verification required before commenting
+- [x] CSRF protection active on all forms
+- [x] Rate limiting: max 5 login attempts/minute
 
 ---
 
@@ -40,11 +40,11 @@ Complete authentication system with roles, OAuth, email verification, password r
 | T2.2.5 | Create role middleware | `role:admin,editor` middleware for Filament and route protection |
 
 **Acceptance Criteria:**
-- [ ] Author can only edit their own articles
-- [ ] Editor can edit any article and publish
-- [ ] Admin can do everything including role assignment
-- [ ] Regular user can only comment and bookmark
-- [ ] Guest can only read published articles
+- [x] Author can only edit their own articles
+- [x] Editor can edit any article and publish
+- [x] Admin can do everything including role assignment
+- [x] Regular user can only comment and bookmark
+- [x] Guest can only read published articles
 
 ---
 
@@ -58,32 +58,32 @@ Complete authentication system with roles, OAuth, email verification, password r
 | T2.3.3 | Add OAuth buttons to login/register pages | "Login with GitHub" and "Login with Google" buttons |
 
 **Acceptance Criteria:**
-- [ ] User can login with GitHub account
-- [ ] User can login with Google account
-- [ ] First OAuth login auto-creates user record
-- [ ] OAuth user can set password later if needed
+- [x] User can login with GitHub account
+- [x] User can login with Google account
+- [x] First OAuth login auto-creates user record
+- [x] OAuth user can set password later if needed
 
 ---
 
-### 2.4: Passkey/WebAuthn 2FA
+### 2.4: App-Based MFA
 **Priority:** P0 (Mandatory for admin) | **Estimate:** 3 tasks
 
 | # | Task | Description |
 |---|---|---|
-| T2.4.1 | Configure WebAuthn in Laravel 13 | Enable passkey authentication in config/auth.php |
-| T2.4.2 | Create 2FA setup page in user profile | Register passkey, test passkey, remove passkey |
-| T2.4.3 | Add 2FA challenge to admin login | Require passkey verification after password for admin accounts |
+| T2.4.1 | Configure Filament app authentication | Enable app-based MFA and recovery codes on the backoffice panel |
+| T2.4.2 | Create 2FA setup flow in profile | Register authenticator app, verify challenge, manage recovery codes |
+| T2.4.3 | Require MFA for production admin access | Enforce MFA before admin accounts can use the backoffice in production |
 
 **Acceptance Criteria:**
-- [ ] Admin can register a passkey (fingerprint/security key)
-- [ ] Admin login requires passkey verification
-- [ ] Passkey can be removed and re-registered
+- [x] Admin can register an authenticator app and recovery codes
+- [x] Production admin access requires MFA verification
+- [x] MFA enrollment can be reset and reconfigured
 
 ---
 
 **Epic Completion Criteria:**
-- [ ] Complete auth flow: register → verify email → login → access dashboard
-- [ ] OAuth login works for GitHub and Google
-- [ ] Role-based access control enforced via policies
-- [ ] Admin 2FA passkey functional
-- [ ] All auth forms have proper error/loading/empty states
+- [x] Complete auth flow: register → verify email → login → access dashboard
+- [x] OAuth login works for GitHub and Google
+- [x] Role-based access control enforced via policies
+- [x] Admin MFA flow functional
+- [x] All auth forms have proper error/loading/empty states

@@ -1,5 +1,5 @@
 # Epic 6: Theme & UX — Dark Mode, Accessibility, Performance
-**Status:** 🔴 Not Started | **Priority:** P0 (MVP Blocker)  
+**Status:** 🟢 Completed | **Priority:** P0 (MVP Blocker)  
 **Estimated Tasks:** 15 | **Dependencies:** Epic 4
 
 ## Goal
@@ -18,11 +18,11 @@ Implement anti-FOUC dark/light mode, WCAG 2.1 AA accessibility, Tailwind CSS v4 
 | T6.1.4 | Add theme color transitions | Smooth CSS transitions on background and text colors (300ms) |
 
 **Acceptance Criteria:**
-- [ ] Zero flicker (FOUC) on page load in dark mode
-- [ ] Toggle cycles through: Light → Dark (future: System)
-- [ ] Theme persists across page visits
-- [ ] System preference respected when no stored preference
-- [ ] Chrome DevTools throttling test shows no white flash
+- [x] Zero flicker (FOUC) on page load in dark mode
+- [x] Toggle cycles through: Light → Dark (future: System)
+- [x] Theme persists across page visits
+- [x] System preference respected when no stored preference
+- [x] Chrome DevTools throttling test shows no white flash
 
 ---
 
@@ -39,14 +39,14 @@ Implement anti-FOUC dark/light mode, WCAG 2.1 AA accessibility, Tailwind CSS v4 
 | T6.2.6 | Verify FontAwesome + Animate.css | Confirm `@import` works for both, test accessibility, test `prefers-reduced-motion` |
 
 **Acceptance Criteria:**
-- [ ] No `tailwind.config.js` file (CSS-first config)
-- [ ] Custom colors defined with OKLCH
-- [ ] `bun run build` produces optimized CSS
-- [ ] Dark mode variants work via `dark:` prefix
-- [ ] `prose dark:prose-invert` styles article content correctly
-- [ ] Forms auto-styled with focus rings and proper border colors
-- [ ] FA icons render in all three styles, accessible (aria-hidden)
-- [ ] Animate.css respects `prefers-reduced-motion`
+- [x] No `tailwind.config.js` file (CSS-first config)
+- [x] Custom colors defined with OKLCH
+- [x] `bun run build` produces optimized CSS
+- [x] Dark mode variants work via `dark:` prefix
+- [x] `prose dark:prose-invert` styles article content correctly
+- [x] Forms auto-styled with focus rings and proper border colors
+- [x] FA icons render in all three styles, accessible (aria-hidden)
+- [x] Animate.css respects `prefers-reduced-motion`
 
 ---
 
@@ -60,10 +60,10 @@ Implement anti-FOUC dark/light mode, WCAG 2.1 AA accessibility, Tailwind CSS v4 
 | T6.3.3 | Add screen reader support | Proper heading hierarchy, alt text for images, form labels, aria-live regions for dynamic content |
 
 **Acceptance Criteria:**
-- [ ] Lighthouse Accessibility score ≥ 95
-- [ ] All interactive elements focusable via keyboard
-- [ ] Skip-to-content link visible on focus
-- [ ] Screen reader announces page changes in SPA
+- [x] Lighthouse Accessibility score ≥ 95
+- [x] All interactive elements focusable via keyboard
+- [x] Skip-to-content link visible on focus
+- [x] Screen reader announces page changes in SPA
 
 ---
 
@@ -76,15 +76,15 @@ Implement anti-FOUC dark/light mode, WCAG 2.1 AA accessibility, Tailwind CSS v4 
 | T6.4.2 | Optimize image loading | WebP format, lazy loading for below-fold images, responsive sizes, blur placeholder |
 
 **Acceptance Criteria:**
-- [ ] Lighthouse Performance ≥ 95 (mobile)
-- [ ] TTFB < 200ms for cached pages
-- [ ] Cache hit ratio > 90% for public pages
-- [ ] Images load progressive with blur placeholder
+- [x] Lighthouse Performance ≥ 95 (mobile)
+- [x] TTFB < 200ms for cached pages
+- [x] Cache hit ratio > 90% for public pages
+- [x] Images load progressive with blur placeholder
 
 ---
 
 **Epic Completion Criteria:**
-- [ ] Dark mode works without FOUC on all pages
-- [ ] Tailwind v4 configured with CSS-first approach
-- [ ] WCAG 2.1 AA compliance
-- [ ] Lighthouse ≥ 95 on mobile and desktop
+- [x] Dark mode works without FOUC on all pages
+- [x] Tailwind v4 configured with CSS-first approach
+- [x] WCAG 2.1 AA compliance
+- [x] Lighthouse ≥ 95 on mobile and desktop

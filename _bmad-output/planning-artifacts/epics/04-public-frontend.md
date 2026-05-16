@@ -1,5 +1,5 @@
 # Epic 4: Public Frontend — Livewire SPA
-**Status:** 🔴 Not Started | **Priority:** P0 (MVP Blocker)  
+**Status:** 🟢 Completed | **Priority:** P0 (MVP Blocker)  
 **Estimated Tasks:** 18 | **Dependencies:** Epic 1
 
 ## Goal
@@ -18,10 +18,10 @@ Build the complete public-facing blog frontend using Livewire 4 SPA with full-pa
 | T4.1.4 | Configure SPA routing | `Route::livewire()` for all public routes, `config/livewire.php` layout setting |
 
 **Acceptance Criteria:**
-- [ ] SPA shell renders without full page reload on navigation
-- [ ] Header is sticky on scroll
-- [ ] Navigation highlights current page
-- [ ] Footer consistent across all pages
+- [x] SPA shell renders without full page reload on navigation
+- [x] Header is sticky on scroll
+- [x] Navigation highlights current page
+- [x] Footer consistent across all pages
 
 ---
 
@@ -36,12 +36,12 @@ Build the complete public-facing blog frontend using Livewire 4 SPA with full-pa
 | T4.2.4 | Add skeleton loading states | Skeleton placeholders while articles load (wire:loading) |
 
 **Acceptance Criteria:**
-- [ ] Homepage displays 12 articles per page
-- [ ] First article (featured) spans wider
-- [ ] Category/tag filter works via query string
-- [ ] Pagination UI functional
-- [ ] Skeleton states display during loading
-- [ ] Empty state shows "Belum ada artikel" message
+- [x] Homepage displays 12 articles per page
+- [x] First article (featured) spans wider
+- [x] Category/tag filter works via query string
+- [x] Pagination UI functional
+- [x] Skeleton states display during loading
+- [x] Empty state shows "Belum ada artikel" message
 
 ---
 
@@ -57,13 +57,13 @@ Build the complete public-facing blog frontend using Livewire 4 SPA with full-pa
 | T4.3.5 | Create RelatedPosts component | Fetch 3 related articles by same category/tags, exclude current |
 
 **Acceptance Criteria:**
-- [ ] Article renders markdown content as HTML
-- [ ] Table of contents auto-generated from h2/h3
-- [ ] Progress bar fills as user scrolls
-- [ ] Share buttons work for all platforms
-- [ ] Related posts show at bottom
-- [ ] 404 page for non-existent or draft articles
-- [ ] OG meta tags populated dynamically
+- [x] Article renders markdown content as HTML
+- [x] Table of contents auto-generated from h2/h3
+- [x] Progress bar fills as user scrolls
+- [x] Share buttons work for all platforms
+- [x] Related posts show at bottom
+- [x] 404 page for non-existent or draft articles
+- [x] OG meta tags populated dynamically
 
 ---
 
@@ -77,9 +77,9 @@ Build the complete public-facing blog frontend using Livewire 4 SPA with full-pa
 | T4.4.3 | Add breadcrumb navigation | Category → Article breadcrumbs with structured data |
 
 **Acceptance Criteria:**
-- [ ] Category page shows articles filtered by category
-- [ ] Tag page shows articles filtered by tag
-- [ ] Breadcrumbs rendered with Schema.org structure
+- [x] Category page shows articles filtered by category
+- [x] Tag page shows articles filtered by tag
+- [x] Breadcrumbs rendered with Schema.org structure
 
 ---
 
@@ -92,17 +92,17 @@ Build the complete public-facing blog frontend using Livewire 4 SPA with full-pa
 | T4.5.2 | Create SearchPage full-page component | Full search with pagination, highlighted keywords in excerpts, empty state |
 
 **Acceptance Criteria:**
-- [ ] Search bar in header works globally
-- [ ] Quick results dropdown shows 5 best matches
-- [ ] Full search page paginates results
-- [ ] Empty state for no results
-- [ ] Searches are rate-limited (30/min)
+- [x] Search bar in header works globally
+- [x] Quick results dropdown shows 5 best matches
+- [x] Full search page paginates results
+- [x] Empty state for no results
+- [x] Searches are rate-limited (30/min)
 
 ---
 
 **Epic Completion Criteria:**
-- [ ] All 7 public pages render via Livewire SPA
-- [ ] Navigation between pages without full reload
-- [ ] All components have loading, empty, and error states
-- [ ] Responsive design works on mobile (tested)
-- [ ] Eager loading prevents N+1 queries
+- [x] All 7 public pages render via Livewire SPA
+- [x] Navigation between pages without full reload
+- [x] All components have loading, empty, and error states
+- [x] Responsive design works on mobile (tested)
+- [x] Eager loading prevents N+1 queries

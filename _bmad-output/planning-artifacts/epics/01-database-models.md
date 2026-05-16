@@ -1,5 +1,5 @@
 # Epic 1: Database & Models Foundation
-**Status:** 🔴 Not Started | **Priority:** P0 (MVP Blocker)  
+**Status:** 🟢 Completed | **Priority:** P0 (MVP Blocker)  
 **Estimated Tasks:** 18 | **Dependencies:** None
 
 ## Goal
@@ -23,10 +23,10 @@ Establish the complete database schema, Eloquent models with relationships, enum
 | T1.1.9 | Create newsletter_subscribers migration | Double opt-in fields | `database/migrations/xxxx_create_newsletter_subscribers_table.php` |
 
 **Acceptance Criteria:**
-- [ ] `php artisan migrate:fresh` runs without errors
-- [ ] All foreign keys correctly defined with cascade rules
-- [ ] FULLTEXT index exists on articles (title, excerpt, content_md)
-- [ ] Proper indexes on all foreign keys and frequently queried columns
+- [x] `php artisan migrate:fresh` runs without errors
+- [x] All foreign keys correctly defined with cascade rules
+- [x] FULLTEXT index exists on articles (title, excerpt, content_md)
+- [x] Proper indexes on all foreign keys and frequently queried columns
 
 ---
 
@@ -38,9 +38,9 @@ Establish the complete database schema, Eloquent models with relationships, enum
 | T1.2.1 | Create all enums | ArticleStatus, UserRole, CommentStatus with labels and colors | `app/Enums/ArticleStatus.php`, `UserRole.php`, `CommentStatus.php` |
 
 **Acceptance Criteria:**
-- [ ] PHP 8.5 backed enums with `string` type
-- [ ] Each enum has `label()` and `color()` methods
-- [ ] `#[\NoDiscard]` attribute on return-value methods
+- [x] PHP 8.5 backed enums with `string` type
+- [x] Each enum has `label()` and `color()` methods
+- [x] `#[\NoDiscard]` attribute on return-value methods
 
 ---
 
@@ -59,10 +59,10 @@ Establish the complete database schema, Eloquent models with relationships, enum
 | T1.3.8 | Create Series + NewsletterSubscriber models | Basic relationships | `app/Models/Series.php`, `NewsletterSubscriber.php` |
 
 **Acceptance Criteria:**
-- [ ] All relationships return correct Eloquent relationship types
-- [ ] All casts defined using `casts()` method
-- [ ] Scopes defined for common query patterns
-- [ ] `php artisan tinker` can create and query all relationships
+- [x] All relationships return correct Eloquent relationship types
+- [x] All casts defined using `casts()` method
+- [x] Scopes defined for common query patterns
+- [x] `php artisan tinker` can create and query all relationships
 
 ---
 
@@ -75,16 +75,16 @@ Establish the complete database schema, Eloquent models with relationships, enum
 | T1.4.2 | Create DatabaseSeeder | Seed 1 admin, 5 categories, 15 tags, 20 published articles, 5 draft, 30 comments | `database/seeders/DatabaseSeeder.php` |
 
 **Acceptance Criteria:**
-- [ ] `php artisan db:seed` populates all tables with realistic data
-- [ ] Factory states work: `Article::factory()->published()->create()`
-- [ ] All foreign key relationships satisfied in seed data
+- [x] `php artisan db:seed` populates all tables with realistic data
+- [x] Factory states work: `Article::factory()->published()->create()`
+- [x] All foreign key relationships satisfied in seed data
 
 ---
 
 **Epic Completion Criteria:**
-- [ ] All 9 migrations created and runnable
-- [ ] All 8 models with complete relationships
-- [ ] All 3 enums with labels and colors
-- [ ] All factories with states
-- [ ] DatabaseSeeder populates meaningful demo data
-- [ ] `php artisan migrate:fresh --seed` runs successfully
+- [x] All 9 migrations created and runnable
+- [x] All 8 models with complete relationships
+- [x] All 3 enums with labels and colors
+- [x] All factories with states
+- [x] DatabaseSeeder populates meaningful demo data
+- [x] `php artisan migrate:fresh --seed` runs successfully

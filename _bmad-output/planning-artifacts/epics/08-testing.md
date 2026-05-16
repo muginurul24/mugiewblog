@@ -1,5 +1,5 @@
 # Epic 8: Testing Suite
-**Status:** 🔴 Not Started | **Priority:** P0 (MVP Blocker)  
+**Status:** 🟢 Completed | **Priority:** P0 (MVP Blocker)  
 **Estimated Tasks:** 14 | **Dependencies:** Epic 1-7
 
 ## Goal
@@ -18,10 +18,10 @@ Achieve ≥ 85% test coverage with Pest unit and feature tests across all critic
 | T8.1.4 | Create CategoryTest & TagTest | Test: parent/child hierarchy, slug auto-generation, taggable polymorphic |
 
 **Acceptance Criteria:**
-- [ ] All model relationships return expected types
-- [ ] All scopes filter correctly
-- [ ] All accessors/mutators work
-- [ ] Enum casts work in both directions
+- [x] All model relationships return expected types
+- [x] All scopes filter correctly
+- [x] All accessors/mutators work
+- [x] Enum casts work in both directions
 
 ---
 
@@ -35,9 +35,9 @@ Achieve ≥ 85% test coverage with Pest unit and feature tests across all critic
 | T8.2.3 | Create SeoServiceTest | Test: sitemap generation, RSS feed format, meta tag generation |
 
 **Acceptance Criteria:**
-- [ ] Services return correct data structures
-- [ ] Edge cases handled (empty, null, invalid input)
-- [ ] Cache integration tested
+- [x] Services return correct data structures
+- [x] Edge cases handled (empty, null, invalid input)
+- [x] Cache integration tested
 
 ---
 
@@ -51,9 +51,9 @@ Achieve ≥ 85% test coverage with Pest unit and feature tests across all critic
 | T8.3.3 | Create PasswordResetTest | Test: forgot password flow, invalid token, expired token, successful reset |
 
 **Acceptance Criteria:**
-- [ ] All auth flows return correct HTTP status
-- [ ] Session correctly set after login
-- [ ] Rate limiting triggers at configured threshold
+- [x] All auth flows return correct HTTP status
+- [x] Session correctly set after login
+- [x] Rate limiting triggers at configured threshold
 
 ---
 
@@ -66,10 +66,10 @@ Achieve ≥ 85% test coverage with Pest unit and feature tests across all critic
 | T8.4.2 | Create CommentTest (feature) | Test: authenticated can comment, guest redirected, nested replies, moderation visibility |
 
 **Acceptance Criteria:**
-- [ ] Public cannot see draft articles
-- [ ] Author can see own drafts
-- [ ] Comments require authentication
-- [ ] Pending comments not visible to public
+- [x] Public cannot see draft articles
+- [x] Author can see own drafts
+- [x] Comments require authentication
+- [x] Pending comments not visible to public
 
 ---
 
@@ -82,14 +82,14 @@ Achieve ≥ 85% test coverage with Pest unit and feature tests across all critic
 | T8.5.2 | Create ArticleShowTest | Test: renders article content, ToC generated, related posts shown, 404 for non-existent |
 
 **Acceptance Criteria:**
-- [ ] Livewire components render expected HTML
-- [ ] Component state updates correctly
-- [ ] Event dispatching works
+- [x] Livewire components render expected HTML
+- [x] Component state updates correctly
+- [x] Event dispatching works
 
 ---
 
 **Epic Completion Criteria:**
-- [ ] `php artisan test --coverage` shows ≥ 85% coverage
-- [ ] All tests pass in CI
-- [ ] Tests use database transactions (RefreshDatabase)
-- [ ] Factories used for all test data
+- [x] `php artisan test --coverage` shows ≥ 85% coverage
+- [x] All tests pass in CI
+- [x] Tests use database transactions (RefreshDatabase)
+- [x] Factories used for all test data

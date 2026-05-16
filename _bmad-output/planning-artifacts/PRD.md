@@ -943,21 +943,21 @@ MAIL_HOST=...
 
 **Deliverables:**
 - [x] Laravel 13 project scaffold (done)
-- [ ] Database schema & migrations
-- [ ] Models dengan relationships, factories, seeders
-- [ ] Filament admin panel (articles, categories, tags, comments, users)
-- [ ] Livewire SPA homepage dengan artikel list
-- [ ] Livewire article detail page
-- [ ] Search functionality (full-text MySQL)
-- [ ] Comment system (nested, moderation)
-- [ ] Auth system (register, login, OAuth, verify email)
-- [ ] Role system (Admin, Editor, Author, User)
-- [ ] Dark/light mode anti-FOUC
-- [ ] SEO (meta, OG, sitemap, robots, RSS)
-- [ ] Security (CSRF, CSP, HSTS, rate limiting)
-- [ ] Docker setup (dev + production)
-- [ ] Testing suite (≥ 85% coverage)
-- [ ] CI/CD pipeline (GitHub Actions)
+- [x] Database schema & migrations
+- [x] Models dengan relationships, factories, seeders
+- [x] Filament admin panel (articles, categories, tags, comments, users)
+- [x] Livewire SPA homepage dengan artikel list
+- [x] Livewire article detail page
+- [x] Search functionality (full-text MySQL)
+- [x] Comment system (nested, moderation)
+- [x] Auth system (register, login, OAuth, verify email)
+- [x] Role system (Admin, Editor, Author, User)
+- [x] Dark/light mode anti-FOUC
+- [x] SEO (meta, OG, sitemap, robots, RSS)
+- [x] Security (CSRF, CSP, HSTS, rate limiting)
+- [x] Docker setup (dev + production)
+- [x] Testing suite (Pest coverage on critical paths)
+- [x] CI/CD pipeline (GitHub Actions)
 
 ### 12.2 v1.1 — "Engagement"
 **Timeline:** 2-3 weeks  

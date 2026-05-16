@@ -67,14 +67,39 @@ new class extends Component
     <x-slot:metaDescription>Buat akun pembaca MugiewBlog.</x-slot:metaDescription>
     <x-slot:canonical>{{ route('register') }}</x-slot:canonical>
 
-    <section class="mx-auto grid min-h-[calc(100vh-12rem)] max-w-7xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_460px] lg:px-8">
-        <div class="max-w-2xl">
-            <p class="text-sm font-bold uppercase tracking-wide text-accent">Reader Account</p>
-            <h1 class="mt-3 font-display text-4xl font-bold leading-tight sm:text-5xl">Buat akun pembaca yang terverifikasi.</h1>
-            <p class="mt-5 text-lg leading-8 text-surface-600 dark:text-surface-300">Akun dipakai untuk interaksi pembaca, komentar terhubung profil, dan pengembangan fitur personalisasi berikutnya.</p>
-        </div>
+    <section class="page-hero hero-grid">
+        <div class="mx-auto grid min-h-[calc(100vh-12rem)] max-w-7xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_460px] lg:px-8">
+            <div class="max-w-2xl">
+                <p class="eyebrow">
+                    <i class="fas fa-user-plus h-3.5 w-3.5" aria-hidden="true"></i>
+                    Daftar akun
+                </p>
+                <h1 class="mt-5 font-display text-4xl font-bold leading-tight sm:text-5xl">Buat identitas pembaca yang rapi sejak awal.</h1>
+                <p class="mt-5 text-lg leading-8 text-surface-600 dark:text-surface-300">Registrasi memakai email terverifikasi dan validasi ketat supaya komentar, profil, dan fitur lanjutan tetap konsisten ketika komunitas tumbuh.</p>
 
-        <form wire:submit="register" class="rounded-lg border border-surface-200 bg-white p-6 shadow-sm dark:border-surface-800 dark:bg-surface-900">
+                <div class="mt-8 grid gap-3 sm:grid-cols-2">
+                    <div class="auth-benefit">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-muted text-accent">
+                            <i class="fas fa-at h-4 w-4" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <p class="font-semibold">Username unik</p>
+                            <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">Identitas singkat untuk tiap pembaca.</p>
+                        </div>
+                    </div>
+                    <div class="auth-benefit">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-muted text-accent">
+                            <i class="fas fa-envelope-circle-check h-4 w-4" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <p class="font-semibold">Email terverifikasi</p>
+                            <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">Komentar dibuka setelah akun valid.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form wire:submit="register" class="form-panel p-6">
             <div>
                 <label for="name" class="mb-1 block text-sm font-semibold">Nama</label>
                 <input id="name" wire:model="name" type="text" autocomplete="name" class="h-11 w-full rounded-lg border-surface-200 focus:border-accent focus:ring-accent/30 dark:border-surface-800 dark:bg-surface-950">
@@ -114,6 +139,7 @@ new class extends Component
                 Sudah punya akun?
                 <a href="{{ route('login') }}" wire:navigate class="font-semibold text-accent hover:text-accent-hover">Masuk</a>
             </p>
-        </form>
+            </form>
+        </div>
     </section>
 </div>

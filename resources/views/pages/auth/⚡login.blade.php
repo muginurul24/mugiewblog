@@ -63,14 +63,39 @@ new class extends Component
     <x-slot:metaDescription>Masuk ke akun MugiewBlog.</x-slot:metaDescription>
     <x-slot:canonical>{{ route('login') }}</x-slot:canonical>
 
-    <section class="mx-auto grid min-h-[calc(100vh-12rem)] max-w-7xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_420px] lg:px-8">
-        <div class="max-w-2xl">
-            <p class="text-sm font-bold uppercase tracking-wide text-accent">MugiewBlog Account</p>
-            <h1 class="mt-3 font-display text-4xl font-bold leading-tight sm:text-5xl">Masuk untuk komentar, bookmark, dan kelola profil.</h1>
-            <p class="mt-5 text-lg leading-8 text-surface-600 dark:text-surface-300">Akun pembaca memakai verifikasi email. Admin dan editor tetap masuk ke panel melalui halaman admin.</p>
-        </div>
+    <section class="page-hero hero-grid">
+        <div class="mx-auto grid min-h-[calc(100vh-12rem)] max-w-7xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:px-8">
+            <div class="max-w-2xl">
+                <p class="eyebrow">
+                    <i class="fas fa-user-shield h-3.5 w-3.5" aria-hidden="true"></i>
+                    Akun pembaca
+                </p>
+                <h1 class="mt-5 font-display text-4xl font-bold leading-tight sm:text-5xl">Masuk untuk ikut berdiskusi tanpa kehilangan konteks.</h1>
+                <p class="mt-5 text-lg leading-8 text-surface-600 dark:text-surface-300">Profil terverifikasi menjaga komentar tetap kredibel, menyimpan identitas pembaca, dan memberi dasar yang rapi untuk fitur personalisasi berikutnya.</p>
 
-        <form wire:submit="login" class="rounded-lg border border-surface-200 bg-white p-6 shadow-sm dark:border-surface-800 dark:bg-surface-900">
+                <div class="mt-8 grid gap-3 sm:grid-cols-2">
+                    <div class="auth-benefit">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-muted text-accent">
+                            <i class="fas fa-comments h-4 w-4" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <p class="font-semibold">Komentar terhubung</p>
+                            <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">Riwayat diskusi tetap melekat ke profil.</p>
+                        </div>
+                    </div>
+                    <div class="auth-benefit">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-muted text-accent">
+                            <i class="fas fa-shield-halved h-4 w-4" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <p class="font-semibold">Verifikasi email</p>
+                            <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">Interaksi pembaca lebih aman dan tertib.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form wire:submit="login" class="form-panel p-6">
             @if (session('status'))
                 <p class="mb-4 rounded-lg bg-accent-muted px-3 py-2 text-sm font-medium text-accent">{{ session('status') }}</p>
             @endif
@@ -115,6 +140,7 @@ new class extends Component
                 Belum punya akun?
                 <a href="{{ route('register') }}" wire:navigate class="font-semibold text-accent hover:text-accent-hover">Daftar</a>
             </p>
-        </form>
+            </form>
+        </div>
     </section>
 </div>

@@ -80,7 +80,7 @@ new class extends Component {
     <x-slot:metaDescription>MugiewBlog adalah blog teknologi untuk developer Indonesia yang membahas Laravel, cloud, DevOps, AI engineering, dan investasi teknologi dengan fokus praktik produksi.</x-slot:metaDescription>
     <x-slot:canonical>{{ route('about') }}</x-slot:canonical>
 
-    <section class="hero-grid border-b border-surface-200 bg-surface-50 dark:border-surface-800 dark:bg-surface-950">
+    <section class="page-hero hero-grid">
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
             <nav class="mb-8 flex items-center gap-2 text-sm text-surface-400" aria-label="Breadcrumb">
                 <a href="{{ route('home') }}" wire:navigate class="hover:text-accent">Beranda</a>
@@ -90,7 +90,7 @@ new class extends Component {
 
             <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
                 <div class="max-w-3xl">
-                    <p class="mb-4 inline-flex items-center gap-2 rounded-lg bg-accent-muted px-3 py-1 text-sm font-semibold text-accent">
+                    <p class="eyebrow mb-4">
                         <i class="fas fa-compass h-3.5 w-3.5" aria-hidden="true"></i>
                         Tentang MugiewBlog
                     </p>

@@ -256,37 +256,58 @@ return () => {
         <div class="h-full bg-accent transition-[width] duration-150" :style="`width: ${progress}%`"></div>
     </div>
 
-    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-surface-400" aria-label="Breadcrumb">
-            <a href="{{ route('home') }}" wire:navigate class="hover:text-accent">Beranda</a>
-            <i class="fas fa-chevron-right h-3 w-3" aria-hidden="true"></i>
-            @if ($this->article->category)
-                <a href="{{ $this->article->category->url() }}" wire:navigate
-                    class="hover:text-accent">{{ $this->article->category->name }}</a>
+    <section class="page-hero hero-grid">
+        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+            <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-surface-400" aria-label="Breadcrumb">
+                <a href="{{ route('home') }}" wire:navigate class="hover:text-accent">Beranda</a>
                 <i class="fas fa-chevron-right h-3 w-3" aria-hidden="true"></i>
-            @endif
-            <span
-                class="max-w-[16rem] truncate text-surface-600 dark:text-surface-300">{{ $this->article->title }}</span>
-        </nav>
+                @if ($this->article->category)
+                    <a href="{{ $this->article->category->url() }}" wire:navigate
+                        class="hover:text-accent">{{ $this->article->category->name }}</a>
+                    <i class="fas fa-chevron-right h-3 w-3" aria-hidden="true"></i>
+                @endif
+                <span
+                    class="max-w-[16rem] truncate text-surface-600 dark:text-surface-300">{{ $this->article->title }}</span>
+            </nav>
 
+            <div class="max-w-4xl">
+                @if ($this->article->category)
+                    <a href="{{ $this->article->category->url() }}" wire:navigate
+                        class="mb-5 inline-flex items-center gap-2 rounded-lg px-3 py-1 text-xs font-bold text-white"
+                        style="background-color: {{ $this->article->category->color }}">
+                        <i class="fas {{ $this->article->category->icon }} h-3 w-3" aria-hidden="true"></i>
+                        {{ $this->article->category->name }}
+                    </a>
+                @endif
+
+                <h1 class="font-display text-4xl font-bold leading-tight sm:text-5xl">{{ $this->article->title }}</h1>
+                <p class="mt-5 max-w-3xl text-lg leading-8 text-surface-600 dark:text-surface-300">
+                    {{ $this->article->excerpt }}
+                </p>
+
+                <div class="mt-6 flex flex-wrap items-center gap-3">
+                    <span class="metadata-pill">
+                        <i class="far fa-calendar h-3.5 w-3.5" aria-hidden="true"></i>
+                        {{ $this->article->published_at?->translatedFormat('d M Y') }}
+                    </span>
+                    <span class="metadata-pill">
+                        <i class="far fa-clock h-3.5 w-3.5" aria-hidden="true"></i>
+                        {{ $this->article->reading_time }} menit baca
+                    </span>
+                    <span class="metadata-pill">
+                        <i class="far fa-comment h-3.5 w-3.5" aria-hidden="true"></i>
+                        {{ $this->article->comments_count }} komentar
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
             <div x-ref="articleBody" class="min-w-0">
                 <header class="mb-8">
-                    @if ($this->article->category)
-                        <a href="{{ $this->article->category->url() }}" wire:navigate
-                            class="mb-5 inline-flex items-center gap-2 rounded-lg px-3 py-1 text-xs font-bold text-white"
-                            style="background-color: {{ $this->article->category->color }}">
-                            <i class="fas {{ $this->article->category->icon }} h-3 w-3" aria-hidden="true"></i>
-                            {{ $this->article->category->name }}
-                        </a>
-                    @endif
-
-                    <h1 class="font-display text-4xl font-bold leading-tight sm:text-5xl">{{ $this->article->title }}
-                    </h1>
-                    <p class="mt-5 text-lg leading-8 text-surface-600 dark:text-surface-300">
-                        {{ $this->article->excerpt }}</p>
-
-                    <div class="mt-6 flex flex-wrap items-center gap-4 text-sm text-surface-500 dark:text-surface-400">
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-surface-500 dark:text-surface-400">
                         <span class="inline-flex items-center gap-2">
                             <span
                                 class="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-100 text-sm font-bold text-accent dark:bg-surface-900">
@@ -298,14 +319,6 @@ return () => {
                                 <span
                                     class="text-xs text-surface-400">{{ $this->article->published_at?->translatedFormat('d M Y') }}</span>
                             </span>
-                        </span>
-                        <span class="inline-flex items-center gap-1.5">
-                            <i class="far fa-clock h-4 w-4" aria-hidden="true"></i>
-                            {{ $this->article->reading_time }} menit baca
-                        </span>
-                        <span class="inline-flex items-center gap-1.5">
-                            <i class="far fa-comment h-4 w-4" aria-hidden="true"></i>
-                            {{ $this->article->comments_count }} komentar
                         </span>
                     </div>
 
@@ -336,7 +349,7 @@ return () => {
                 @if ($this->article->featured_image_url)
                     <img src="{{ $this->article->featured_image_url }}"
                         alt="{{ $this->article->featured_image_alt ?: $this->article->title }}"
-                        class="mb-10 aspect-[16/9] w-full rounded-lg object-cover" loading="eager">
+                        class="mb-10 aspect-video w-full rounded-lg object-cover" loading="eager">
                 @endif
 
                 <div class="article-prose">
@@ -355,8 +368,7 @@ return () => {
                     </div>
                 @endif
 
-                <section
-                    class="mt-12 rounded-lg border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+                <section class="surface-panel mt-12 p-5">
                     <h2 class="font-display text-2xl font-bold">Komentar</h2>
                     <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">Komentar baru akan masuk moderation
                         queue sebelum tampil.</p>
@@ -432,8 +444,7 @@ return () => {
             <aside class="hidden lg:block">
                 <div class="sticky top-24 space-y-6">
                     @if (count($this->preparedContent['toc']) > 0)
-                        <section
-                            class="rounded-lg border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+                        <section class="surface-panel p-5">
                             <h2 class="mb-4 text-sm font-semibold uppercase text-surface-400">Daftar Isi</h2>
                             <nav class="grid gap-1" aria-label="Daftar isi artikel">
                                 @foreach ($this->preparedContent['toc'] as $item)

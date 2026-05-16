@@ -59,9 +59,19 @@ new class extends Component
     <x-slot:metaDescription>Buat password baru untuk akun MugiewBlog.</x-slot:metaDescription>
     <x-slot:canonical>{{ url()->current() }}</x-slot:canonical>
 
-    <section class="mx-auto flex min-h-[calc(100vh-12rem)] max-w-xl items-center px-4 py-10 sm:px-6 lg:px-8">
-        <form wire:submit="resetPassword" class="w-full rounded-lg border border-surface-200 bg-white p-6 shadow-sm dark:border-surface-800 dark:bg-surface-900">
-            <h1 class="font-display text-3xl font-bold">Password baru</h1>
+    <section class="page-hero hero-grid">
+        <div class="mx-auto grid min-h-[calc(100vh-12rem)] max-w-6xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:px-8">
+            <div class="max-w-xl">
+                <p class="eyebrow">
+                    <i class="fas fa-key h-3.5 w-3.5" aria-hidden="true"></i>
+                    Password baru
+                </p>
+                <h1 class="mt-5 font-display text-4xl font-bold leading-tight">Buat kredensial baru yang kuat.</h1>
+                <p class="mt-4 leading-7 text-surface-600 dark:text-surface-300">Gunakan password unik supaya sesi akun tetap aman setelah proses pemulihan selesai.</p>
+            </div>
+
+            <form wire:submit="resetPassword" class="form-panel w-full p-6">
+                <h2 class="font-display text-2xl font-bold">Password baru</h2>
 
             <div class="mt-5">
                 <label for="email" class="mb-1 block text-sm font-semibold">Email</label>
@@ -84,6 +94,7 @@ new class extends Component
                 <i class="fas fa-key h-4 w-4" aria-hidden="true"></i>
                 Simpan password
             </button>
-        </form>
+            </form>
+        </div>
     </section>
 </div>

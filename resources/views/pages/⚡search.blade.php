@@ -44,9 +44,13 @@ new class extends Component {
     <x-slot:metaDescription>Cari artikel MugiewBlog berdasarkan judul, ringkasan, kategori, dan tag.</x-slot:metaDescription>
     <x-slot:canonical>{{ route('search') }}</x-slot:canonical>
 
-    <section class="border-b border-surface-200 bg-white dark:border-surface-800 dark:bg-surface-950">
-        <div class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-            <h1 class="font-display text-4xl font-bold">Cari Artikel</h1>
+    <section class="page-hero hero-grid">
+        <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+            <p class="eyebrow mb-4">
+                <i class="fas fa-magnifying-glass h-3.5 w-3.5" aria-hidden="true"></i>
+                Search
+            </p>
+            <h1 class="font-display text-4xl font-bold">Cari artikel yang benar-benar relevan.</h1>
             <p class="mt-3 leading-7 text-surface-600 dark:text-surface-300">Temukan tulisan tentang Laravel, cloud, DevOps, AI engineering, dan investasi teknologi.</p>
 
             <div class="relative mt-6">
@@ -67,7 +71,8 @@ new class extends Component {
     <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="mb-6 flex items-end justify-between gap-4">
             <div>
-                <h2 class="font-display text-2xl font-bold">Hasil</h2>
+                <p class="section-kicker">Hasil</p>
+                <h2 class="mt-2 font-display text-2xl font-bold">Hasil pencarian</h2>
                 <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">
                     @if (trim($query) !== '')
                         {{ $this->articles->total() }} hasil untuk "{{ $query }}"

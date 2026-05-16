@@ -148,18 +148,18 @@ new class extends Component {
     <x-slot:title>MugiewBlog — Blog Teknologi dan Pemrograman</x-slot:title>
     <x-slot:metaDescription>Artikel mendalam tentang Laravel, pemrograman, infrastruktur cloud, DevOps, AI engineering, dan investasi teknologi untuk developer Indonesia.</x-slot:metaDescription>
 
-    <section class="hero-grid border-b border-surface-200 bg-surface-50 dark:border-surface-800 dark:bg-surface-950">
+    <section class="page-hero hero-grid">
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-            <div class="max-w-3xl">
-                <p class="mb-4 inline-flex items-center gap-2 rounded-lg bg-accent-muted px-3 py-1 text-sm font-semibold text-accent">
+            <div class="mx-auto max-w-4xl text-center">
+                <p class="eyebrow mb-5">
                     <i class="fas fa-bolt h-3.5 w-3.5" aria-hidden="true"></i>
                     Laravel, Cloud, DevOps, AI, Investment
                 </p>
                 <h1 class="font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-                    Byte-sized insight untuk developer modern.
+                    Engineering notes untuk developer yang mengirim fitur ke produksi.
                 </h1>
-                <p class="mt-5 max-w-2xl text-lg leading-8 text-surface-600 dark:text-surface-300">
-                    Catatan teknis yang fokus pada implementasi produksi, keputusan arsitektur, performa, dan cara berpikir engineering yang bisa dipakai langsung.
+                <p class="mx-auto mt-5 max-w-3xl text-lg leading-8 text-surface-600 dark:text-surface-300">
+                    Artikel teknis mendalam tentang implementasi produksi, keputusan arsitektur, performa, dan workflow engineering yang bisa dipakai langsung oleh tim modern.
                 </p>
             </div>
 
@@ -197,7 +197,8 @@ new class extends Component {
         <div>
             <div class="mb-6 flex items-end justify-between gap-4">
                 <div>
-                    <h2 class="font-display text-2xl font-bold">Artikel Terbaru</h2>
+                    <p class="section-kicker">Terbaru</p>
+                    <h2 class="mt-2 font-display text-2xl font-bold">Artikel Terbaru</h2>
                     <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">Tulisan terbaru dari pipeline produksi MugiewBlog.</p>
                 </div>
                 <div wire:loading class="text-sm font-medium text-accent">
@@ -225,7 +226,7 @@ new class extends Component {
         </div>
 
         <aside class="space-y-6">
-            <section class="rounded-lg border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+            <section class="surface-panel p-5">
                 <h2 class="mb-4 text-sm font-semibold uppercase text-surface-400">Populer</h2>
                 <div class="space-y-4">
                     @foreach ($this->popularArticles as $popularArticle)
@@ -240,7 +241,7 @@ new class extends Component {
                 </div>
             </section>
 
-            <section class="rounded-lg border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+            <section class="surface-panel p-5">
                 <h2 class="mb-4 text-sm font-semibold uppercase text-surface-400">Topik Populer</h2>
                 <div class="flex flex-wrap gap-2">
                     @foreach ($this->popularTags as $tag)

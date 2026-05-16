@@ -60,12 +60,12 @@
             @endif
         </p>
 
-        <div class="mt-5 flex flex-wrap items-center gap-4 text-xs font-medium text-surface-400">
-            <span class="inline-flex items-center gap-1.5">
+        <div class="mt-5 flex flex-wrap items-center gap-2 text-xs font-medium text-surface-400">
+            <span class="metadata-pill">
                 <i class="far fa-clock h-3.5 w-3.5" aria-hidden="true"></i>
                 {{ $article->reading_time }} menit
             </span>
-            <span class="inline-flex items-center gap-1.5">
+            <span class="metadata-pill">
                 <i class="far fa-comment h-3.5 w-3.5" aria-hidden="true"></i>
                 {{ $article->comments_count ?? 0 }} komentar
             </span>

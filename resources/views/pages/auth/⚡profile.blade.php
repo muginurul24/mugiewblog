@@ -82,14 +82,28 @@ new class extends Component
     <x-slot:metaDescription>Kelola profil akun MugiewBlog.</x-slot:metaDescription>
     <x-slot:canonical>{{ route('profile') }}</x-slot:canonical>
 
-    <section class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        <div class="mb-8">
-            <h1 class="font-display text-4xl font-bold">Profil</h1>
-            <p class="mt-2 text-surface-600 dark:text-surface-300">{{ auth()->user()->email }}</p>
+    <section class="page-hero hero-grid">
+        <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+            <p class="eyebrow">
+                <i class="fas fa-id-card h-3.5 w-3.5" aria-hidden="true"></i>
+                Profil pembaca
+            </p>
+            <div class="mt-5 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <h1 class="font-display text-4xl font-bold">{{ auth()->user()->name }}</h1>
+                    <p class="mt-2 text-surface-600 dark:text-surface-300">{{ auth()->user()->email }}</p>
+                </div>
+                <span class="metadata-pill w-fit">
+                    <i class="fas fa-circle-check h-3.5 w-3.5" aria-hidden="true"></i>
+                    {{ auth()->user()->hasVerifiedEmail() ? 'Email terverifikasi' : 'Menunggu verifikasi email' }}
+                </span>
+            </div>
         </div>
+    </section>
 
-        <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
-            <form wire:submit="saveProfile" class="rounded-lg border border-surface-200 bg-white p-6 shadow-sm dark:border-surface-800 dark:bg-surface-900">
+    <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+            <form wire:submit="saveProfile" class="form-panel p-6">
                 @if (session('profile_status'))
                     <p class="mb-4 rounded-lg bg-accent-muted px-3 py-2 text-sm font-medium text-accent">{{ session('profile_status') }}</p>
                 @endif
@@ -137,7 +151,7 @@ new class extends Component
                 </button>
             </form>
 
-            <form wire:submit="updatePassword" class="rounded-lg border border-surface-200 bg-white p-6 shadow-sm dark:border-surface-800 dark:bg-surface-900">
+            <form wire:submit="updatePassword" class="form-panel p-6">
                 <h2 class="font-display text-xl font-bold">Password</h2>
 
                 @if (session('password_status'))

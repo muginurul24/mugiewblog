@@ -45,7 +45,7 @@ new class extends Component {
     <x-slot:metaDescription>Artikel MugiewBlog dengan topik {{ $this->tag->name }}.</x-slot:metaDescription>
     <x-slot:canonical>{{ $this->tag->url() }}</x-slot:canonical>
 
-    <section class="border-b border-surface-200 bg-white dark:border-surface-800 dark:bg-surface-950">
+    <section class="page-hero hero-grid">
         <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <nav class="mb-8 flex items-center gap-2 text-sm text-surface-400" aria-label="Breadcrumb">
                 <a href="{{ route('home') }}" wire:navigate class="hover:text-accent">Beranda</a>
@@ -55,17 +55,25 @@ new class extends Component {
                 <span class="text-surface-600 dark:text-surface-300">{{ $this->tag->name }}</span>
             </nav>
 
-            <p class="mb-3 inline-flex items-center gap-2 rounded-lg bg-accent-muted px-3 py-1 text-sm font-semibold text-accent">
+            <p class="eyebrow mb-3">
                 <i class="fas fa-tag h-3.5 w-3.5" aria-hidden="true"></i>
                 Topik
             </p>
             <h1 class="font-display text-4xl font-bold">{{ $this->tag->name }}</h1>
-            <p class="mt-3 text-sm font-semibold text-accent">{{ $this->tag->articles_count }} artikel published</p>
+            <p class="mt-3 max-w-2xl leading-7 text-surface-600 dark:text-surface-300">
+                Arsip tulisan yang membahas {{ $this->tag->name }} dari sudut pandang implementasi, keputusan teknis, dan pengalaman produksi.
+            </p>
+            <p class="mt-3 text-sm font-semibold text-accent">{{ $this->tag->articles_count }} artikel terbit</p>
         </div>
     </section>
 
     <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         @if ($this->articles->isNotEmpty())
+            <div class="mb-6">
+                <p class="section-kicker">Arsip topik</p>
+                <h2 class="mt-2 font-display text-2xl font-bold">Tulisan terbaru</h2>
+            </div>
+
             <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($this->articles as $article)
                     <x-article-card :article="$article" wire:key="tag-article-{{ $article->id }}" />

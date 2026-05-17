@@ -29,7 +29,7 @@
 
         @if ($category)
             <span class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold text-white" style="background-color: {{ $category->color }}">
-                <i class="fas {{ $category->icon }} h-3 w-3" aria-hidden="true"></i>
+                <i class="{{ $category->icon_classes }} h-3 w-3" aria-hidden="true"></i>
                 {{ $category->name }}
             </span>
         @endif

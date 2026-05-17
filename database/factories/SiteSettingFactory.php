@@ -22,7 +22,7 @@ class SiteSettingFactory extends Factory
             'tagline' => fake()->sentence(),
             'site_url' => fake()->url(),
             'site_description' => fake()->paragraph(),
-            'default_og_image' => fake()->imageUrl(),
+            'default_og_image' => 'settings/og/default.webp',
             'contact_email' => fake()->safeEmail(),
             'sitemap_enabled' => true,
             'rss_enabled' => true,

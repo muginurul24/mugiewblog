@@ -13,11 +13,15 @@ use App\Filament\Widgets\ArticleCategoriesChart;
 use App\Filament\Widgets\ArticleViewsChart;
 use App\Filament\Widgets\BlogStats;
 use App\Models\Article;
+use App\Models\Category;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Support\FontAwesomeIconCatalog;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
@@ -135,6 +139,9 @@ it('should render polished management pages when user is admin', function () {
 
 it('should save working site settings when admin submits the settings page', function () {
     $admin = User::factory()->admin()->create();
+    $ogImage = UploadedFile::fake()->image('default-og.webp', 1200, 630);
+
+    Storage::fake('public');
 
     $this->actingAs($admin);
 
@@ -144,7 +151,7 @@ it('should save working site settings when admin submits the settings page', fun
             'tagline' => 'Catatan engineering',
             'site_url' => 'https://devpulse.test',
             'site_description' => 'Blog untuk tim engineering.',
-            'default_og_image' => 'https://devpulse.test/og.webp',
+            'default_og_image' => $ogImage,
             'contact_email' => 'hello@devpulse.test',
             'sitemap_enabled' => true,
             'rss_enabled' => false,
@@ -154,11 +161,41 @@ it('should save working site settings when admin submits the settings page', fun
         ->call('save')
         ->assertNotified();
 
+    $siteSetting = SiteSetting::current();
+
     expect(SiteSetting::current())
         ->site_name->toBe('DevPulse')
         ->rss_enabled->toBeFalse()
         ->newsletter_enabled->toBeFalse()
-        ->articles_per_page->toBe(12);
+        ->articles_per_page->toBe(12)
+        ->default_og_image->toStartWith('settings/og/');
+
+    Storage::disk('public')->assertExists($siteSetting->default_og_image);
+});
+
+it('should resolve default og image urls when settings use uploaded paths', function () {
+    config(['app.url' => 'https://devpulse.test']);
+
+    $siteSetting = SiteSetting::factory()->create([
+        'default_og_image' => 'settings/og/default.webp',
+    ]);
+
+    expect($siteSetting->default_og_image_url)
+        ->toBe(url('/storage/settings/og/default.webp'));
+});
+
+it('should expose searchable free font awesome icons when category icons are configured', function () {
+    $legacyCategory = Category::factory()->make(['icon' => 'fa-code']);
+    $brandCategory = Category::factory()->make(['icon' => 'fa-brands fa-github']);
+
+    expect($legacyCategory->icon_classes)
+        ->toBe('fa-solid fa-code')
+        ->and($brandCategory->icon_classes)
+        ->toBe('fa-brands fa-github')
+        ->and(FontAwesomeIconCatalog::search('github'))
+        ->toHaveKey('fa-brands fa-github')
+        ->and(FontAwesomeIconCatalog::optionLabel('fa-brands fa-github'))
+        ->toContain('fa-brands fa-github');
 });
 
 it('should cache only the current site settings identifier', function () {

@@ -57,7 +57,7 @@ new class extends Component {
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
                 <div class="flex items-start gap-4">
                     <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-white" style="background-color: {{ $this->category->color }}">
-                        <i class="fas {{ $this->category->icon }} h-5 w-5" aria-hidden="true"></i>
+                        <i class="{{ $this->category->icon_classes }} h-5 w-5" aria-hidden="true"></i>
                     </span>
                     <div>
                         <h1 class="font-display text-4xl font-bold">{{ $this->category->name }}</h1>

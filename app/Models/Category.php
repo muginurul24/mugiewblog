@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\FontAwesomeIconCatalog;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -56,6 +57,12 @@ class Category extends Model
     public function url(): string
     {
         return route('categories.show', $this);
+    }
+
+    #[\NoDiscard]
+    public function getIconClassesAttribute(): string
+    {
+        return FontAwesomeIconCatalog::normalizeValue($this->icon);
     }
 
     #[\NoDiscard]

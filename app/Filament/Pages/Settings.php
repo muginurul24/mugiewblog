@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\SiteSetting;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -99,10 +100,16 @@ class Settings extends Page
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('default_og_image')
+                                FileUpload::make('default_og_image')
                                     ->label('Default OG image')
-                                    ->url()
-                                    ->maxLength(255),
+                                    ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                                    ->disk('public')
+                                    ->directory('settings/og')
+                                    ->visibility('public')
+                                    ->imageEditor()
+                                    ->maxSize(5120)
+                                    ->helperText('Upload gambar untuk preview sosial. Rasio 1200x630 direkomendasikan.'),
                                 TextInput::make('contact_email')
                                     ->label('Email kontak')
                                     ->email()

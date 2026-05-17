@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use App\Support\FontAwesomeIconCatalog;
+use Closure;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -58,12 +60,28 @@ class CategoryForm
                                     ->required()
                                     ->regex('/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b$/')
                                     ->default('#D4943A'),
-                                TextInput::make('icon')
+                                Select::make('icon')
                                     ->label('Ikon')
-                                    ->helperText('Gunakan nama ikon Font Awesome, contoh: fa-code.')
+                                    ->helperText('Cari dan pilih ikon Font Awesome Free. Solid, Regular, dan Brands tersedia.')
+                                    ->options(FontAwesomeIconCatalog::recommendedOptions())
+                                    ->getSearchResultsUsing(fn (?string $search): array => FontAwesomeIconCatalog::search($search))
+                                    ->getOptionLabelUsing(fn (?string $value): ?string => FontAwesomeIconCatalog::optionLabel($value))
+                                    ->formatStateUsing(fn (?string $state): string => FontAwesomeIconCatalog::normalizeValue($state))
+                                    ->dehydrateStateUsing(fn (?string $state): string => FontAwesomeIconCatalog::normalizeValue($state))
+                                    ->searchable()
+                                    ->native(false)
+                                    ->allowHtml()
                                     ->required()
-                                    ->maxLength(64)
-                                    ->default('fa-folder'),
+                                    ->rules([
+                                        'string',
+                                        'max:64',
+                                        function (string $attribute, mixed $value, Closure $fail): void {
+                                            if (! FontAwesomeIconCatalog::contains($value)) {
+                                                $fail('Ikon yang dipilih tidak tersedia.');
+                                            }
+                                        },
+                                    ])
+                                    ->default('fa-solid fa-folder'),
                             ]),
                     ]),
             ]);

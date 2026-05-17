@@ -312,7 +312,7 @@ return () => {
                     <a href="{{ $this->article->category->url() }}" wire:navigate
                         class="mb-5 inline-flex items-center gap-2 rounded-lg px-3 py-1 text-xs font-bold text-white"
                         style="background-color: {{ $this->article->category->color }}">
-                        <i class="fas {{ $this->article->category->icon }} h-3 w-3" aria-hidden="true"></i>
+                        <i class="{{ $this->article->category->icon_classes }} h-3 w-3" aria-hidden="true"></i>
                         {{ $this->article->category->name }}
                     </a>
                 @endif

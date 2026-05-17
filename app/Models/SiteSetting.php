@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 #[Fillable([
     'site_name',
@@ -65,6 +67,22 @@ class SiteSetting extends Model
     public static function forgetCurrent(): void
     {
         Cache::forget(self::CACHE_KEY);
+    }
+
+    #[\NoDiscard]
+    public function getDefaultOgImageUrlAttribute(): ?string
+    {
+        if (blank($this->default_og_image)) {
+            return null;
+        }
+
+        if (Str::startsWith($this->default_og_image, ['http://', 'https://'])) {
+            return $this->default_og_image;
+        }
+
+        $url = Storage::disk('public')->url($this->default_og_image);
+
+        return Str::startsWith($url, ['http://', 'https://']) ? $url : url($url);
     }
 
     /**

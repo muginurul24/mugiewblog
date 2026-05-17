@@ -200,12 +200,12 @@ class DatabaseSeeder extends Seeder
     private function seedCategories(): Collection
     {
         return collect([
-            ['Programming', 'programming', 'Laravel, PHP, JavaScript, dan pola coding modern.', '#D4943A', 'fa-code'],
-            ['Cloud', 'cloud', 'Infrastruktur cloud, deployment, dan scaling.', '#2B8A7E', 'fa-cloud'],
-            ['DevOps', 'devops', 'CI/CD, observability, containers, dan reliability.', '#5F6F94', 'fa-server'],
-            ['Go & Rust', 'go-rust', 'Backend performa tinggi dengan Go dan Rust.', '#B85C38', 'fa-terminal'],
-            ['AI Engineering', 'ai-engineering', 'LLM, agent workflow, RAG, dan evaluasi model.', '#6A7D39', 'fa-microchip'],
-            ['Investment', 'investment', 'Analisis investasi teknologi, crypto, dan pasar digital.', '#8A6F3E', 'fa-chart-line'],
+            ['Programming', 'programming', 'Laravel, PHP, JavaScript, dan pola coding modern.', '#D4943A', 'fa-solid fa-code'],
+            ['Cloud', 'cloud', 'Infrastruktur cloud, deployment, dan scaling.', '#2B8A7E', 'fa-solid fa-cloud'],
+            ['DevOps', 'devops', 'CI/CD, observability, containers, dan reliability.', '#5F6F94', 'fa-solid fa-server'],
+            ['Go & Rust', 'go-rust', 'Backend performa tinggi dengan Go dan Rust.', '#B85C38', 'fa-solid fa-terminal'],
+            ['AI Engineering', 'ai-engineering', 'LLM, agent workflow, RAG, dan evaluasi model.', '#6A7D39', 'fa-solid fa-microchip'],
+            ['Investment', 'investment', 'Analisis investasi teknologi, crypto, dan pasar digital.', '#8A6F3E', 'fa-solid fa-chart-line'],
         ])->mapWithKeys(fn (array $category, int $index): array => [
             $category[1] => Category::updateOrCreate([
                 'slug' => $category[1],

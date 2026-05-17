@@ -312,7 +312,7 @@ new class extends Component {
                 @foreach ($this->categories as $categoryItem)
                     <a href="{{ $categoryItem->url() }}" wire:navigate class="group rounded-lg border border-surface-200 bg-surface-50 p-5 transition hover:border-accent/40 hover:bg-white dark:border-surface-800 dark:bg-surface-900 dark:hover:bg-surface-900">
                         <span class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg text-white" style="background-color: {{ $categoryItem->color }}">
-                            <i class="fas {{ $categoryItem->icon }} h-4 w-4" aria-hidden="true"></i>
+                            <i class="{{ $categoryItem->icon_classes }} h-4 w-4" aria-hidden="true"></i>
                         </span>
                         <span class="font-display text-lg font-bold transition group-hover:text-accent">{{ $categoryItem->name }}</span>
                         <span class="mt-2 block text-sm leading-6 text-surface-500 dark:text-surface-400">{{ $categoryItem->description }}</span>

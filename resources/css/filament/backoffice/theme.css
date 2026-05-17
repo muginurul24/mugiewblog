@@ -1,5 +1,6 @@
 @import url("https://fonts.bunny.net/css?family=space-grotesk:500,600,700|jetbrains-mono:400,500,600");
 @import "../../../../vendor/filament/filament/resources/css/theme.css";
+@import "../../../fontawesome/css/all.min.css";
 
 @source "../../../../app/Filament/**/*";
 @source "../../../../resources/views/filament/**/*";

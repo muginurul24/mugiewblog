@@ -4,7 +4,7 @@
         (string) ($metaDescription ?? $siteSettings->site_description),
     );
     $canonicalUrl = (string) ($canonical ?? url()->current());
-    $shareImage = (string) ($ogImage ?? ($siteSettings->default_og_image ?: asset('favicon.ico')));
+    $shareImage = (string) ($ogImage ?? ($siteSettings->default_og_image_url ?: asset('favicon.ico')));
     $isHomeRoute = request()->routeIs('home');
     $isCategoryRoute = request()->routeIs('categories.show');
     $isAboutRoute = request()->routeIs('about');

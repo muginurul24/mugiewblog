@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Categories\Schemas;
 
 use App\Support\FontAwesomeIconCatalog;
-use Closure;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -72,15 +71,7 @@ class CategoryForm
                                     ->native(false)
                                     ->allowHtml()
                                     ->required()
-                                    ->rules([
-                                        'string',
-                                        'max:64',
-                                        function (string $attribute, mixed $value, Closure $fail): void {
-                                            if (! FontAwesomeIconCatalog::contains($value)) {
-                                                $fail('Ikon yang dipilih tidak tersedia.');
-                                            }
-                                        },
-                                    ])
+                                    ->rules(['string', 'max:64'])
                                     ->default('fa-solid fa-folder'),
                             ]),
                     ]),

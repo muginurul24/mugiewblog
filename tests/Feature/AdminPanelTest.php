@@ -4,6 +4,7 @@ use App\Filament\Pages\CacheQueue;
 use App\Filament\Pages\Settings;
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Resources\Categories\CategoryResource;
+use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Comments\CommentResource;
 use App\Filament\Resources\Media\MediaResource;
 use App\Filament\Resources\NewsletterSubscribers\NewsletterSubscriberResource;
@@ -196,6 +197,20 @@ it('should expose searchable free font awesome icons when category icons are con
         ->toHaveKey('fa-brands fa-github')
         ->and(FontAwesomeIconCatalog::optionLabel('fa-brands fa-github'))
         ->toContain('fa-brands fa-github');
+});
+
+it('should update legacy category icons through the edit form', function () {
+    $admin = User::factory()->admin()->create();
+    $category = Category::factory()->create(['icon' => 'fa-code']);
+
+    $this->actingAs($admin);
+
+    Livewire::test(EditCategory::class, ['record' => $category->slug])
+        ->call('save')
+        ->assertHasNoFormErrors()
+        ->assertNotified();
+
+    expect($category->refresh()->icon)->toBe('fa-solid fa-code');
 });
 
 it('should cache only the current site settings identifier', function () {

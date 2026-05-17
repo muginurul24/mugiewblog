@@ -133,11 +133,6 @@ class FontAwesomeIconCatalog
         return $style.' '.($icon ?: 'fa-folder');
     }
 
-    public static function contains(?string $value): bool
-    {
-        return in_array(self::normalizeValue($value), self::values(), true);
-    }
-
     /**
      * @return array<int, string>
      */
